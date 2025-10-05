@@ -1,0 +1,20 @@
+{
+  "title": "Seguimiento en Vivo",
+  "activeVehicles": "Vehículos Activos",
+  "totalDistance": "Distancia Total",
+  "averageSpeed": "Velocidad Promedio",
+  "mapView": "Vista de Mapa",
+  "listView": "Vista de Lista",
+  "vehicleStatus": {
+    "active": "Activo",
+    "idle": "Inactivo",
+    "parked": "Estacionado",
+    "maintenance": "Mantenimiento",
+    "offline": "Desconectado"
+  },
+  "filters": {
+    "all": "Todos los Vehículos",
+    "status": "Filtrar por Estado",
+    "group": "Filtrar por Grupo"
+  }
+}

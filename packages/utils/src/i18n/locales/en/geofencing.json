@@ -1,0 +1,19 @@
+{
+  "title": "Geofencing",
+  "createGeofence": "Create Geofence",
+  "editGeofence": "Edit Geofence",
+  "deleteGeofence": "Delete Geofence",
+  "geofenceName": "Geofence Name",
+  "geofenceType": "Type",
+  "types": {
+    "circle": "Circle",
+    "polygon": "Polygon"
+  },
+  "events": {
+    "entry": "Entry",
+    "exit": "Exit"
+  },
+  "assignedVehicles": "Assigned Vehicles",
+  "rules": "Rules",
+  "notifications": "Notifications"
+}

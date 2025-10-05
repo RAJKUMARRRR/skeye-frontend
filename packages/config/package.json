@@ -1,0 +1,11 @@
+{
+  "name": "@fleet/config",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "files": [
+    "typescript",
+    "eslint",
+    "tailwind"
+  ]
+}

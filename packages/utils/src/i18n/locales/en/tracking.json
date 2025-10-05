@@ -1,0 +1,20 @@
+{
+  "title": "Live Tracking",
+  "activeVehicles": "Active Vehicles",
+  "totalDistance": "Total Distance",
+  "averageSpeed": "Average Speed",
+  "mapView": "Map View",
+  "listView": "List View",
+  "vehicleStatus": {
+    "active": "Active",
+    "idle": "Idle",
+    "parked": "Parked",
+    "maintenance": "Maintenance",
+    "offline": "Offline"
+  },
+  "filters": {
+    "all": "All Vehicles",
+    "status": "Filter by Status",
+    "group": "Filter by Group"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "app": {
+    "name": "Plateforme de Gestion de Flotte",
+    "welcome": "Bienvenue",
+    "logout": "Déconnexion",
+    "login": "Connexion",
+    "settings": "Paramètres"
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "tracking": "Suivi en Direct",
+    "vehicles": "Véhicules",
+    "drivers": "Conducteurs",
+    "geofencing": "Géorepérage",
+    "alerts": "Alertes",
+    "reports": "Rapports",
+    "maintenance": "Maintenance",
+    "routes": "Itinéraires"
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "refresh": "Actualiser",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non"
+  }
+}

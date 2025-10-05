@@ -1,0 +1,37 @@
+{
+  "app": {
+    "name": "Plataforma de Gestión de Flotas",
+    "welcome": "Bienvenido",
+    "logout": "Cerrar sesión",
+    "login": "Iniciar sesión",
+    "settings": "Configuración"
+  },
+  "navigation": {
+    "dashboard": "Panel",
+    "tracking": "Seguimiento en Vivo",
+    "vehicles": "Vehículos",
+    "drivers": "Conductores",
+    "geofencing": "Geocercas",
+    "alerts": "Alertas",
+    "reports": "Informes",
+    "maintenance": "Mantenimiento",
+    "routes": "Rutas"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "export": "Exportar",
+    "refresh": "Actualizar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No"
+  }
+}

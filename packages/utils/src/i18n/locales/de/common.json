@@ -1,0 +1,37 @@
+{
+  "app": {
+    "name": "Flottenmanagement-Plattform",
+    "welcome": "Willkommen",
+    "logout": "Abmelden",
+    "login": "Anmelden",
+    "settings": "Einstellungen"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "tracking": "Live-Tracking",
+    "vehicles": "Fahrzeuge",
+    "drivers": "Fahrer",
+    "geofencing": "Geofencing",
+    "alerts": "Warnungen",
+    "reports": "Berichte",
+    "maintenance": "Wartung",
+    "routes": "Routen"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "export": "Exportieren",
+    "refresh": "Aktualisieren",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein"
+  }
+}

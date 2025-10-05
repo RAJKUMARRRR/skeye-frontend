@@ -1,0 +1,311 @@
+{
+  "navigation": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "about": "About",
+    "blog": "Blog",
+    "contact": "Contact",
+    "login": "Login",
+    "requestDemo": "Request Demo"
+  },
+  "home": {
+    "hero": {
+      "badge": "Trusted by 1000+ companies",
+      "title": "Modern Fleet Management for the Digital Age",
+      "description": "Track, manage, and optimize your fleet with real-time GPS tracking, intelligent analytics, and automated maintenance scheduling.",
+      "cta": {
+        "primary": "Start Free Trial",
+        "secondary": "Watch Demo"
+      }
+    },
+    "features": {
+      "title": "Everything You Need to Manage Your Fleet",
+      "subtitle": "Powerful features to streamline your operations",
+      "tracking": {
+        "title": "Real-Time Tracking",
+        "description": "Monitor your entire fleet's location with precision GPS tracking and live updates every 30 seconds."
+      },
+      "geofencing": {
+        "title": "Smart Geofencing",
+        "description": "Create custom zones and get instant alerts when vehicles enter or exit designated areas."
+      },
+      "maintenance": {
+        "title": "Maintenance Management",
+        "description": "Never miss scheduled maintenance with automated reminders and comprehensive service history."
+      },
+      "analytics": {
+        "title": "Advanced Analytics",
+        "description": "Make data-driven decisions with detailed reports on fuel consumption, driver behavior, and route efficiency."
+      },
+      "mobile": {
+        "title": "Mobile Application",
+        "description": "Drivers can access trip information, checklists, and communicate seamlessly through our mobile app."
+      },
+      "alerts": {
+        "title": "Intelligent Alerts",
+        "description": "Stay informed with customizable alerts for speeding, harsh braking, idling, and maintenance needs."
+      }
+    },
+    "testimonials": {
+      "title": "Trusted by Industry Leaders",
+      "subtitle": "See what our customers say about us"
+    },
+    "cta": {
+      "title": "Ready to Transform Your Fleet Management?",
+      "description": "Join thousands of companies using our platform to reduce costs, improve efficiency, and enhance safety.",
+      "button": "Get Started Today"
+    }
+  },
+  "pricing": {
+    "title": "Simple, Transparent Pricing",
+    "subtitle": "Choose the perfect plan for your fleet size",
+    "billing": {
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "save": "Save 20%"
+    },
+    "tiers": {
+      "trial": {
+        "name": "Free Trial",
+        "price": "$0",
+        "description": "Perfect for testing our platform",
+        "features": [
+          "Up to 5 vehicles",
+          "Real-time GPS tracking",
+          "Basic reporting",
+          "Email support",
+          "30-day trial period"
+        ],
+        "cta": "Start Free Trial"
+      },
+      "basic": {
+        "name": "Basic",
+        "price": "$29",
+        "description": "For small fleets",
+        "features": [
+          "Up to 25 vehicles",
+          "Real-time GPS tracking",
+          "Geofencing (5 zones)",
+          "Basic alerts",
+          "Standard reports",
+          "Email support"
+        ],
+        "cta": "Choose Basic"
+      },
+      "pro": {
+        "name": "Professional",
+        "price": "$99",
+        "description": "Most popular choice",
+        "badge": "Most Popular",
+        "features": [
+          "Up to 100 vehicles",
+          "Real-time GPS tracking",
+          "Unlimited geofencing",
+          "Advanced alerts",
+          "Maintenance management",
+          "Route optimization",
+          "Advanced analytics",
+          "Priority support"
+        ],
+        "cta": "Choose Pro"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "description": "For large organizations",
+        "features": [
+          "Unlimited vehicles",
+          "All Professional features",
+          "White-label options",
+          "Custom integrations",
+          "API access",
+          "Dedicated account manager",
+          "24/7 phone support",
+          "Custom SLA"
+        ],
+        "cta": "Contact Sales"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "questions": [
+        {
+          "question": "What's included in the free trial?",
+          "answer": "The 30-day free trial includes full access to all Pro features, including real-time tracking, geofencing, maintenance scheduling, and advanced analytics. No credit card required."
+        },
+        {
+          "question": "Can I change plans later?",
+          "answer": "Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate any charges."
+        },
+        {
+          "question": "What payment methods do you accept?",
+          "answer": "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers for annual subscriptions."
+        },
+        {
+          "question": "Is there a setup fee?",
+          "answer": "No setup fees! You only pay for your monthly or annual subscription based on your chosen plan."
+        },
+        {
+          "question": "What kind of support do you offer?",
+          "answer": "We offer email support for all plans, priority support for Professional plans, and dedicated phone support with a custom SLA for Enterprise customers."
+        },
+        {
+          "question": "Can I add more vehicles later?",
+          "answer": "Absolutely! You can easily add more vehicles to your account. If you exceed your plan's limit, we'll help you upgrade to the appropriate tier."
+        }
+      ]
+    }
+  },
+  "features": {
+    "title": "Comprehensive Fleet Management Features",
+    "subtitle": "All the tools you need in one powerful platform",
+    "tabs": {
+      "tracking": "Vehicle Tracking",
+      "geofencing": "Geofencing",
+      "maintenance": "Maintenance",
+      "analytics": "Analytics",
+      "mobile": "Mobile App"
+    }
+  },
+  "about": {
+    "title": "About Fleet Management Platform",
+    "subtitle": "Revolutionizing fleet operations since 2020",
+    "mission": {
+      "title": "Our Mission",
+      "description": "To empower businesses with cutting-edge technology that transforms fleet management from a cost center into a competitive advantage."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "A world where every fleet operates at peak efficiency, safety, and sustainability through intelligent automation and data-driven insights."
+    },
+    "values": {
+      "title": "Our Values",
+      "innovation": {
+        "title": "Innovation",
+        "description": "We continuously push boundaries to deliver the most advanced fleet management solutions."
+      },
+      "reliability": {
+        "title": "Reliability",
+        "description": "Our platform delivers 99.9% uptime, ensuring your fleet never goes dark."
+      },
+      "customerSuccess": {
+        "title": "Customer Success",
+        "description": "Your success is our success. We're committed to helping you achieve your goals."
+      }
+    },
+    "team": {
+      "title": "Meet Our Team"
+    }
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "Have questions? We're here to help",
+    "form": {
+      "name": "Full Name",
+      "email": "Email Address",
+      "company": "Company Name",
+      "subject": "Subject",
+      "message": "Message",
+      "submit": "Send Message",
+      "sending": "Sending...",
+      "subjects": {
+        "general": "General Inquiry",
+        "sales": "Sales",
+        "support": "Support",
+        "partnership": "Partnership"
+      }
+    },
+    "info": {
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "hours": "Business Hours"
+    },
+    "success": "Thank you! We'll get back to you soon.",
+    "error": "Failed to send message. Please try again."
+  },
+  "demo": {
+    "title": "Request a Demo",
+    "subtitle": "See how our platform can transform your fleet operations",
+    "form": {
+      "fullName": "Full Name",
+      "email": "Work Email",
+      "company": "Company Name",
+      "phone": "Phone Number",
+      "fleetSize": "Fleet Size",
+      "industry": "Industry",
+      "requirements": "Additional Requirements",
+      "submit": "Request Demo",
+      "fleetSizes": {
+        "1-10": "1-10 vehicles",
+        "11-50": "11-50 vehicles",
+        "51-100": "51-100 vehicles",
+        "101-500": "101-500 vehicles",
+        "500+": "500+ vehicles"
+      },
+      "industries": {
+        "transportation": "Transportation",
+        "logistics": "Logistics",
+        "construction": "Construction",
+        "utilities": "Utilities",
+        "government": "Government",
+        "other": "Other"
+      }
+    },
+    "benefits": {
+      "title": "What to Expect",
+      "demo": "Live 30-minute personalized demo",
+      "consultation": "Free consultation with our experts",
+      "trial": "30-day free trial access",
+      "setup": "Guided setup assistance"
+    }
+  },
+  "blog": {
+    "title": "Fleet Management Insights",
+    "subtitle": "Tips, trends, and best practices",
+    "readMore": "Read More",
+    "readTime": "min read",
+    "categories": "Categories",
+    "tags": "Tags"
+  },
+  "footer": {
+    "tagline": "Modern Fleet Management Platform",
+    "product": {
+      "title": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "integrations": "Integrations",
+      "changelog": "Changelog"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About",
+      "blog": "Blog",
+      "careers": "Careers",
+      "press": "Press"
+    },
+    "resources": {
+      "title": "Resources",
+      "documentation": "Documentation",
+      "support": "Support",
+      "status": "Status Page",
+      "apiReference": "API Reference"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy"
+    },
+    "copyright": "© 2025 Fleet Management Platform. All rights reserved.",
+    "language": "Language"
+  },
+  "common": {
+    "learnMore": "Learn More",
+    "getStarted": "Get Started",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "required": "Required",
+    "optional": "Optional"
+  }
+}

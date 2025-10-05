@@ -1,15 +1,14 @@
+'use client'
+
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'Pricing | Fleet Management Platform',
-  description: 'Simple, transparent pricing for fleets of all sizes. Choose from Trial, Basic, Professional, or Enterprise plans.',
-}
+import { MagneticButton } from '@/components/ui/magnetic-button'
+import { motion } from 'framer-motion'
+import { Check } from 'lucide-react'
 
 export default function PricingPage() {
   const t = useTranslations('pricing')
@@ -114,106 +113,178 @@ export default function PricingPage() {
 
   return (
     <>
-      {/* Header */}
-      <section className="border-b bg-muted/50 py-16">
-        <div className="container">
-          <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+      {/* Premium Header */}
+      <section className="relative border-b border-border/40 bg-gradient-to-b from-muted/30 to-background py-20 overflow-hidden">
+        <div className="container relative z-10">
+          <motion.div
+            className="mx-auto max-w-3xl text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.h1
+              className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
               {t('title')}
-            </h1>
-            <p className="mt-4 text-lg text-muted-foreground">
+            </motion.h1>
+            <motion.p
+              className="mt-6 text-lg text-muted-foreground md:text-xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
               {t('subtitle')}
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
+        </div>
+
+        {/* Background decoration */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
         </div>
       </section>
 
-      {/* Pricing Cards */}
-      <section className="py-20">
+      {/* Premium Pricing Cards */}
+      <section className="py-24 relative">
         <div className="container">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {pricingTiers.map((tier, i) => (
-              <Card
+              <motion.div
                 key={i}
-                className={
-                  tier.popular
-                    ? 'relative border-primary shadow-xl'
-                    : ''
-                }
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
               >
-                {tier.popular && tier.badge && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="px-3 py-1">
-                      {tier.badge}
-                    </Badge>
-                  </div>
-                )}
-                <CardHeader>
-                  <CardTitle className="text-xl">{tier.name}</CardTitle>
-                  <CardDescription>{tier.description}</CardDescription>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold">{tier.price}</span>
-                    {tier.price !== 'Custom' && tier.price !== '$0' && (
-                      <span className="text-muted-foreground">/month</span>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
-                    {tier.features.map((feature, j) => (
-                      <li key={j} className="flex items-start gap-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="mt-0.5 h-4 w-4 text-primary"
+                <Card
+                  className={
+                    tier.popular
+                      ? 'relative border-primary/50 bg-card/50 backdrop-blur-sm shadow-2xl glow card-hover h-full'
+                      : 'card-hover bg-card/50 backdrop-blur-sm border-border/50 h-full'
+                  }
+                >
+                  {tier.popular && tier.badge && (
+                    <motion.div
+                      className="absolute -top-4 left-1/2 -translate-x-1/2"
+                      initial={{ scale: 0, rotate: -12 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ type: "spring", delay: i * 0.1 + 0.3 }}
+                    >
+                      <Badge className="px-4 py-1.5 bg-gradient-to-r from-primary to-accent shadow-lg">
+                        {tier.badge}
+                      </Badge>
+                    </motion.div>
+                  )}
+                  <CardHeader className="pb-8">
+                    <CardTitle className="text-2xl">{tier.name}</CardTitle>
+                    <CardDescription className="text-base">{tier.description}</CardDescription>
+                    <div className="mt-6">
+                      <motion.span
+                        className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70"
+                        initial={{ scale: 0.5 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", delay: i * 0.1 + 0.2 }}
+                      >
+                        {tier.price}
+                      </motion.span>
+                      {tier.price !== 'Custom' && tier.price !== '$0' && (
+                        <span className="text-muted-foreground ml-1">/month</span>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <ul className="space-y-3">
+                      {tier.features.map((feature, j) => (
+                        <motion.li
+                          key={j}
+                          className="flex items-start gap-3"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.1 + j * 0.05 + 0.3 }}
                         >
-                          <path d="M20 6 9 17l-5-5" />
-                        </svg>
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-                <CardFooter>
-                  <Button
-                    className="w-full"
-                    variant={tier.popular ? 'default' : 'outline'}
-                    asChild
-                  >
-                    <Link href={tier.href}>{tier.cta}</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+                          <div className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary/10">
+                            <Check className="h-3 w-3 text-primary" />
+                          </div>
+                          <span className="text-sm leading-relaxed">{feature}</span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter className="pt-6">
+                    <MagneticButton className="w-full" strength={0.2}>
+                      <Button
+                        className={tier.popular ? 'w-full button-shine shadow-lg' : 'w-full'}
+                        variant={tier.popular ? 'default' : 'outline'}
+                        size="lg"
+                        asChild
+                      >
+                        <Link href={tier.href}>{tier.cta}</Link>
+                      </Button>
+                    </MagneticButton>
+                  </CardFooter>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
+
+        {/* Background grid */}
+        <div className="absolute inset-0 -z-10 opacity-5">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:64px_64px]" />
+        </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="border-t bg-muted/50 py-20">
+      {/* Premium FAQ Section */}
+      <section className="border-t border-border/40 bg-muted/30 py-24 relative">
         <div className="container">
           <div className="mx-auto max-w-3xl">
-            <h2 className="mb-12 text-center text-3xl font-bold">
+            <motion.h2
+              className="mb-16 text-center text-3xl font-bold md:text-4xl"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
               {t('faq.title')}
-            </h2>
-            <Accordion type="single" collapsible>
-              {faqs.map((faq, i) => (
-                <AccordionItem key={i} value={`item-${i}`}>
-                  <AccordionTrigger value={`item-${i}`} className="text-left">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent value={`item-${i}`} className="text-muted-foreground">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            </motion.h2>
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Accordion type="single" collapsible className="space-y-4">
+                {faqs.map((faq, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.3, delay: i * 0.05 }}
+                  >
+                    <AccordionItem
+                      value={`item-${i}`}
+                      className="border border-border/50 bg-card/50 backdrop-blur-sm rounded-lg px-6 data-[state=open]:shadow-lg transition-shadow"
+                    >
+                      <AccordionTrigger className="text-left hover:no-underline py-5">
+                        <span className="font-semibold">{faq.question}</span>
+                      </AccordionTrigger>
+                      <AccordionContent className="text-muted-foreground pb-5 leading-relaxed">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </motion.div>
+                ))}
+              </Accordion>
+            </motion.div>
           </div>
+        </div>
+
+        {/* Subtle background */}
+        <div className="absolute inset-0 -z-10 opacity-10">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px]" />
         </div>
       </section>
     </>

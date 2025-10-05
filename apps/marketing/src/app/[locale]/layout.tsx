@@ -36,7 +36,7 @@ export default async function LocaleLayout({ children, params: { locale } }: Pro
   const messages = await getMessages()
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className="dark">
       <body className={inter.className}>
         <NextIntlClientProvider messages={messages}>
           <div className="flex min-h-screen flex-col">

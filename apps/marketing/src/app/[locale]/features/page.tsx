@@ -4,6 +4,14 @@ import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import { CTASection } from '@/components/marketing/CTASection'
 import Image from 'next/image'
+import {
+  GPSTrackingViz,
+  GeofenceViz,
+  RouteOptimizationViz,
+  VehicleDiagnosticsViz,
+  DriverSafetyViz,
+  AnalyticsDashboardViz
+} from '@/components/visualizations'
 
 export default function FeaturesPage() {
   const t = useTranslations('features')
@@ -26,7 +34,7 @@ export default function FeaturesPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       ),
-      visual: 'map' // Placeholder for map visual
+      visualization: <GPSTrackingViz />
     },
     {
       category: 'Geofencing',
@@ -44,7 +52,7 @@ export default function FeaturesPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
         </svg>
       ),
-      visual: 'geofence'
+      visualization: <GeofenceViz />
     },
     {
       category: 'Route Optimization',
@@ -62,7 +70,7 @@ export default function FeaturesPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
         </svg>
       ),
-      visual: 'route'
+      visualization: <RouteOptimizationViz />
     },
     {
       category: 'Vehicle Diagnostics',
@@ -81,7 +89,7 @@ export default function FeaturesPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       ),
-      visual: 'vehicle'
+      visualization: <VehicleDiagnosticsViz />
     },
     {
       category: 'Driver Behavior',
@@ -99,7 +107,7 @@ export default function FeaturesPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      visual: 'analytics'
+      visualization: <DriverSafetyViz />
     },
     {
       category: 'Reporting & Analytics',
@@ -117,7 +125,7 @@ export default function FeaturesPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
       ),
-      visual: 'dashboard'
+      visualization: <AnalyticsDashboardViz />
     },
   ]
 
@@ -216,17 +224,8 @@ export default function FeaturesPage() {
 
                 {/* Visual */}
                 <div className={`${index % 2 === 1 ? 'lg:col-start-1' : ''}`}>
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border/40 bg-card">
-                    {/* Placeholder for actual visuals - you can replace with real screenshots */}
-                    <div className="flex h-full items-center justify-center bg-gradient-to-br from-muted/50 to-muted/20">
-                      <div className="text-center">
-                        <div className="mb-4 text-6xl">{feature.icon}</div>
-                        <p className="text-sm text-muted-foreground">{feature.visual} visualization</p>
-                      </div>
-                    </div>
-
-                    {/* Glow effect */}
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-primary/5 via-transparent to-transparent opacity-50" />
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border/40">
+                    {feature.visualization}
                   </div>
                 </div>
               </motion.div>

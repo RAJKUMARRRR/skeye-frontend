@@ -7,6 +7,14 @@ import { CTASection } from '@/components/marketing/CTASection'
 import { AnimatedTestimonials } from '@/components/ui/animated-testimonials'
 import { MagneticButton } from '@/components/ui/magnetic-button'
 import { motion } from 'framer-motion'
+import {
+  GPSTrackingViz,
+  GeofenceViz,
+  RouteOptimizationViz,
+  VehicleDiagnosticsViz,
+  DriverSafetyViz,
+  AnalyticsDashboardViz
+} from '@/components/visualizations'
 
 export default function HomePage() {
   const t = useTranslations()
@@ -21,6 +29,7 @@ export default function HomePage() {
       ),
       title: 'Real-Time GPS Tracking',
       description: 'Monitor all vehicles with sub-meter precision. Updates every 10-30 seconds with intelligent clustering for large fleets.',
+      visualization: <GPSTrackingViz />
     },
     {
       icon: (
@@ -30,6 +39,7 @@ export default function HomePage() {
       ),
       title: 'Smart Geofencing',
       description: 'Create unlimited virtual boundaries. Get instant alerts when vehicles enter or exit specific zones.',
+      visualization: <GeofenceViz />
     },
     {
       icon: (
@@ -39,6 +49,7 @@ export default function HomePage() {
       ),
       title: 'Route Optimization',
       description: 'AI-powered routing that saves time and fuel. Considers traffic, capacity, and time windows automatically.',
+      visualization: <RouteOptimizationViz />
     },
     {
       icon: (
@@ -49,6 +60,7 @@ export default function HomePage() {
       ),
       title: 'Vehicle Diagnostics',
       description: 'Real-time health monitoring with predictive maintenance alerts. Prevent breakdowns before they happen.',
+      visualization: <VehicleDiagnosticsViz />
     },
     {
       icon: (
@@ -58,6 +70,7 @@ export default function HomePage() {
       ),
       title: 'Driver Safety',
       description: 'Monitor speeding, harsh braking, and aggressive driving. Improve safety scores and reduce insurance costs.',
+      visualization: <DriverSafetyViz />
     },
     {
       icon: (
@@ -67,6 +80,7 @@ export default function HomePage() {
       ),
       title: 'Analytics & Reports',
       description: 'Pre-built and custom dashboards. Export to Excel, PDF, or integrate with your BI tools.',
+      visualization: <AnalyticsDashboardViz />
     },
   ]
 

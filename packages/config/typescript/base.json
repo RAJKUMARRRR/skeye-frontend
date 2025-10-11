@@ -16,7 +16,7 @@
     "outDir": "dist",
     "removeComments": true,
     "importHelpers": true,
-    "importsNotUsedAsValues": "error",
+    "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

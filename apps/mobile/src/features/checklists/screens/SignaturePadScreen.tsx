@@ -61,23 +61,54 @@ export default function SignaturePadScreen() {
           <SignatureScreen
             ref={signatureRef}
             onOK={handleSignature}
+            onEmpty={() => Alert.alert('Empty', 'Please provide a signature')}
+            onBegin={() => console.log('Signature started')}
             descriptionText=""
             clearText="Clear"
             confirmText="Save"
+            imageType="image/png"
+            penColor="#000000"
+            backgroundColor="#ffffff"
             webStyle={`
+              * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+              }
+              body, html {
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+                background-color: #ffffff;
+              }
               .m-signature-pad {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
                 box-shadow: none;
                 border: none;
               }
               .m-signature-pad--body {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
                 border: none;
                 background-color: #ffffff;
               }
+              .m-signature-pad--body canvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100% !important;
+                height: 100% !important;
+                touch-action: none;
+              }
               .m-signature-pad--footer {
                 display: none;
-              }
-              body {
-                background-color: #f9fafb;
               }
             `}
           />
@@ -129,10 +160,11 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 16,
+    justifyContent: 'space-between',
   },
   instructions: {
     alignItems: 'center',
-    paddingVertical: 24,
+    paddingVertical: 16,
     gap: 12,
   },
   instructionsText: {
@@ -142,6 +174,7 @@ const styles = StyleSheet.create({
   },
   signatureContainer: {
     flex: 1,
+    minHeight: 400,
     backgroundColor: '#ffffff',
     borderRadius: 12,
     borderWidth: 2,

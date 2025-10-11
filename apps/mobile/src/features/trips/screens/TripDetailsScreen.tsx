@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
@@ -40,29 +41,81 @@ interface TripDetails {
 }
 
 // Mock data - replace with actual data from API/SQLite
-const MOCK_TRIP: TripDetails = {
-  id: '1',
-  tripNumber: 'TRP-001',
-  status: 'scheduled',
-  origin: {
-    name: 'Warehouse A',
-    address: '123 Main St, Los Angeles, CA 90001',
-    coordinates: { lat: 34.0522, lng: -118.2437 },
+const MOCK_TRIPS: Record<string, TripDetails> = {
+  '1': {
+    id: '1',
+    tripNumber: 'TRP-001',
+    status: 'scheduled',
+    origin: {
+      name: 'Warehouse A',
+      address: '123 Main St, Los Angeles, CA 90001',
+      coordinates: { lat: 34.0522, lng: -118.2437 },
+    },
+    destination: {
+      name: 'Customer Site B',
+      address: '456 Oak Ave, Santa Monica, CA 90401',
+      coordinates: { lat: 34.0195, lng: -118.4912 },
+    },
+    scheduledStartTime: '2025-10-11T09:00:00',
+    scheduledEndTime: '2025-10-11T11:00:00',
+    distance: '25 mi',
+    vehicle: {
+      number: 'VEH-123',
+      type: 'Box Truck',
+    },
+    cargo: 'Electronics - 15 pallets',
+    notes: 'Contact warehouse manager upon arrival. Loading dock #3.',
   },
-  destination: {
-    name: 'Customer Site B',
-    address: '456 Oak Ave, Santa Monica, CA 90401',
-    coordinates: { lat: 34.0195, lng: -118.4912 },
+  '2': {
+    id: '2',
+    tripNumber: 'TRP-002',
+    status: 'in_progress',
+    origin: {
+      name: 'Depot C',
+      address: '789 Elm St, Los Angeles, CA 90002',
+      coordinates: { lat: 34.0622, lng: -118.2537 },
+    },
+    destination: {
+      name: 'Distribution Center D',
+      address: '321 Pine Rd, Pasadena, CA 91101',
+      coordinates: { lat: 34.1478, lng: -118.1445 },
+    },
+    scheduledStartTime: '2025-10-11T08:00:00',
+    scheduledEndTime: '2025-10-11T10:30:00',
+    actualStartTime: '2025-10-11T08:05:00',
+    distance: '18 mi',
+    vehicle: {
+      number: 'VEH-456',
+      type: 'Van',
+    },
+    cargo: 'Office supplies - 8 boxes',
+    notes: 'Call ahead before arrival.',
   },
-  scheduledStartTime: '2025-10-11T09:00:00',
-  scheduledEndTime: '2025-10-11T11:00:00',
-  distance: '25 mi',
-  vehicle: {
-    number: 'VEH-123',
-    type: 'Box Truck',
+  '3': {
+    id: '3',
+    tripNumber: 'TRP-003',
+    status: 'completed',
+    origin: {
+      name: 'Warehouse E',
+      address: '555 Maple Dr, Long Beach, CA 90805',
+      coordinates: { lat: 33.8583, lng: -118.1945 },
+    },
+    destination: {
+      name: 'Customer F',
+      address: '888 Cedar Ln, Irvine, CA 92614',
+      coordinates: { lat: 33.6846, lng: -117.8265 },
+    },
+    scheduledStartTime: '2025-10-10T14:00:00',
+    scheduledEndTime: '2025-10-10T16:00:00',
+    actualStartTime: '2025-10-10T14:10:00',
+    actualEndTime: '2025-10-10T15:45:00',
+    distance: '32 mi',
+    vehicle: {
+      number: 'VEH-789',
+      type: 'Box Truck',
+    },
+    cargo: 'Furniture - 12 items',
   },
-  cargo: 'Electronics - 15 pallets',
-  notes: 'Contact warehouse manager upon arrival. Loading dock #3.',
 };
 
 export default function TripDetailsScreen() {
@@ -71,7 +124,7 @@ export default function TripDetailsScreen() {
   const { tripId } = route.params;
 
   // TODO: Fetch trip details from API/SQLite using tripId
-  const trip = MOCK_TRIP;
+  const [trip, setTrip] = useState<TripDetails>(MOCK_TRIPS[tripId] || MOCK_TRIPS['1']);
 
   const getStatusColor = (status: TripDetails['status']) => {
     switch (status) {
@@ -100,13 +153,60 @@ export default function TripDetailsScreen() {
   };
 
   const handleStartTrip = () => {
-    // TODO: Implement start trip logic
-    console.log('Starting trip:', tripId);
+    Alert.alert(
+      'Start Trip',
+      'Are you ready to start this trip?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Start',
+          onPress: () => {
+            // Update trip status
+            setTrip((prev) => ({
+              ...prev,
+              status: 'in_progress',
+              actualStartTime: new Date().toISOString(),
+            }));
+
+            // TODO: Send update to server/SQLite
+            console.log('Trip started:', tripId);
+
+            Alert.alert('Success', 'Trip started successfully!');
+          },
+        },
+      ]
+    );
   };
 
   const handleCompleteTrip = () => {
-    // TODO: Implement complete trip logic
-    console.log('Completing trip:', tripId);
+    Alert.alert(
+      'Complete Trip',
+      'Mark this trip as completed?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Complete',
+          onPress: () => {
+            // Update trip status
+            setTrip((prev) => ({
+              ...prev,
+              status: 'completed',
+              actualEndTime: new Date().toISOString(),
+            }));
+
+            // TODO: Send update to server/SQLite
+            console.log('Trip completed:', tripId);
+
+            Alert.alert('Success', 'Trip completed successfully!', [
+              {
+                text: 'OK',
+                onPress: () => navigation.goBack(),
+              },
+            ]);
+          },
+        },
+      ]
+    );
   };
 
   return (

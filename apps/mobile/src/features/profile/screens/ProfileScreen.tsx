@@ -10,9 +10,15 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../navigation/RootNavigator';
 import * as NetInfo from '@react-native-community/netinfo';
 
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 export default function ProfileScreen() {
+  const navigation = useNavigation<NavigationProp>();
   const { user, logout } = useAuth();
   const [isOnline, setIsOnline] = useState(true);
   const [syncStatus, setSyncStatus] = useState<'synced' | 'pending' | 'syncing'>('synced');
@@ -184,7 +190,10 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Settings</Text>
           <View style={styles.card}>
-            <TouchableOpacity style={styles.settingRow}>
+            <TouchableOpacity
+              style={styles.settingRow}
+              onPress={() => navigation.navigate('NotificationsSettings')}
+            >
               <View style={styles.settingInfo}>
                 <Ionicons name="notifications-outline" size={24} color="#6b7280" />
                 <Text style={styles.settingText}>Notifications</Text>
@@ -194,7 +203,10 @@ export default function ProfileScreen() {
 
             <View style={styles.divider} />
 
-            <TouchableOpacity style={styles.settingRow}>
+            <TouchableOpacity
+              style={styles.settingRow}
+              onPress={() => navigation.navigate('LocationSettings')}
+            >
               <View style={styles.settingInfo}>
                 <Ionicons name="location-outline" size={24} color="#6b7280" />
                 <Text style={styles.settingText}>Location Settings</Text>
@@ -204,7 +216,10 @@ export default function ProfileScreen() {
 
             <View style={styles.divider} />
 
-            <TouchableOpacity style={styles.settingRow}>
+            <TouchableOpacity
+              style={styles.settingRow}
+              onPress={() => navigation.navigate('LanguageSettings')}
+            >
               <View style={styles.settingInfo}>
                 <Ionicons name="language-outline" size={24} color="#6b7280" />
                 <Text style={styles.settingText}>Language</Text>
@@ -217,7 +232,10 @@ export default function ProfileScreen() {
 
             <View style={styles.divider} />
 
-            <TouchableOpacity style={styles.settingRow}>
+            <TouchableOpacity
+              style={styles.settingRow}
+              onPress={() => navigation.navigate('HelpSupport')}
+            >
               <View style={styles.settingInfo}>
                 <Ionicons name="help-circle-outline" size={24} color="#6b7280" />
                 <Text style={styles.settingText}>Help & Support</Text>

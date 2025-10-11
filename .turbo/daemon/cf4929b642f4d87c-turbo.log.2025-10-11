@@ -8,3 +8,17 @@
 2025-10-11T06:42:23.416506Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@fleet/ui-web"), path: AnchoredSystemPathBuf("packages/ui-web") }}))
 2025-10-11T06:43:20.192191Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("yarn.lock"), AnchoredSystemPathBuf("packages/ui-web/package.json")}
 2025-10-11T06:43:20.192219Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }, WorkspacePackage { name: Other("@fleet/ui-web"), path: AnchoredSystemPathBuf("packages/ui-web") }}))
+2025-10-11T06:51:39.321362Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/components/dashboard/ComparisonView.tsx"), AnchoredSystemPathBuf("apps/web/src/components/dashboard/ComparisonView.tsx.tmp.14624.1760165499285")}
+2025-10-11T06:51:39.321386Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@fleet/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2025-10-11T07:05:49.330109Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("context"), AnchoredSystemPathBuf("context/design-review-slash-command.md"), AnchoredSystemPathBuf("context/design-principles.md"), AnchoredSystemPathBuf("context/design-review-claude-md-snippet.md")}
+2025-10-11T07:05:49.330143Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-10-11T07:05:59.029179Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("CLAUDE.md")}
+2025-10-11T07:05:59.029193Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-10-11T07:06:13.531537Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".claude/.DS_Store"), AnchoredSystemPathBuf(".DS_Store")}
+2025-10-11T07:06:13.532050Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-10-11T07:06:13.630874Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".claude/commands/design-review.md")}
+2025-10-11T07:06:13.630891Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-10-11T07:06:24.829790Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".claude/.DS_Store")}
+2025-10-11T07:06:24.829805Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-10-11T07:06:26.129764Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".claude/agents/design-review-agent.md")}
+2025-10-11T07:06:26.129780Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))

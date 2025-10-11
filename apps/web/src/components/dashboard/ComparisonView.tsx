@@ -51,6 +51,16 @@ export function ComparisonView({ metrics, className }: ComparisonViewProps) {
     return null
   }
 
+  // Convert date strings to Date objects if needed (for persisted state)
+  const fromDate = dateRange.from instanceof Date ? dateRange.from : new Date(dateRange.from)
+  const toDate = dateRange.to instanceof Date ? dateRange.to : new Date(dateRange.to)
+  const comparisonFromDate = comparisonDateRange?.from instanceof Date
+    ? comparisonDateRange.from
+    : comparisonDateRange?.from ? new Date(comparisonDateRange.from) : null
+  const comparisonToDate = comparisonDateRange?.to instanceof Date
+    ? comparisonDateRange.to
+    : comparisonDateRange?.to ? new Date(comparisonDateRange.to) : null
+
   return (
     <Card className={className}>
       <div className="p-4 space-y-4">
@@ -58,12 +68,12 @@ export function ComparisonView({ metrics, className }: ComparisonViewProps) {
           <h3 className="text-lg font-semibold mb-2">Period Comparison</h3>
           <div className="text-sm text-gray-600">
             <div>
-              Current: {dateRange.from.toLocaleDateString()} - {dateRange.to.toLocaleDateString()}
+              Current: {fromDate.toLocaleDateString()} - {toDate.toLocaleDateString()}
             </div>
-            {comparisonDateRange && (
+            {comparisonFromDate && comparisonToDate && (
               <div>
-                Previous: {comparisonDateRange.from.toLocaleDateString()} -{' '}
-                {comparisonDateRange.to.toLocaleDateString()}
+                Previous: {comparisonFromDate.toLocaleDateString()} -{' '}
+                {comparisonToDate.toLocaleDateString()}
               </div>
             )}
           </div>

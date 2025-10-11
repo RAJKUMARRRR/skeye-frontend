@@ -8,7 +8,15 @@
   ],
   "scripts": {
     "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@fleet/web",
+    "dev:mobile": "cd apps/mobile && yarn start",
+    "dev:marketing": "turbo run dev --filter=@fleet/marketing",
+    "mobile": "cd apps/mobile && yarn start",
+    "mobile:ios": "cd apps/mobile && yarn ios",
+    "mobile:android": "cd apps/mobile && yarn android",
     "build": "turbo run build",
+    "build:web": "turbo run build --filter=@fleet/web",
+    "build:marketing": "turbo run build --filter=@fleet/marketing",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
@@ -30,6 +38,10 @@
   },
   "dependencies": {
     "shadcn": "^3.3.1"
+  },
+  "resolutions": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

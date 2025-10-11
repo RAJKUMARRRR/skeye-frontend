@@ -1,0 +1,87 @@
+{
+  "expo": {
+    "name": "Fleet Driver",
+    "slug": "fleet-driver",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fleet.driver",
+      "infoPlist": {
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to location to track trips and provide navigation.",
+        "NSLocationWhenInUseUsageDescription": "This app needs access to location to track trips and provide navigation.",
+        "NSLocationAlwaysUsageDescription": "This app needs access to location in the background to track trips.",
+        "NSCameraUsageDescription": "This app needs access to camera to capture incident photos and checklist images.",
+        "NSMicrophoneUsageDescription": "This app needs access to microphone to record voice notes for incidents.",
+        "NSFaceIDUsageDescription": "This app uses Face ID for secure and convenient login."
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.fleet.driver",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "CAMERA",
+        "RECORD_AUDIO",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Fleet Driver to use your location to track trips.",
+          "locationAlwaysPermission": "Allow Fleet Driver to use your location in the background to track trips.",
+          "locationWhenInUsePermission": "Allow Fleet Driver to use your location to track trips.",
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#ffffff"
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow Fleet Driver to use Face ID for secure login."
+        }
+      ]
+    ],
+    "scheme": "fleet-driver",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    }
+  }
+}

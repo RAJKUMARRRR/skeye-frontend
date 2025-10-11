@@ -10,6 +10,11 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../navigation/RootNavigator';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 interface ChecklistItem {
   id: string;
@@ -62,6 +67,7 @@ const INSPECTION_CHECKLIST: ChecklistSection[] = [
 ];
 
 export default function ChecklistsScreen() {
+  const navigation = useNavigation<NavigationProp>();
   const [checklist, setChecklist] = useState<ChecklistSection[]>(INSPECTION_CHECKLIST);
   const [currentType, setCurrentType] = useState<'pre-trip' | 'post-trip'>('pre-trip');
 
@@ -104,8 +110,15 @@ export default function ChecklistsScreen() {
   };
 
   const handleSignature = (sectionIndex: number, itemIndex: number) => {
-    // TODO: Navigate to signature pad screen
-    Alert.alert('Signature Pad', 'Signature pad screen will open here');
+    navigation.navigate('SignaturePad', {
+      onSignatureCapture: (signature: string) => {
+        setChecklist((prev) => {
+          const updated = [...prev];
+          updated[sectionIndex].items[itemIndex].signatureUri = signature;
+          return updated;
+        });
+      },
+    });
   };
 
   const isChecklistComplete = () => {
@@ -196,15 +209,26 @@ export default function ChecklistsScreen() {
           {item.isRequired && <Text style={styles.requiredBadge}>Required</Text>}
         </View>
       </View>
-      <TouchableOpacity
-        style={styles.signatureButton}
-        onPress={() => handleSignature(sectionIndex, itemIndex)}
-      >
-        <Ionicons name="create" size={20} color="#3b82f6" />
-        <Text style={styles.signatureButtonText}>
-          {item.signatureUri ? 'Update Signature' : 'Add Signature'}
-        </Text>
-      </TouchableOpacity>
+      {item.signatureUri ? (
+        <View style={styles.signaturePreview}>
+          <Image source={{ uri: item.signatureUri }} style={styles.signatureImage} />
+          <TouchableOpacity
+            style={styles.retakeButton}
+            onPress={() => handleSignature(sectionIndex, itemIndex)}
+          >
+            <Ionicons name="create" size={16} color="#3b82f6" />
+            <Text style={styles.retakeButtonText}>Update</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <TouchableOpacity
+          style={styles.signatureButton}
+          onPress={() => handleSignature(sectionIndex, itemIndex)}
+        >
+          <Ionicons name="create" size={20} color="#3b82f6" />
+          <Text style={styles.signatureButtonText}>Add Signature</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -419,6 +443,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#3b82f6',
+  },
+  signaturePreview: {
+    gap: 8,
+  },
+  signatureImage: {
+    width: '100%',
+    height: 120,
+    borderRadius: 8,
+    backgroundColor: '#f9fafb',
   },
   footer: {
     padding: 16,

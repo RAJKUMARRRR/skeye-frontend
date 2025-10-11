@@ -1,11 +1,19 @@
+import { useState, useMemo } from 'react'
 import { useVehicles } from '../hooks/useVehicles'
+import { KPICard, StatCard, Card, Button } from '@fleet/ui-web'
+import { DashboardDateFilter } from '../components/dashboard/DashboardDateFilter'
+import { DashboardExport } from '../components/dashboard/DashboardExport'
+import { DashboardAutoRefresh } from '../components/dashboard/DashboardAutoRefresh'
+import { DashboardCustomization } from '../components/dashboard/DashboardCustomization'
+import { TrendChart } from '../components/dashboard/TrendChart'
+import { ComparisonView } from '../components/dashboard/ComparisonView'
+import { RealTimeAlertNotifications } from '../components/alerts/RealTimeAlertNotifications'
+import { useDashboardStore } from '../stores/dashboardStore'
 
 export function Dashboard() {
   const { data: vehicles, isLoading } = useVehicles()
-
-  if (isLoading) {
-    return <div className="text-gray-600">Loading...</div>
-  }
+  const { comparisonMode, toggleComparisonMode } = useDashboardStore()
+  const [showCustomization, setShowCustomization] = useState(false)
 
   const stats = {
     total: vehicles?.length || 0,
@@ -15,45 +23,199 @@ export function Dashboard() {
     offline: vehicles?.filter(v => v.status === 'offline').length || 0,
   }
 
+  // Mock data for KPIs
+  const mockKPIs = {
+    totalVehicles: stats.total,
+    activeTrips: 23,
+    totalAlerts: 5,
+    fuelConsumed: '1,245L',
+    distanceToday: '3,456 km'
+  }
+
+  // Mock trend data
+  const vehicleTrendData = useMemo(() => {
+    const now = new Date()
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(now)
+      date.setDate(date.getDate() - (6 - i))
+      return {
+        timestamp: date.toISOString(),
+        value: Math.floor(Math.random() * 20) + 35,
+      }
+    })
+  }, [])
+
+  const tripsTrendData = useMemo(() => {
+    const now = new Date()
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(now)
+      date.setDate(date.getDate() - (6 - i))
+      return {
+        timestamp: date.toISOString(),
+        value: Math.floor(Math.random() * 15) + 15,
+      }
+    })
+  }, [])
+
+  // Mock comparison metrics
+  const comparisonMetrics = [
+    {
+      label: 'Total Vehicles',
+      currentValue: stats.total,
+      previousValue: stats.total - 5,
+    },
+    {
+      label: 'Active Trips',
+      currentValue: mockKPIs.activeTrips,
+      previousValue: 18,
+    },
+    {
+      label: 'Total Alerts',
+      currentValue: mockKPIs.totalAlerts,
+      previousValue: 8,
+    },
+  ]
+
+  if (showCustomization) {
+    return <DashboardCustomization onClose={() => setShowCustomization(false)} />
+  }
+
+  if (isLoading) {
+    return <div className="text-gray-600">Loading...</div>
+  }
+
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h2>
+    <div className="space-y-6">
+      {/* Real-time alert notifications */}
+      {/* TODO: Enable when WebSocket server is available */}
+      {/* <RealTimeAlertNotifications enabled={true} /> */}
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-gray-500 truncate">Total Vehicles</dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">{stats.total}</dd>
-          </div>
+      {/* Header with Controls */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <div className="flex items-center gap-3">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={toggleComparisonMode}
+          >
+            {comparisonMode ? 'Hide' : 'Show'} Comparison
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowCustomization(true)}
+          >
+            ⚙️ Customize
+          </Button>
         </div>
+      </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-green-500 truncate">Active</dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">{stats.active}</dd>
-          </div>
-        </div>
+      {/* Dashboard Controls */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <DashboardDateFilter />
+        <DashboardAutoRefresh />
+        <DashboardExport />
+      </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-yellow-500 truncate">Idle</dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">{stats.idle}</dd>
-          </div>
-        </div>
+      {/* KPI Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <KPICard
+          title="Total Vehicles"
+          value={mockKPIs.totalVehicles}
+          icon={<span className="text-2xl">🚗</span>}
+          trend={{ value: 12, isPositive: true }}
+          description="Active fleet size"
+        />
+        <KPICard
+          title="Active Trips"
+          value={mockKPIs.activeTrips}
+          icon={<span className="text-2xl">🗺️</span>}
+          trend={{ value: 3, isPositive: false }}
+          description="Currently in progress"
+        />
+        <KPICard
+          title="Total Alerts"
+          value={mockKPIs.totalAlerts}
+          icon={<span className="text-2xl">🔔</span>}
+          description="Requires attention"
+        />
+        <KPICard
+          title="Distance Today"
+          value={mockKPIs.distanceToday}
+          icon={<span className="text-2xl">📍</span>}
+          trend={{ value: 8, isPositive: true }}
+        />
+      </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-orange-500 truncate">Maintenance</dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">{stats.maintenance}</dd>
-          </div>
+      {/* Vehicle Status Breakdown */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Fleet Status</h3>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          <StatCard
+            label="Total Vehicles"
+            value={stats.total}
+            icon={<span>📊</span>}
+            variant="default"
+          />
+          <StatCard
+            label="Active"
+            value={stats.active}
+            icon={<span>✅</span>}
+            variant="success"
+          />
+          <StatCard
+            label="Idle"
+            value={stats.idle}
+            icon={<span>⏸️</span>}
+            variant="warning"
+          />
+          <StatCard
+            label="Maintenance"
+            value={stats.maintenance}
+            icon={<span>🔧</span>}
+            variant="warning"
+          />
+          <StatCard
+            label="Offline"
+            value={stats.offline}
+            icon={<span>⚫</span>}
+            variant="danger"
+          />
         </div>
+      </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-red-500 truncate">Offline</dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">{stats.offline}</dd>
-          </div>
-        </div>
+      {/* Comparison View */}
+      {comparisonMode && (
+        <ComparisonView metrics={comparisonMetrics} />
+      )}
+
+      {/* Trend Charts */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <TrendChart
+          title="Vehicle Utilization Trend"
+          data={vehicleTrendData}
+          chartType="area"
+          color="#3b82f6"
+        />
+        <TrendChart
+          title="Daily Trips Trend"
+          data={tripsTrendData}
+          chartType="line"
+          color="#10b981"
+        />
+      </div>
+
+      {/* Additional Charts */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Recent Alerts</h3>
+          <p className="text-sm text-muted-foreground">Alerts list coming soon...</p>
+        </Card>
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Recent Trips</h3>
+          <p className="text-sm text-muted-foreground">Trips list coming soon...</p>
+        </Card>
       </div>
     </div>
   )

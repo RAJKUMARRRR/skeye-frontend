@@ -1,27 +1,43 @@
 import { NavLink } from 'react-router-dom'
+import {
+  LayoutDashboard,
+  MapPin,
+  Truck,
+  Users,
+  Route,
+  MapPinned,
+  Navigation,
+  Wrench,
+  Fuel,
+  Bell,
+  FileText,
+  BarChart3,
+  Settings,
+  Zap
+} from 'lucide-react'
 import { usePermissions } from '../../features/auth/contexts/PermissionContext'
 
 interface NavigationItem {
   name: string
   path: string
-  icon: string
+  icon: React.ElementType
   requiredRole?: 'super_admin' | 'admin' | 'manager' | 'dispatcher' | 'driver'
 }
 
 const navigation: NavigationItem[] = [
-  { name: 'Dashboard', path: '/', icon: '📊' },
-  { name: 'Live Tracking', path: '/tracking', icon: '📍' },
-  { name: 'Vehicles', path: '/vehicles', icon: '🚗' },
-  { name: 'Drivers', path: '/drivers', icon: '👤' },
-  { name: 'Trips', path: '/trips', icon: '🗺️' },
-  { name: 'Geofences', path: '/geofences', icon: '⬛' },
-  { name: 'Routes', path: '/routes', icon: '🛣️' },
-  { name: 'Maintenance', path: '/maintenance', icon: '🔧' },
-  { name: 'Fuel', path: '/fuel', icon: '⛽' },
-  { name: 'Alerts', path: '/alerts', icon: '🔔' },
-  { name: 'Reports', path: '/reports', icon: '📈' },
-  { name: 'Analytics', path: '/analytics', icon: '📉' },
-  { name: 'Settings', path: '/settings', icon: '⚙️', requiredRole: 'manager' },
+  { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+  { name: 'Live Tracking', path: '/tracking', icon: MapPin },
+  { name: 'Vehicles', path: '/vehicles', icon: Truck },
+  { name: 'Drivers', path: '/drivers', icon: Users },
+  { name: 'Trips', path: '/trips', icon: Route },
+  { name: 'Geofences', path: '/geofences', icon: MapPinned },
+  { name: 'Routes', path: '/routes', icon: Navigation },
+  { name: 'Maintenance', path: '/maintenance', icon: Wrench },
+  { name: 'Fuel', path: '/fuel', icon: Fuel },
+  { name: 'Alerts', path: '/alerts', icon: Bell },
+  { name: 'Reports', path: '/reports', icon: FileText },
+  { name: 'Analytics', path: '/analytics', icon: BarChart3 },
+  { name: 'Settings', path: '/settings', icon: Settings, requiredRole: 'manager' },
 ]
 
 export function Sidebar() {
@@ -33,31 +49,56 @@ export function Sidebar() {
   })
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 min-h-screen">
-      <div className="flex flex-col h-full">
-        <div className="p-4 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-gray-900">Fleet Manager</h1>
+    <aside className="w-64 bg-sidebar border-r border-sidebar-border min-h-screen flex flex-col">
+      {/* Logo Section */}
+      <div className="p-6 border-b border-sidebar-border">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm">
+            <Truck className="w-5 h-5 text-white" />
+          </div>
+          <h1 className="text-xl font-bold text-sidebar-text font-display tracking-tight">
+            Fleet<span className="text-accent">Hub</span>
+          </h1>
         </div>
+      </div>
 
-        <nav className="flex-1 p-4 space-y-1">
-          {filteredNavigation.map((item) => (
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        {filteredNavigation.map((item) => {
+          const Icon = item.icon
+          return (
             <NavLink
               key={item.path}
               to={item.path}
               end={item.path === '/'}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                `group flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150 ${
                   isActive
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? 'bg-sidebar-active text-white'
+                    : 'text-sidebar-text-muted hover:text-white hover:bg-sidebar-hover'
                 }`
               }
             >
-              <span className="text-lg">{item.icon}</span>
-              <span>{item.name}</span>
+              {({ isActive }) => (
+                <>
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <span className="flex-1">{item.name}</span>
+                </>
+              )}
             </NavLink>
-          ))}
-        </nav>
+          )
+        })}
+      </nav>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-sidebar-border">
+        <div className="bg-sidebar-dark rounded-lg p-3">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+            <p className="text-xs font-medium text-sidebar-text">Online</p>
+          </div>
+          <p className="text-xs text-sidebar-text-muted mt-1">All systems operational</p>
+        </div>
       </div>
     </aside>
   )

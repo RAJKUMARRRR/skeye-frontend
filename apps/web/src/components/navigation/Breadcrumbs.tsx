@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import { ChevronRight, Home } from 'lucide-react'
 
 interface Breadcrumb {
   label: string
@@ -63,21 +64,23 @@ export function Breadcrumbs() {
 
   return (
     <nav className="flex mb-4" aria-label="Breadcrumb">
-      <ol className="flex items-center space-x-2">
+      <ol className="flex items-center space-x-1">
         {breadcrumbs.map((breadcrumb, index) => (
           <li key={breadcrumb.path} className="flex items-center">
             {index > 0 && (
-              <span className="mx-2 text-gray-400">/</span>
+              <ChevronRight className="mx-1.5 w-4 h-4 text-gray-400" />
             )}
             {index === breadcrumbs.length - 1 ? (
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-gray-900 flex items-center gap-1.5">
+                {index === 0 && <Home className="w-4 h-4" />}
                 {breadcrumb.label}
               </span>
             ) : (
               <Link
                 to={breadcrumb.path}
-                className="text-sm font-medium text-blue-600 hover:text-blue-800"
+                className="text-sm font-medium text-gray-600 hover:text-accent transition-colors flex items-center gap-1.5"
               >
+                {index === 0 && <Home className="w-4 h-4" />}
                 {breadcrumb.label}
               </Link>
             )}

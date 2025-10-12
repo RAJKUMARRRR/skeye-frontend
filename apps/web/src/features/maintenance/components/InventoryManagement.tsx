@@ -116,13 +116,13 @@ export function InventoryManagement() {
   const getStockBadge = (quantity: number, minQuantity: number) => {
     if (quantity < minQuantity) {
       return (
-        <Badge className="bg-red-100 text-red-800 flex items-center gap-1">
+        <Badge variant="error" className="flex items-center gap-1">
           <AlertTriangle className="h-3 w-3" />
           Low Stock
         </Badge>
       )
     }
-    return <Badge className="bg-green-100 text-green-800">In Stock</Badge>
+    return <Badge variant="success">In Stock</Badge>
   }
 
   const getCategoryBadge = (category: string) => {

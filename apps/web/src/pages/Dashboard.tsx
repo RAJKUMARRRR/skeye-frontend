@@ -9,6 +9,18 @@ import { TrendChart } from '../components/dashboard/TrendChart'
 import { ComparisonView } from '../components/dashboard/ComparisonView'
 import { RealTimeAlertNotifications } from '../components/alerts/RealTimeAlertNotifications'
 import { useDashboardStore } from '../stores/dashboardStore'
+import {
+  Truck,
+  Route,
+  Bell,
+  MapPin,
+  BarChart3,
+  CheckCircle,
+  PauseCircle,
+  Wrench,
+  Circle,
+  Settings
+} from 'lucide-react'
 
 export function Dashboard() {
   const { data: vehicles, isLoading } = useVehicles()
@@ -106,7 +118,8 @@ export function Dashboard() {
             variant="outline"
             onClick={() => setShowCustomization(true)}
           >
-            ⚙️ Customize
+            <Settings className="w-4 h-4 mr-1.5" />
+            Customize
           </Button>
         </div>
       </div>
@@ -123,27 +136,27 @@ export function Dashboard() {
         <KPICard
           title="Total Vehicles"
           value={mockKPIs.totalVehicles}
-          icon={<span className="text-2xl">🚗</span>}
+          icon={<Truck className="w-6 h-6" />}
           trend={{ value: 12, isPositive: true }}
           description="Active fleet size"
         />
         <KPICard
           title="Active Trips"
           value={mockKPIs.activeTrips}
-          icon={<span className="text-2xl">🗺️</span>}
+          icon={<Route className="w-6 h-6" />}
           trend={{ value: 3, isPositive: false }}
           description="Currently in progress"
         />
         <KPICard
           title="Total Alerts"
           value={mockKPIs.totalAlerts}
-          icon={<span className="text-2xl">🔔</span>}
+          icon={<Bell className="w-6 h-6" />}
           description="Requires attention"
         />
         <KPICard
           title="Distance Today"
           value={mockKPIs.distanceToday}
-          icon={<span className="text-2xl">📍</span>}
+          icon={<MapPin className="w-6 h-6" />}
           trend={{ value: 8, isPositive: true }}
         />
       </div>
@@ -155,31 +168,31 @@ export function Dashboard() {
           <StatCard
             label="Total Vehicles"
             value={stats.total}
-            icon={<span>📊</span>}
+            icon={<BarChart3 className="w-5 h-5" />}
             variant="default"
           />
           <StatCard
             label="Active"
             value={stats.active}
-            icon={<span>✅</span>}
+            icon={<CheckCircle className="w-5 h-5" />}
             variant="success"
           />
           <StatCard
             label="Idle"
             value={stats.idle}
-            icon={<span>⏸️</span>}
+            icon={<PauseCircle className="w-5 h-5" />}
             variant="warning"
           />
           <StatCard
             label="Maintenance"
             value={stats.maintenance}
-            icon={<span>🔧</span>}
+            icon={<Wrench className="w-5 h-5" />}
             variant="warning"
           />
           <StatCard
             label="Offline"
             value={stats.offline}
-            icon={<span>⚫</span>}
+            icon={<Circle className="w-5 h-5" />}
             variant="danger"
           />
         </div>

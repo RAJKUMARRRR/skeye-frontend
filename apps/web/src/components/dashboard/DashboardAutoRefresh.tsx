@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useDashboardStore } from '../../stores/dashboardStore'
 import { Button, Card } from '@fleet/ui-web'
+import { Play, Pause } from 'lucide-react'
 
 const REFRESH_INTERVALS = [
   { value: 10, label: '10s' },
@@ -36,7 +37,17 @@ export function DashboardAutoRefresh() {
             variant={autoRefresh ? 'default' : 'outline'}
             onClick={() => setAutoRefresh(!autoRefresh)}
           >
-            {autoRefresh ? '⏸️ Pause' : '▶️ Start'}
+            {autoRefresh ? (
+              <>
+                <Pause className="w-4 h-4 mr-1.5" />
+                Pause
+              </>
+            ) : (
+              <>
+                <Play className="w-4 h-4 mr-1.5" />
+                Start
+              </>
+            )}
           </Button>
         </div>
 

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button, Card } from '@fleet/ui-web'
 import { useDashboardStore } from '../../stores/dashboardStore'
+import { FileText, FileSpreadsheet, FileDown, Image } from 'lucide-react'
 
 type ExportFormat = 'pdf' | 'excel' | 'csv' | 'image'
 
@@ -122,7 +123,8 @@ export function DashboardExport() {
             }}
             disabled={isExporting}
           >
-            📄 PDF
+            <FileText className="w-4 h-4 mr-1.5" />
+            PDF
           </Button>
           <Button
             size="sm"
@@ -133,7 +135,8 @@ export function DashboardExport() {
             }}
             disabled={isExporting}
           >
-            📊 Excel
+            <FileSpreadsheet className="w-4 h-4 mr-1.5" />
+            Excel
           </Button>
           <Button
             size="sm"
@@ -144,7 +147,8 @@ export function DashboardExport() {
             }}
             disabled={isExporting}
           >
-            📋 CSV
+            <FileDown className="w-4 h-4 mr-1.5" />
+            CSV
           </Button>
           <Button
             size="sm"
@@ -155,7 +159,8 @@ export function DashboardExport() {
             }}
             disabled={isExporting}
           >
-            🖼️ Image
+            <Image className="w-4 h-4 mr-1.5" />
+            Image
           </Button>
         </div>
 

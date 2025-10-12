@@ -1,5 +1,13 @@
 import { useState } from 'react'
 import { Button, Card, Badge, Tabs, TabsContent, TabsList, TabsTrigger } from '@fleet/ui-web'
+import {
+  Route,
+  DollarSign,
+  FileText,
+  Users,
+  Truck,
+  BarChart3
+} from 'lucide-react'
 
 const availableReports = [
   {
@@ -7,42 +15,42 @@ const availableReports = [
     name: 'Trip Summary Report',
     description: 'Detailed breakdown of all trips including distance, duration, and fuel consumption',
     category: 'Operations',
-    icon: '🗺️',
+    icon: Route,
   },
   {
     id: 'cost-analysis',
     name: 'Cost Analysis Report',
     description: 'Comprehensive cost breakdown including fuel and maintenance expenses',
     category: 'Financial',
-    icon: '💰',
+    icon: DollarSign,
   },
   {
     id: 'compliance',
     name: 'Compliance Report',
     description: 'Hours-of-service compliance and regulation adherence tracking',
     category: 'Compliance',
-    icon: '📋',
+    icon: FileText,
   },
   {
     id: 'driver-performance',
     name: 'Driver Performance Report',
     description: 'Comparative analysis of driver scores and behavior metrics',
     category: 'Performance',
-    icon: '👨‍✈️',
+    icon: Users,
   },
   {
     id: 'utilization',
     name: 'Vehicle Utilization Report',
     description: 'Analysis of vehicle usage, idle time, and efficiency metrics',
     category: 'Operations',
-    icon: '🚗',
+    icon: Truck,
   },
   {
     id: 'executive-summary',
     name: 'Executive Summary',
     description: 'High-level overview with key KPIs, trends, and actionable insights',
     category: 'Management',
-    icon: '📊',
+    icon: BarChart3,
   },
 ]
 
@@ -142,24 +150,29 @@ export function Reports() {
 
         <TabsContent value="available" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {availableReports.map((report) => (
-              <Card key={report.id} className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="text-4xl">{report.icon}</div>
-                  <Badge variant="outline">{report.category}</Badge>
-                </div>
-                <h3 className="font-semibold text-lg mb-2">{report.name}</h3>
-                <p className="text-sm text-gray-600 mb-4">{report.description}</p>
-                <div className="flex gap-2">
-                  <Button size="sm" className="flex-1">
-                    Generate
-                  </Button>
-                  <Button size="sm" variant="outline" className="flex-1">
-                    Schedule
-                  </Button>
-                </div>
-              </Card>
-            ))}
+            {availableReports.map((report) => {
+              const IconComponent = report.icon
+              return (
+                <Card key={report.id} className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-12 h-12 rounded-lg bg-accent-100 flex items-center justify-center">
+                      <IconComponent className="w-6 h-6 text-accent-600" />
+                    </div>
+                    <Badge variant="outline">{report.category}</Badge>
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2">{report.name}</h3>
+                  <p className="text-sm text-gray-600 mb-4">{report.description}</p>
+                  <div className="flex gap-2">
+                    <Button size="sm" className="flex-1">
+                      Generate
+                    </Button>
+                    <Button size="sm" variant="outline" className="flex-1">
+                      Schedule
+                    </Button>
+                  </div>
+                </Card>
+              )
+            })}
           </div>
         </TabsContent>
 

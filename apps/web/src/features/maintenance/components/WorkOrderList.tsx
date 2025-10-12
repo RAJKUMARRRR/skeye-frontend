@@ -126,31 +126,31 @@ export function WorkOrderList() {
   }, [workOrders, searchTerm, typeFilter, statusFilter, priorityFilter])
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, { className: string; label: string; icon: JSX.Element }> = {
+    const variants: Record<string, { variant: 'secondary' | 'info' | 'warning' | 'success'; label: string; icon: JSX.Element }> = {
       pending: {
-        className: 'bg-gray-100 text-gray-800',
+        variant: 'secondary',
         label: 'Pending',
         icon: <Clock className="h-3 w-3" />,
       },
       scheduled: {
-        className: 'bg-blue-100 text-blue-800',
+        variant: 'info',
         label: 'Scheduled',
         icon: <Clock className="h-3 w-3" />,
       },
       in_progress: {
-        className: 'bg-yellow-100 text-yellow-800',
+        variant: 'warning',
         label: 'In Progress',
         icon: <Wrench className="h-3 w-3" />,
       },
       completed: {
-        className: 'bg-green-100 text-green-800',
+        variant: 'success',
         label: 'Completed',
         icon: <CheckCircle className="h-3 w-3" />,
       },
     }
     const config = variants[status] || variants.pending
     return (
-      <Badge className={`${config.className} flex items-center gap-1`}>
+      <Badge variant={config.variant} className="flex items-center gap-1">
         {config.icon}
         {config.label}
       </Badge>
@@ -158,13 +158,13 @@ export function WorkOrderList() {
   }
 
   const getPriorityBadge = (priority: string) => {
-    const variants: Record<string, { className: string; label: string }> = {
-      low: { className: 'bg-green-100 text-green-800', label: 'Low' },
-      medium: { className: 'bg-yellow-100 text-yellow-800', label: 'Medium' },
-      high: { className: 'bg-red-100 text-red-800', label: 'High' },
+    const variants: Record<string, { variant: 'success' | 'warning' | 'error'; label: string }> = {
+      low: { variant: 'success', label: 'Low' },
+      medium: { variant: 'warning', label: 'Medium' },
+      high: { variant: 'error', label: 'High' },
     }
     const config = variants[priority] || variants.low
-    return <Badge className={config.className}>{config.label}</Badge>
+    return <Badge variant={config.variant}>{config.label}</Badge>
   }
 
   const getTypeBadge = (type: string) => {

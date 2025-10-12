@@ -35,17 +35,32 @@ interface AlertTableProps {
   isLoading?: boolean
 }
 
-const severityColors = {
-  critical: 'bg-red-100 text-red-800 border-red-300',
-  high: 'bg-orange-100 text-orange-800 border-orange-300',
-  medium: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-  low: 'bg-blue-100 text-blue-800 border-blue-300',
+const getSeverityVariant = (severity: Alert['severity']) => {
+  switch (severity) {
+    case 'critical':
+      return 'error' as const
+    case 'high':
+      return 'destructive' as const
+    case 'medium':
+      return 'warning' as const
+    case 'low':
+      return 'info' as const
+    default:
+      return 'secondary' as const
+  }
 }
 
-const statusColors = {
-  active: 'bg-red-100 text-red-800',
-  acknowledged: 'bg-yellow-100 text-yellow-800',
-  resolved: 'bg-green-100 text-green-800',
+const getStatusVariant = (status: Alert['status']) => {
+  switch (status) {
+    case 'active':
+      return 'error' as const
+    case 'acknowledged':
+      return 'warning' as const
+    case 'resolved':
+      return 'success' as const
+    default:
+      return 'secondary' as const
+  }
 }
 
 export function AlertTable({ alerts, isLoading }: AlertTableProps) {
@@ -148,22 +163,22 @@ export function AlertTable({ alerts, isLoading }: AlertTableProps) {
               filteredAlerts.map((alert) => (
                 <TableRow key={alert.id}>
                   <TableCell>
-                    <Badge variant="outline" className={severityColors[alert.severity]}>
+                    <Badge variant={getSeverityVariant(alert.severity)} className="capitalize">
                       {alert.severity}
                     </Badge>
                   </TableCell>
-                  <TableCell>{alert.type}</TableCell>
+                  <TableCell className="font-medium">{alert.type}</TableCell>
                   <TableCell>
                     <button
                       onClick={() => navigate(`/vehicles/${alert.vehicleId}`)}
-                      className="text-blue-600 hover:underline"
+                      className="text-accent hover:text-accent-600 font-medium hover:underline"
                     >
                       {alert.vehicleName}
                     </button>
                   </TableCell>
-                  <TableCell className="max-w-md">{alert.message}</TableCell>
+                  <TableCell className="max-w-md text-gray-700">{alert.message}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={statusColors[alert.status]}>
+                    <Badge variant={getStatusVariant(alert.status)} className="capitalize">
                       {alert.status}
                     </Badge>
                   </TableCell>

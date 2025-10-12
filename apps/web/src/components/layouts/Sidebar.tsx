@@ -53,11 +53,11 @@ export function Sidebar() {
       {/* Logo Section */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm">
-            <Truck className="w-5 h-5 text-white" />
+          <div className="w-9 h-9 bg-accent/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-accent/30">
+            <Truck className="w-5 h-5 text-accent" />
           </div>
           <h1 className="text-xl font-bold text-sidebar-text font-display tracking-tight">
-            Fleet<span className="text-accent">Hub</span>
+            Fleet<span className="text-accent font-bold">Hub</span>
           </h1>
         </div>
       </div>
@@ -72,16 +72,16 @@ export function Sidebar() {
               to={item.path}
               end={item.path === '/'}
               className={({ isActive }) =>
-                `group flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150 ${
+                `group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 relative ${
                   isActive
-                    ? 'bg-sidebar-active text-white'
-                    : 'text-sidebar-text-muted hover:text-white hover:bg-sidebar-hover'
+                    ? 'bg-accent/10 text-accent border border-accent/20'
+                    : 'text-sidebar-text-muted hover:text-white hover:bg-sidebar-hover border border-transparent'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-accent' : ''}`} />
                   <span className="flex-1">{item.name}</span>
                 </>
               )}

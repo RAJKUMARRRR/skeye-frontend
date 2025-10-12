@@ -39,16 +39,16 @@ export default {
           950: '#042f2e',
           DEFAULT: '#14b8a6',
         },
-        // Sidebar - Dark green/black like Fleetio
+        // Sidebar - Dark black (Uber-like)
         sidebar: {
-          DEFAULT: '#1a4d2e', // Dark green
-          dark: '#0f2818',
-          light: '#234d33',
+          DEFAULT: '#0a0a0a', // Deep black
+          dark: '#000000', // Pure black
+          light: '#1a1a1a', // Slightly lighter black
           text: '#ffffff',
-          'text-muted': '#a8c5b8',
-          border: '#234d33',
-          hover: '#234d33',
-          active: '#2d6a40',
+          'text-muted': '#999999',
+          border: '#1a1a1a',
+          hover: '#1a1a1a',
+          active: '#262626',
         },
         // Content area - Light/white backgrounds
         content: {

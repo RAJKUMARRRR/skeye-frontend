@@ -46,11 +46,11 @@ export function LoginForm() {
           {/* Logo & Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-sidebar rounded-lg flex items-center justify-center">
-                <Zap className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center border border-accent/30">
+                <Zap className="w-6 h-6 text-accent" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Fleet<span className="text-accent">Hub</span>
+                Fleet<span className="text-accent font-bold">Hub</span>
               </h1>
             </div>
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -147,15 +147,19 @@ export function LoginForm() {
       </div>
 
       {/* Right Side - Feature Image/Gradient */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-sidebar to-sidebar-dark items-center justify-center p-12">
-        <div className="text-center text-white space-y-6">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-2xl backdrop-blur-sm mb-4">
-            <Zap className="w-10 h-10" />
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-sidebar via-sidebar to-sidebar-dark items-center justify-center p-12 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-20 right-20 w-64 h-64 bg-accent/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 left-20 w-80 h-80 bg-accent/5 rounded-full blur-3xl" />
+
+        <div className="text-center text-white space-y-6 relative z-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-accent/20 rounded-2xl backdrop-blur-sm mb-4 border border-accent/30">
+            <Zap className="w-10 h-10 text-accent" />
           </div>
           <h3 className="text-4xl font-bold">
-            Manage Your Fleet<br />With Confidence
+            Manage Your Fleet<br />With <span className="text-accent">Confidence</span>
           </h3>
-          <p className="text-sidebar-text-muted text-lg max-w-md">
+          <p className="text-gray-400 text-lg max-w-md">
             Real-time tracking, driver management, and analytics all in one powerful platform.
           </p>
           <div className="flex justify-center gap-8 mt-8">
@@ -165,7 +169,9 @@ export function LoginForm() {
               { icon: Sparkles, label: 'Reliable' },
             ].map((feature, i) => (
               <div key={i} className="flex flex-col items-center gap-2">
-                <feature.icon className="w-6 h-6" />
+                <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center border border-accent/20">
+                  <feature.icon className="w-6 h-6 text-accent" />
+                </div>
                 <span className="text-sm font-medium">{feature.label}</span>
               </div>
             ))}

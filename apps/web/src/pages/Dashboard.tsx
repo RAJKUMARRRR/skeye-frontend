@@ -209,25 +209,67 @@ export function Dashboard() {
           title="Vehicle Utilization Trend"
           data={vehicleTrendData}
           chartType="area"
-          color="#3b82f6"
+          color="#14b8a6"
         />
         <TrendChart
           title="Daily Trips Trend"
           data={tripsTrendData}
           chartType="line"
-          color="#10b981"
+          color="#0d9488"
         />
       </div>
 
-      {/* Additional Charts */}
+      {/* Recent Activity */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4">Recent Alerts</h3>
-          <p className="text-sm text-muted-foreground">Alerts list coming soon...</p>
+          <div className="space-y-3">
+            {[
+              { type: 'Speed Violation', vehicle: 'TN-01-AB-1234', severity: 'high', time: '15 mins ago' },
+              { type: 'Geofence Exit', vehicle: 'TN-01-CD-5678', severity: 'critical', time: '30 mins ago' },
+              { type: 'Idle Time', vehicle: 'TN-01-EF-9012', severity: 'medium', time: '45 mins ago' },
+              { type: 'Maintenance Due', vehicle: 'TN-01-AB-1234', severity: 'medium', time: '2 hours ago' },
+            ].map((alert, i) => (
+              <div key={i} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full ${
+                    alert.severity === 'critical' ? 'bg-red-600' :
+                    alert.severity === 'high' ? 'bg-orange-500' :
+                    'bg-yellow-500'
+                  }`} />
+                  <div>
+                    <p className="text-sm font-medium">{alert.type}</p>
+                    <p className="text-xs text-gray-500">{alert.vehicle}</p>
+                  </div>
+                </div>
+                <span className="text-xs text-gray-500">{alert.time}</span>
+              </div>
+            ))}
+          </div>
         </Card>
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4">Recent Trips</h3>
-          <p className="text-sm text-muted-foreground">Trips list coming soon...</p>
+          <div className="space-y-3">
+            {[
+              { driver: 'John Smith', route: 'Chicago → Milwaukee', status: 'In Progress', distance: '145 km' },
+              { driver: 'Jane Doe', route: 'Detroit → Cleveland', status: 'Completed', distance: '268 km' },
+              { driver: 'Mike Johnson', route: 'Indianapolis → Columbus', status: 'In Progress', distance: '289 km' },
+              { driver: 'Sarah Williams', route: 'Madison → Green Bay', status: 'Completed', distance: '198 km' },
+            ].map((trip, i) => (
+              <div key={i} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                <div>
+                  <p className="text-sm font-medium">{trip.driver}</p>
+                  <p className="text-xs text-gray-500">{trip.route}</p>
+                </div>
+                <div className="text-right">
+                  <p className={`text-xs font-medium ${
+                    trip.status === 'In Progress' ? 'text-accent' : 'text-green-600'
+                  }`}>{trip.status}</p>
+                  <p className="text-xs text-gray-500">{trip.distance}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </Card>
       </div>
     </div>

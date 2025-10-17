@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -71,7 +71,21 @@ const navigation: NavigationItem[] = [
   },
   { name: 'Reports', path: '/reports', icon: FileText },
   { name: 'Analytics', path: '/analytics', icon: BarChart3 },
-  { name: 'Settings', path: '/settings', icon: Settings, requiredRole: 'manager' },
+  {
+    name: 'Settings',
+    path: '/settings',
+    icon: Settings,
+    requiredRole: 'manager',
+    subItems: [
+      { name: 'Organization', path: '/settings/organization' },
+      { name: 'Users', path: '/settings/users' },
+      { name: 'Notifications', path: '/settings/notifications' },
+      { name: 'Security', path: '/settings/security' },
+      { name: 'Appearance', path: '/settings/appearance' },
+      { name: 'Integrations', path: '/settings/integrations' },
+      { name: 'White Label', path: '/settings/white-label' },
+    ]
+  },
 ]
 
 export function Sidebar() {
@@ -79,24 +93,26 @@ export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [expandedItems, setExpandedItems] = useState<string[]>([])
 
-  const filteredNavigation = navigation.filter((item) => {
-    if (!item.requiredRole) return true
-    return hasRole(item.requiredRole)
-  })
+  const filteredNavigation = useMemo(() => {
+    return navigation.filter((item) => {
+      if (!item.requiredRole) return true
+      return hasRole(item.requiredRole)
+    })
+  }, [hasRole])
 
-  const toggleExpanded = (itemName: string) => {
+  const toggleExpanded = useCallback((itemName: string) => {
     setExpandedItems((prev) =>
       prev.includes(itemName)
         ? prev.filter((name) => name !== itemName)
         : [...prev, itemName]
     )
-  }
+  }, [])
 
   return (
     <aside
       className={`${
         isCollapsed ? 'w-20' : 'w-64'
-      } bg-sidebar border-r border-sidebar-border min-h-screen flex flex-col transition-all duration-300`}
+      } bg-sidebar border-r border-sidebar-border min-h-screen flex flex-col transition-[width] duration-300 will-change-[width]`}
     >
       {/* Logo Section */}
       <div className="p-6 border-b border-sidebar-border flex items-center justify-between">
@@ -126,7 +142,7 @@ export function Sidebar() {
         <div className="px-3 pt-4">
           <button
             onClick={() => setIsCollapsed(false)}
-            className="w-full flex items-center justify-center p-2.5 rounded-lg text-sidebar-text-muted hover:text-white hover:bg-sidebar-hover transition-all"
+            className="w-full flex items-center justify-center p-2.5 rounded-lg text-sidebar-text-muted hover:text-white hover:bg-sidebar-hover transition-colors"
             title="Expand sidebar"
           >
             <PanelLeft className="w-5 h-5" />
@@ -135,7 +151,7 @@ export function Sidebar() {
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto scrollbar-premium">
         {filteredNavigation.map((item) => {
           const Icon = item.icon
           const isExpanded = expandedItems.includes(item.name)
@@ -147,7 +163,7 @@ export function Sidebar() {
               {hasSubItems && !isCollapsed ? (
                 <button
                   onClick={() => toggleExpanded(item.name)}
-                  className="group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 relative text-sidebar-text-muted hover:text-white hover:bg-sidebar-hover w-full"
+                  className="group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 relative text-sidebar-text-muted hover:text-white hover:bg-sidebar-hover w-full"
                 >
                   <Icon className="w-5 h-5 flex-shrink-0" />
                   <span className="flex-1 text-left">{item.name}</span>
@@ -162,7 +178,7 @@ export function Sidebar() {
                   to={item.path}
                   end={item.path === '/'}
                   className={({ isActive }) =>
-                    `group flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 relative overflow-hidden ${
+                    `group flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 relative overflow-hidden ${
                       isActive
                         ? 'bg-sidebar-active text-white'
                         : 'text-sidebar-text-muted hover:text-white hover:bg-sidebar-hover'

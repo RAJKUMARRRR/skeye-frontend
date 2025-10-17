@@ -12,7 +12,7 @@ const buttonVariants = cva(
         // Destructive - Error red for dangerous actions
         destructive: 'bg-error text-white hover:bg-error-600 active:bg-error-700 shadow-sm hover:shadow',
         // Outline - Border style for secondary actions
-        outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 active:bg-gray-100',
+        outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 active:border-gray-500',
         // Secondary - Light gray for less prominent actions
         secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 active:bg-gray-300',
         // Ghost - Transparent with hover state

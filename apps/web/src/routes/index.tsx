@@ -33,6 +33,9 @@ import { Fuel } from '../pages/Fuel'
 import { Settings } from '../pages/Settings'
 import { OrganizationSettings } from '../pages/settings/OrganizationSettings'
 import { UserManagement } from '../pages/settings/UserManagement'
+import { NotificationSettings } from '../pages/settings/NotificationSettings'
+import { SecuritySettings } from '../pages/settings/SecuritySettings'
+import { AppearanceSettings } from '../pages/settings/AppearanceSettings'
 import { Integrations } from '../pages/settings/Integrations'
 import { WhiteLabel } from '../pages/settings/WhiteLabel'
 
@@ -164,24 +167,34 @@ export const routes: RouteObject[] = [
       {
         path: 'settings',
         element: <Settings />,
-        children: [
-          {
-            path: 'organization',
-            element: <OrganizationSettings />,
-          },
-          {
-            path: 'users',
-            element: <UserManagement />,
-          },
-          {
-            path: 'integrations',
-            element: <Integrations />,
-          },
-          {
-            path: 'white-label',
-            element: <WhiteLabel />,
-          },
-        ],
+      },
+      {
+        path: 'settings/organization',
+        element: <OrganizationSettings />,
+      },
+      {
+        path: 'settings/users',
+        element: <UserManagement />,
+      },
+      {
+        path: 'settings/notifications',
+        element: <NotificationSettings />,
+      },
+      {
+        path: 'settings/security',
+        element: <SecuritySettings />,
+      },
+      {
+        path: 'settings/appearance',
+        element: <AppearanceSettings />,
+      },
+      {
+        path: 'settings/integrations',
+        element: <Integrations />,
+      },
+      {
+        path: 'settings/white-label',
+        element: <WhiteLabel />,
       },
     ],
   },

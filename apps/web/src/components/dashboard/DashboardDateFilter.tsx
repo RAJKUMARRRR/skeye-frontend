@@ -132,6 +132,7 @@ export function DashboardDateFilter() {
               size="sm"
               variant={selectedPreset === preset.value ? 'default' : 'outline'}
               onClick={() => handlePresetChange(preset.value)}
+              className="whitespace-nowrap"
             >
               {preset.label}
             </Button>

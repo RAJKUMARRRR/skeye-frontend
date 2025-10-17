@@ -12,6 +12,7 @@ import {
   TableRow,
   Badge,
 } from '@fleet/ui-web'
+import { Bell, Mail, MessageSquare, Info } from 'lucide-react'
 
 interface NotificationChannel {
   email: boolean
@@ -143,12 +144,14 @@ export function NotificationPreferences() {
   return (
     <div className="space-y-6">
       {/* Info Banner */}
-      <Card className="p-4 bg-blue-50 border-blue-200">
+      <Card className="p-4 bg-accent/5 border-accent/20">
         <div className="flex gap-3">
-          <span className="text-2xl">🔔</span>
+          <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
+            <Info className="w-5 h-5 text-accent" />
+          </div>
           <div>
-            <h4 className="font-semibold text-blue-900">Notification Preferences</h4>
-            <p className="text-sm text-blue-800 mt-1">
+            <h4 className="font-semibold text-gray-900">Notification Preferences</h4>
+            <p className="text-sm text-gray-600 mt-1">
               Configure how you receive notifications for each alert type. You can enable/disable
               specific channels (Email, SMS, Push) for different alert types and severities.
             </p>
@@ -164,33 +167,39 @@ export function NotificationPreferences() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div className="flex items-center justify-between p-4 border rounded-lg hover:border-accent/30 transition-colors">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">📧</span>
+              <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Mail className="w-5 h-5 text-accent" />
+              </div>
               <div>
-                <Label>Email Notifications</Label>
+                <Label className="text-sm font-medium">Email Notifications</Label>
                 <p className="text-xs text-gray-600">Receive alerts via email</p>
               </div>
             </div>
             <Switch checked={globalEmail} onCheckedChange={setGlobalEmail} />
           </div>
 
-          <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div className="flex items-center justify-between p-4 border rounded-lg hover:border-accent/30 transition-colors">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">📱</span>
+              <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <MessageSquare className="w-5 h-5 text-accent" />
+              </div>
               <div>
-                <Label>SMS Notifications</Label>
+                <Label className="text-sm font-medium">SMS Notifications</Label>
                 <p className="text-xs text-gray-600">Receive alerts via SMS</p>
               </div>
             </div>
             <Switch checked={globalSms} onCheckedChange={setGlobalSms} />
           </div>
 
-          <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div className="flex items-center justify-between p-4 border rounded-lg hover:border-accent/30 transition-colors">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">🔔</span>
+              <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Bell className="w-5 h-5 text-accent" />
+              </div>
               <div>
-                <Label>Push Notifications</Label>
+                <Label className="text-sm font-medium">Push Notifications</Label>
                 <p className="text-xs text-gray-600">Receive push notifications</p>
               </div>
             </div>

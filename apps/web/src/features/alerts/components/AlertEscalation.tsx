@@ -17,6 +17,7 @@ import {
   TableRow,
   Badge,
 } from '@fleet/ui-web'
+import { Info, Users, User } from 'lucide-react'
 
 interface EscalationRule {
   id: string
@@ -94,12 +95,14 @@ export function AlertEscalation() {
   return (
     <div className="space-y-6">
       {/* Info Banner */}
-      <Card className="p-4 bg-blue-50 border-blue-200">
+      <Card className="p-4 bg-accent/5 border-accent/20">
         <div className="flex gap-3">
-          <span className="text-2xl">ℹ️</span>
+          <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
+            <Info className="w-5 h-5 text-accent" />
+          </div>
           <div>
-            <h4 className="font-semibold text-blue-900">About Alert Escalation</h4>
-            <p className="text-sm text-blue-800 mt-1">
+            <h4 className="font-semibold text-gray-900">About Alert Escalation</h4>
+            <p className="text-sm text-gray-600 mt-1">
               When an alert is not acknowledged within the specified time, it will be
               automatically escalated to the designated users or roles. This ensures critical
               alerts are never missed.
@@ -236,8 +239,12 @@ export function AlertEscalation() {
                 <TableCell>
                   <div className="flex flex-col gap-1">
                     {rule.escalateTo.map((a, i) => (
-                      <Badge key={i} variant="secondary">
-                        {a.type === 'role' ? '👥 ' : '👤 '}
+                      <Badge key={i} variant="secondary" className="flex items-center gap-1.5">
+                        {a.type === 'role' ? (
+                          <Users className="w-3 h-3" />
+                        ) : (
+                          <User className="w-3 h-3" />
+                        )}
                         {a.name}
                       </Badge>
                     ))}

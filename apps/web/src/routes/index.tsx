@@ -16,7 +16,17 @@ import { Geofences } from '../pages/Geofences'
 import { GeofenceNew } from '../pages/GeofenceNew'
 import { Maintenance } from '../pages/Maintenance'
 import { Routes as RoutesPage } from '../pages/Routes'
+import { RoutePlanner } from '../pages/routes/RoutePlanner'
+import { LiveMap } from '../pages/routes/LiveMap'
+import { RouteHistoryPage } from '../pages/routes/RouteHistoryPage'
 import { Alerts } from '../pages/Alerts'
+import { AlertRules } from '../pages/alerts/AlertRules'
+import { AlertRouting } from '../pages/alerts/AlertRouting'
+import { AlertEscalation } from '../pages/alerts/AlertEscalation'
+import { AlertHistory } from '../pages/alerts/AlertHistory'
+import { AlertMuting } from '../pages/alerts/AlertMuting'
+import { AlertQuietHours } from '../pages/alerts/AlertQuietHours'
+import { AlertNotifications } from '../pages/alerts/AlertNotifications'
 import { Reports } from '../pages/Reports'
 import { Analytics } from '../pages/Analytics'
 import { Fuel } from '../pages/Fuel'
@@ -96,8 +106,48 @@ export const routes: RouteObject[] = [
         element: <RoutesPage />,
       },
       {
+        path: 'routes/planner',
+        element: <RoutePlanner />,
+      },
+      {
+        path: 'routes/map',
+        element: <LiveMap />,
+      },
+      {
+        path: 'routes/history',
+        element: <RouteHistoryPage />,
+      },
+      {
         path: 'alerts',
         element: <Alerts />,
+      },
+      {
+        path: 'alerts/rules',
+        element: <AlertRules />,
+      },
+      {
+        path: 'alerts/routing',
+        element: <AlertRouting />,
+      },
+      {
+        path: 'alerts/escalation',
+        element: <AlertEscalation />,
+      },
+      {
+        path: 'alerts/history',
+        element: <AlertHistory />,
+      },
+      {
+        path: 'alerts/muting',
+        element: <AlertMuting />,
+      },
+      {
+        path: 'alerts/quiet-hours',
+        element: <AlertQuietHours />,
+      },
+      {
+        path: 'alerts/notifications',
+        element: <AlertNotifications />,
       },
       {
         path: 'reports',

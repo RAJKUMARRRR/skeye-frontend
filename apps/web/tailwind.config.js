@@ -45,10 +45,10 @@ export default {
           dark: '#000000', // Pure black
           light: '#1a1a1a', // Slightly lighter black
           text: '#ffffff',
-          'text-muted': '#999999',
-          border: '#1a1a1a',
+          'text-muted': '#9ca3af',
+          border: '#1f2937',
           hover: '#1a1a1a',
-          active: '#262626',
+          active: '#1f4d36', // Darker teal-green for active items
         },
         // Content area - Light/white backgrounds
         content: {

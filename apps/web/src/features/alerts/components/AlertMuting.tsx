@@ -17,6 +17,7 @@ import {
   TableRow,
   Badge,
 } from '@fleet/ui-web'
+import { AlertTriangle } from 'lucide-react'
 
 interface MutedAlert {
   id: string
@@ -99,12 +100,14 @@ export function AlertMuting() {
   return (
     <div className="space-y-6">
       {/* Info Banner */}
-      <Card className="p-4 bg-yellow-50 border-yellow-200">
+      <Card className="p-4 bg-amber-50 border-amber-200">
         <div className="flex gap-3">
-          <span className="text-2xl">⚠️</span>
+          <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <AlertTriangle className="w-5 h-5 text-amber-600" />
+          </div>
           <div>
-            <h4 className="font-semibold text-yellow-900">Important: Alert Muting</h4>
-            <p className="text-sm text-yellow-800 mt-1">
+            <h4 className="font-semibold text-amber-900">Important: Alert Muting</h4>
+            <p className="text-sm text-amber-800 mt-1">
               Muting alerts temporarily disables notifications. Use this feature carefully as it may prevent you from receiving important alerts. Muted alerts will automatically unmute after the specified duration.
             </p>
           </div>

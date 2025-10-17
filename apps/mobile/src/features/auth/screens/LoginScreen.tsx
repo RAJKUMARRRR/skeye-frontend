@@ -56,8 +56,8 @@ export default function LoginScreen() {
     >
       <View style={styles.content}>
         <View style={styles.header}>
-          <Ionicons name="car-sport" size={64} color="#3b82f6" />
-          <Text style={styles.title}>Fleet Driver</Text>
+          <Ionicons name="flash" size={64} color="#14b8a6" />
+          <Text style={styles.title}>Skeye Driver</Text>
           <Text style={styles.subtitle}>Sign in to continue</Text>
         </View>
 

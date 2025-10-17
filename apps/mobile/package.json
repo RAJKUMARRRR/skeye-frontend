@@ -1,5 +1,5 @@
 {
-  "name": "@fleet/mobile",
+  "name": "@skeye/mobile",
   "version": "0.1.0",
   "private": true,
   "main": "index.js",

@@ -102,11 +102,11 @@ export function Sidebar() {
       <div className="p-6 border-b border-sidebar-border flex items-center justify-between">
         <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center w-full' : ''}`}>
           <div className="w-9 h-9 bg-accent/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-accent/30">
-            <Truck className="w-5 h-5 text-accent" />
+            <Zap className="w-5 h-5 text-accent" />
           </div>
           {!isCollapsed && (
             <h1 className="text-xl font-bold text-sidebar-text font-display tracking-tight">
-              Fleet<span className="text-accent font-bold">Hub</span>
+              <span className="text-accent font-bold">Skeye</span>
             </h1>
           )}
         </div>

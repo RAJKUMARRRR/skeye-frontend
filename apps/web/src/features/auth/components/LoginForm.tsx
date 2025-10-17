@@ -50,7 +50,7 @@ export function LoginForm() {
                 <Zap className="w-6 h-6 text-accent" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Fleet<span className="text-accent font-bold">Hub</span>
+                <span className="text-accent font-bold">Skeye</span>
               </h1>
             </div>
             <h2 className="text-3xl font-bold text-gray-900 mb-2">

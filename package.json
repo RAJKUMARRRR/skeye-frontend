@@ -2,10 +2,21 @@
   "name": "fleet-management-platform",
   "version": "0.1.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "nohoist": [
+      "apps/mobile/react",
+      "apps/mobile/react/**",
+      "apps/mobile/react-native",
+      "apps/mobile/react-native/**",
+      "apps/mobile/react-dom",
+      "apps/mobile/react-dom/**",
+      "apps/mobile/@clerk/**"
+    ]
+  },
   "scripts": {
     "dev": "turbo run dev",
     "dev:web": "turbo run dev --filter=@fleet/web",

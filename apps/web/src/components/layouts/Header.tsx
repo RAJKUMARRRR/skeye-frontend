@@ -8,9 +8,9 @@ export function Header() {
   const navigate = useNavigate()
   const [showUserMenu, setShowUserMenu] = useState(false)
 
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
+  const handleLogout = async () => {
+    await logout()
+    // Logout function already handles redirect to /login
   }
 
   const getRoleColor = (role: string) => {

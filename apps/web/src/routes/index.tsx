@@ -2,6 +2,11 @@ import { RouteObject } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute'
 import { Login } from '../pages/Login'
+import { SignUp } from '../pages/SignUp'
+import { SSOCallback } from '../pages/SSOCallback'
+import { SignInPage } from '../pages/auth/SignIn'
+import { SignUpPage } from '../pages/auth/SignUp'
+import { Profile } from '../pages/Profile'
 import { Dashboard } from '../pages/Dashboard'
 import { LiveTracking } from '../pages/LiveTracking'
 import { Vehicles } from '../pages/Vehicles'
@@ -43,6 +48,22 @@ export const routes: RouteObject[] = [
   {
     path: '/login',
     element: <Login />,
+  },
+  {
+    path: '/signup',
+    element: <SignUp />,
+  },
+  {
+    path: '/sso-callback',
+    element: <SSOCallback />,
+  },
+  {
+    path: '/sign-in/*',
+    element: <SignInPage />,
+  },
+  {
+    path: '/sign-up/*',
+    element: <SignUpPage />,
   },
   {
     path: '/',
@@ -163,6 +184,10 @@ export const routes: RouteObject[] = [
       {
         path: 'fuel',
         element: <Fuel />,
+      },
+      {
+        path: 'profile',
+        element: <Profile />,
       },
       {
         path: 'settings',

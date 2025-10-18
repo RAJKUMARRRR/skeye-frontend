@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, Link } from 'react-router-dom'
-import { useSignIn } from '@clerk/clerk-react'
-import { loginSchema, type LoginFormData } from '../../../lib/validations/auth'
+import { useSignUp } from '@clerk/clerk-react'
+import { registerSchema, type RegisterFormData } from '../../../lib/validations/auth'
 import {
   Form,
   FormControl,
@@ -14,66 +14,69 @@ import {
   Input,
   Button,
 } from '@fleet/ui-web'
-import { Zap, ArrowRight, Shield, Sparkles, AlertCircle } from 'lucide-react'
+import { Zap, ArrowRight, Shield, Sparkles, AlertCircle, Mail } from 'lucide-react'
 import { toast } from 'sonner'
 
-export function LoginForm() {
-  const { signIn, setActive } = useSignIn()
+export function SignUpForm() {
+  const { signUp, setActive } = useSignUp()
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
-  const [requires2FA, setRequires2FA] = useState(false)
-  const [twoFactorCode, setTwoFactorCode] = useState('')
+  const [pendingVerification, setPendingVerification] = useState(false)
+  const [verificationCode, setVerificationCode] = useState('')
 
-  const form = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
+  const form = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues:{
+      name: '',
       email: '',
       password: '',
+      confirmPassword: '',
     },
   })
 
-  const handleGoogleSignIn = async () => {
-    if (!signIn) return
+  const handleGoogleSignUp = async () => {
+    if (!signUp) return
 
     setIsGoogleLoading(true)
     try {
-      await signIn.authenticateWithRedirect({
+      await signUp.authenticateWithRedirect({
         strategy: 'oauth_google',
         redirectUrl: window.location.origin + '/sso-callback',
         redirectUrlComplete: window.location.origin + '/',
       })
     } catch (err: any) {
-      console.error('Google sign-in error:', err)
-      toast.error('Failed to sign in with Google')
+      console.error('Google sign-up error:', err)
+      toast.error('Failed to sign up with Google')
       setIsGoogleLoading(false)
     }
   }
 
-  const onSubmit = async (data: LoginFormData) => {
-    if (!signIn) return
+  const onSubmit = async (data: RegisterFormData) => {
+    if (!signUp) return
 
     setIsLoading(true)
     try {
-      const result = await signIn.create({
-        identifier: data.email,
+      // Split name into first and last name
+      const nameParts = data.name.trim().split(' ')
+      const firstName = nameParts[0]
+      const lastName = nameParts.slice(1).join(' ') || nameParts[0]
+
+      await signUp.create({
+        emailAddress: data.email,
         password: data.password,
+        firstName,
+        lastName,
       })
 
-      if (result.status === 'complete') {
-        await setActive({ session: result.createdSessionId })
-        navigate('/')
-      } else if (result.status === 'needs_second_factor') {
-        // 2FA is required
-        setRequires2FA(true)
-        toast.info('Please enter your 2FA code')
-      } else {
-        // Handle other statuses
-        console.log('Sign-in status:', result.status)
-      }
+      // Send email verification code
+      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
+
+      setPendingVerification(true)
+      toast.success('Verification code sent to your email')
     } catch (err: any) {
-      console.error('Login error:', err)
-      const errorMessage = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || 'Invalid email or password'
+      console.error('Sign-up error:', err)
+      const errorMessage = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || 'Failed to create account'
       form.setError('root', {
         message: errorMessage,
       })
@@ -82,32 +85,31 @@ export function LoginForm() {
     }
   }
 
-  const handle2FASubmit = async (e: React.FormEvent) => {
+  const handleVerification = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!signIn || !twoFactorCode) return
+    if (!signUp || !verificationCode) return
 
     setIsLoading(true)
     try {
-      const result = await signIn.attemptSecondFactor({
-        strategy: 'totp',
-        code: twoFactorCode,
+      const result = await signUp.attemptEmailAddressVerification({
+        code: verificationCode,
       })
 
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId })
-        toast.success('Successfully signed in!')
+        toast.success('Account created successfully!')
         navigate('/')
       }
     } catch (err: any) {
-      console.error('2FA error:', err)
-      toast.error(err?.errors?.[0]?.message || 'Invalid 2FA code')
+      console.error('Verification error:', err)
+      toast.error(err?.errors?.[0]?.message || 'Invalid verification code')
     } finally {
       setIsLoading(false)
     }
   }
 
-  // If 2FA is required, show 2FA form
-  if (requires2FA) {
+  // If pending verification, show verification form
+  if (pendingVerification) {
     return (
       <div className="min-h-screen flex">
         <div className="flex-1 flex items-center justify-center p-8 bg-white">
@@ -115,29 +117,29 @@ export function LoginForm() {
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center border border-accent/30">
-                  <Shield className="w-6 h-6 text-accent" />
+                  <Mail className="w-6 h-6 text-accent" />
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900">
                   <span className="text-accent font-bold">Skeye</span>
                 </h1>
               </div>
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                Two-Factor Authentication
+                Verify your email
               </h2>
               <p className="text-gray-600">
-                Enter the 6-digit code from your authenticator app
+                We sent a verification code to <span className="font-medium">{form.getValues('email')}</span>
               </p>
             </div>
 
-            <form onSubmit={handle2FASubmit} className="space-y-5">
+            <form onSubmit={handleVerification} className="space-y-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Authentication Code
+                  Verification Code
                 </label>
                 <input
                   type="text"
-                  value={twoFactorCode}
-                  onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-accent focus:border-accent text-center text-2xl tracking-widest font-mono"
                   placeholder="000000"
                   maxLength={6}
@@ -148,7 +150,7 @@ export function LoginForm() {
               <Button
                 type="submit"
                 className="w-full h-11"
-                disabled={isLoading || twoFactorCode.length !== 6}
+                disabled={isLoading || verificationCode.length !== 6}
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -157,7 +159,7 @@ export function LoginForm() {
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-2">
-                    Verify & Sign in
+                    Verify & Continue
                     <ArrowRight className="w-4 h-4" />
                   </span>
                 )}
@@ -165,13 +167,17 @@ export function LoginForm() {
 
               <button
                 type="button"
-                onClick={() => {
-                  setRequires2FA(false)
-                  setTwoFactorCode('')
+                onClick={async () => {
+                  try {
+                    await signUp?.prepareEmailAddressVerification({ strategy: 'email_code' })
+                    toast.success('New code sent!')
+                  } catch (err) {
+                    toast.error('Failed to resend code')
+                  }
                 }}
-                className="w-full text-sm text-gray-600 hover:text-gray-900"
+                className="w-full text-sm text-accent hover:text-accent-600 font-medium"
               >
-                ← Back to login
+                Resend code
               </button>
             </form>
           </div>
@@ -184,13 +190,13 @@ export function LoginForm() {
 
           <div className="text-center text-white space-y-6 relative z-10">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-accent/20 rounded-2xl backdrop-blur-sm mb-4 border border-accent/30">
-              <Shield className="w-10 h-10 text-accent" />
+              <Mail className="w-10 h-10 text-accent" />
             </div>
             <h3 className="text-4xl font-bold">
-              Secure Access<br />With <span className="text-accent">2FA</span>
+              Almost There!
             </h3>
             <p className="text-gray-400 text-lg max-w-md">
-              Your account is protected with two-factor authentication for enhanced security.
+              Check your inbox for the verification code to complete your registration.
             </p>
           </div>
         </div>
@@ -200,7 +206,7 @@ export function LoginForm() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Login Form */}
+      {/* Left Side - Sign Up Form */}
       <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
           {/* Logo & Header */}
@@ -214,10 +220,10 @@ export function LoginForm() {
               </h1>
             </div>
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Welcome back
+              Create your account
             </h2>
             <p className="text-gray-600">
-              Sign in to access your fleet management platform
+              Start managing your fleet with confidence
             </p>
           </div>
 
@@ -231,6 +237,26 @@ export function LoginForm() {
               )}
 
               <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 text-sm font-medium">
+                        Full Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="John Doe"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-error text-xs" />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="email"
@@ -270,15 +296,26 @@ export function LoginForm() {
                     </FormItem>
                   )}
                 />
-              </div>
 
-              <div className="flex items-center justify-end">
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-accent hover:text-accent-600 font-medium"
-                >
-                  Forgot password?
-                </Link>
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 text-sm font-medium">
+                        Confirm Password
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-error text-xs" />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <Button
@@ -289,11 +326,11 @@ export function LoginForm() {
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Signing in...
+                    Creating account...
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-2">
-                    Sign in
+                    Create account
                     <ArrowRight className="w-4 h-4" />
                   </span>
                 )}
@@ -309,10 +346,10 @@ export function LoginForm() {
                 </div>
               </div>
 
-              {/* Google Sign In */}
+              {/* Google Sign Up */}
               <button
                 type="button"
-                onClick={handleGoogleSignIn}
+                onClick={handleGoogleSignUp}
                 disabled={isGoogleLoading}
                 className="w-full h-11 bg-white border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-3 shadow-sm hover:shadow disabled:opacity-60 disabled:cursor-not-allowed"
               >
@@ -346,11 +383,11 @@ export function LoginForm() {
                 )}
               </button>
 
-              {/* Sign Up Link */}
+              {/* Sign In Link */}
               <p className="text-center text-sm text-gray-600 mt-6">
-                Don't have an account?{' '}
-                <Link to="/signup" className="text-accent hover:text-accent-600 font-medium">
-                  Sign up
+                Already have an account?{' '}
+                <Link to="/login" className="text-accent hover:text-accent-600 font-medium">
+                  Sign in
                 </Link>
               </p>
             </form>
@@ -369,10 +406,10 @@ export function LoginForm() {
             <Zap className="w-10 h-10 text-accent" />
           </div>
           <h3 className="text-4xl font-bold">
-            Manage Your Fleet<br />With <span className="text-accent">Confidence</span>
+            Join Thousands of<br /><span className="text-accent">Fleet Managers</span>
           </h3>
           <p className="text-gray-400 text-lg max-w-md">
-            Real-time tracking, driver management, and analytics all in one powerful platform.
+            Get started with real-time tracking, driver management, and powerful analytics.
           </p>
           <div className="flex justify-center gap-8 mt-8">
             {[

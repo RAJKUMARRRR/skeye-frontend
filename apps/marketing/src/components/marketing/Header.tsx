@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
+import { useAuth } from '@clerk/nextjs'
 import { Link } from '@/i18n/navigation'
 import { Button } from '@/components/ui/button'
 import { MagneticButton } from '@/components/ui/magnetic-button'
@@ -11,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 export function Header() {
   const t = useTranslations('navigation')
+  const { isSignedIn } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navigation = [
@@ -78,9 +80,15 @@ export function Header() {
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
 
-          <Button variant="ghost" size="sm" asChild className="hidden md:inline-flex">
-            <Link href="/login">{t('login')}</Link>
-          </Button>
+          {isSignedIn ? (
+            <Button variant="ghost" size="sm" asChild className="hidden md:inline-flex">
+              <a href="http://localhost:3001">Dashboard</a>
+            </Button>
+          ) : (
+            <Button variant="ghost" size="sm" asChild className="hidden md:inline-flex">
+              <a href="http://localhost:3001/login">{t('login')}</a>
+            </Button>
+          )}
 
           <MagneticButton strength={0.15}>
             <Button size="sm" className="button-shine shadow-lg glow" asChild>
@@ -163,13 +171,23 @@ export function Header() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: navigation.length * 0.05 }}
               >
-                <Link
-                  href="/login"
-                  className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary rounded-md hover:bg-muted"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {t('login')}
-                </Link>
+                {isSignedIn ? (
+                  <a
+                    href="http://localhost:3001"
+                    className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary rounded-md hover:bg-muted"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Dashboard
+                  </a>
+                ) : (
+                  <a
+                    href="http://localhost:3001/login"
+                    className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary rounded-md hover:bg-muted"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t('login')}
+                  </a>
+                )}
               </motion.div>
             </nav>
           </motion.div>

@@ -1,14 +1,110 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Switch, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useUser } from '@clerk/clerk-expo';
 
 export default function NotificationsSettingsScreen() {
-  const [pushEnabled, setPushEnabled] = useState(true);
-  const [emailEnabled, setEmailEnabled] = useState(true);
-  const [tripUpdates, setTripUpdates] = useState(true);
-  const [alerts, setAlerts] = useState(true);
-  const [messages, setMessages] = useState(true);
+  const { user, isLoaded } = useUser();
+
+  // Notification states - will be loaded from Clerk metadata
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [emailEnabled, setEmailEnabled] = useState(false);
+  const [tripUpdates, setTripUpdates] = useState(false);
+  const [alerts, setAlerts] = useState(false);
+  const [messages, setMessages] = useState(false);
   const [systemUpdates, setSystemUpdates] = useState(false);
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  const savePreferences = async (preferences: any) => {
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      await user.update({
+        unsafeMetadata: {
+          ...user.unsafeMetadata,
+          notificationPreferences: preferences,
+        },
+      });
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+      Alert.alert('Error', 'Failed to save notification preferences');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Load preferences from Clerk metadata on mount and when user data changes
+  useEffect(() => {
+    if (user && !isInitialized) {
+      const metadata = user.unsafeMetadata?.notificationPreferences as any;
+
+      // If metadata exists, use it. Otherwise, use defaults for new users
+      if (metadata) {
+        setPushEnabled(metadata.pushEnabled ?? false);
+        setEmailEnabled(metadata.emailEnabled ?? false);
+        setTripUpdates(metadata.tripUpdates ?? false);
+        setAlerts(metadata.alerts ?? false);
+        setMessages(metadata.messages ?? false);
+        setSystemUpdates(metadata.systemUpdates ?? false);
+      } else {
+        // First time user - set sensible defaults for mobile drivers
+        setPushEnabled(true);
+        setEmailEnabled(false);
+        setTripUpdates(true);
+        setAlerts(true);
+        setMessages(true);
+        setSystemUpdates(false);
+
+        // Save these defaults to metadata
+        savePreferences({
+          pushEnabled: true,
+          emailEnabled: false,
+          tripUpdates: true,
+          alerts: true,
+          messages: true,
+          systemUpdates: false,
+        });
+      }
+
+      setIsInitialized(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isInitialized]);
+
+  const handleToggle = async (
+    setter: (value: boolean) => void,
+    currentValue: boolean,
+    key: string
+  ) => {
+    const newValue = !currentValue;
+    setter(newValue);
+
+    // Save to Clerk metadata
+    const newPreferences = {
+      pushEnabled,
+      emailEnabled,
+      tripUpdates,
+      alerts,
+      messages,
+      systemUpdates,
+      [key]: newValue,
+    };
+
+    await savePreferences(newPreferences);
+  };
+
+  // Show loading state while user data is loading
+  if (!isLoaded || !user) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+        <Text style={styles.loadingText}>Loading preferences...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -26,9 +122,10 @@ export default function NotificationsSettingsScreen() {
               </View>
               <Switch
                 value={pushEnabled}
-                onValueChange={setPushEnabled}
+                onValueChange={() => handleToggle(setPushEnabled, pushEnabled, 'pushEnabled')}
                 trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
                 thumbColor={pushEnabled ? '#3b82f6' : '#f3f4f6'}
+                disabled={isSaving}
               />
             </View>
 
@@ -44,9 +141,10 @@ export default function NotificationsSettingsScreen() {
               </View>
               <Switch
                 value={emailEnabled}
-                onValueChange={setEmailEnabled}
+                onValueChange={() => handleToggle(setEmailEnabled, emailEnabled, 'emailEnabled')}
                 trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
                 thumbColor={emailEnabled ? '#3b82f6' : '#f3f4f6'}
+                disabled={isSaving}
               />
             </View>
           </View>
@@ -65,9 +163,10 @@ export default function NotificationsSettingsScreen() {
               </View>
               <Switch
                 value={tripUpdates}
-                onValueChange={setTripUpdates}
+                onValueChange={() => handleToggle(setTripUpdates, tripUpdates, 'tripUpdates')}
                 trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
                 thumbColor={tripUpdates ? '#3b82f6' : '#f3f4f6'}
+                disabled={isSaving}
               />
             </View>
 
@@ -83,9 +182,10 @@ export default function NotificationsSettingsScreen() {
               </View>
               <Switch
                 value={alerts}
-                onValueChange={setAlerts}
+                onValueChange={() => handleToggle(setAlerts, alerts, 'alerts')}
                 trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
                 thumbColor={alerts ? '#3b82f6' : '#f3f4f6'}
+                disabled={isSaving}
               />
             </View>
 
@@ -101,9 +201,10 @@ export default function NotificationsSettingsScreen() {
               </View>
               <Switch
                 value={messages}
-                onValueChange={setMessages}
+                onValueChange={() => handleToggle(setMessages, messages, 'messages')}
                 trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
                 thumbColor={messages ? '#3b82f6' : '#f3f4f6'}
+                disabled={isSaving}
               />
             </View>
 
@@ -119,13 +220,21 @@ export default function NotificationsSettingsScreen() {
               </View>
               <Switch
                 value={systemUpdates}
-                onValueChange={setSystemUpdates}
+                onValueChange={() => handleToggle(setSystemUpdates, systemUpdates, 'systemUpdates')}
                 trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
                 thumbColor={systemUpdates ? '#3b82f6' : '#f3f4f6'}
+                disabled={isSaving}
               />
             </View>
           </View>
         </View>
+
+        {isSaving && (
+          <View style={styles.savingIndicator}>
+            <ActivityIndicator size="small" color="#3b82f6" />
+            <Text style={styles.savingText}>Saving preferences...</Text>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -136,8 +245,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9fafb',
   },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   content: {
     flex: 1,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: '#6b7280',
   },
   section: {
     padding: 16,
@@ -187,5 +305,16 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#e5e7eb',
     marginVertical: 16,
+  },
+  savingIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    gap: 8,
+  },
+  savingText: {
+    fontSize: 14,
+    color: '#6b7280',
   },
 });

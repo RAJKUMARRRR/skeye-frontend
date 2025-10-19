@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ActivityIndicator, View } from 'react-native';
 import MainTabNavigator from './MainTabNavigator';
 import LoginScreen from '../features/auth/screens/LoginScreen';
+import ForgotPasswordScreen from '../features/auth/screens/ForgotPasswordScreen';
 import SignaturePadScreen from '../features/checklists/screens/SignaturePadScreen';
 import NotificationsSettingsScreen from '../features/settings/screens/NotificationsSettingsScreen';
 import LocationSettingsScreen from '../features/settings/screens/LocationSettingsScreen';
@@ -13,6 +14,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 export type RootStackParamList = {
   Login: undefined;
+  ForgotPassword: undefined;
   Main: undefined;
   SignaturePad: {
     onSignatureCapture: (signature: string) => void;
@@ -58,7 +60,10 @@ export default function RootNavigator() {
     >
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!isAuthenticated ? (
-          <Stack.Screen name="Login" component={LoginScreen} />
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          </>
         ) : (
           <>
             <Stack.Screen name="Main" component={MainTabNavigator} />

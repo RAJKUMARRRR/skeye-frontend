@@ -11,17 +11,21 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useBiometric } from '../hooks/useBiometric';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useSignIn } from '@clerk/clerk-expo';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../../navigation/RootNavigator';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function LoginScreen() {
+  const navigation = useNavigation<NavigationProp>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login } = useAuth();
-  const { isBiometricAvailable, authenticateWithBiometric } = useBiometric();
+  const { signIn, setActive, isLoaded } = useSignIn();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -29,23 +33,27 @@ export default function LoginScreen() {
       return;
     }
 
+    if (!isLoaded) return;
+
     setIsLoading(true);
     try {
-      await login(email, password);
-      // Navigation will happen automatically when auth state changes
-    } catch (error) {
+      const result = await signIn.create({
+        identifier: email,
+        password: password,
+      });
+
+      if (result.status === 'complete') {
+        await setActive({ session: result.createdSessionId });
+        // Navigation will happen automatically when auth state changes
+      } else {
+        Alert.alert('Error', 'Login failed. Please check your credentials.');
+      }
+    } catch (error: any) {
       console.error('Login error:', error);
-      Alert.alert('Error', 'Login failed. Please try again.');
+      const errorMessage = error?.errors?.[0]?.longMessage || error?.errors?.[0]?.message || 'Login failed. Please try again.';
+      Alert.alert('Error', errorMessage);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleBiometricLogin = async () => {
-    const success = await authenticateWithBiometric();
-    if (success) {
-      // TODO: Implement auto-login after biometric auth
-      console.log('Biometric authentication successful');
     }
   };
 
@@ -109,27 +117,12 @@ export default function LoginScreen() {
               <Text style={styles.buttonText}>Sign In</Text>
             )}
           </TouchableOpacity>
-
-          {isBiometricAvailable && (
-            <>
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>OR</Text>
-                <View style={styles.dividerLine} />
-              </View>
-
-              <TouchableOpacity
-                style={styles.biometricButton}
-                onPress={handleBiometricLogin}
-              >
-                <Ionicons name="finger-print" size={24} color="#3b82f6" />
-                <Text style={styles.biometricButtonText}>Use Biometric Login</Text>
-              </TouchableOpacity>
-            </>
-          )}
         </View>
 
-        <TouchableOpacity style={styles.forgotPassword}>
+        <TouchableOpacity
+          style={styles.forgotPassword}
+          onPress={() => navigation.navigate('ForgotPassword')}
+        >
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>

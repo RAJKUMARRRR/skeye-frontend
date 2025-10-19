@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import { useAuth as useClerkAuth, useUser } from '@clerk/clerk-expo';
 
 interface User {
   id: string;
@@ -18,71 +18,40 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { isSignedIn, isLoaded, signOut } = useClerkAuth();
+  const { user: clerkUser } = useUser();
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored auth token on mount
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = async () => {
-    try {
-      const token = await SecureStore.getItemAsync('authToken');
-      if (token) {
-        // TODO: Validate token with backend and get user data
-        // For now, just set a mock user
-        setUser({
-          id: '1',
-          email: 'test@example.com',
-          name: 'Test Driver',
-        });
-      }
-    } catch (error) {
-      console.error('Error checking auth status:', error);
-    } finally {
-      setIsLoading(false);
+    if (isLoaded && isSignedIn && clerkUser) {
+      // Map Clerk user to our User interface
+      setUser({
+        id: clerkUser.id,
+        email: clerkUser.primaryEmailAddress?.emailAddress || '',
+        name: clerkUser.fullName || clerkUser.firstName || 'Driver',
+      });
+    } else if (isLoaded && !isSignedIn) {
+      setUser(null);
     }
-  };
+  }, [isLoaded, isSignedIn, clerkUser]);
 
   const login = async (email: string, password: string) => {
-    try {
-      // TODO: Implement actual API call to backend
-      // For now, mock successful login
-      console.log('Logging in with:', email, password);
-
-      // Mock token
-      const mockToken = 'mock-jwt-token';
-      await SecureStore.setItemAsync('authToken', mockToken);
-
-      // Set user data
-      setUser({
-        id: '1',
-        email,
-        name: 'Test Driver',
-      });
-    } catch (error) {
-      console.error('Login error:', error);
-      throw error;
-    }
+    // Login is handled by Clerk's SignIn component
+    // This method is kept for interface compatibility
+    throw new Error('Use Clerk SignIn component for login');
   };
 
   const logout = async () => {
-    try {
-      await SecureStore.deleteItemAsync('authToken');
-      setUser(null);
-    } catch (error) {
-      console.error('Logout error:', error);
-      throw error;
-    }
+    await signOut();
+    setUser(null);
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
-        isLoading,
+        isAuthenticated: isSignedIn || false,
+        isLoading: !isLoaded,
         login,
         logout,
       }}

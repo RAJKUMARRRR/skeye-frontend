@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
-import { LoginForm } from '../features/auth/components/LoginForm'
+import { ForgotPasswordForm } from '../features/auth/components/ForgotPasswordForm'
 
-export function Login() {
+export function ForgotPassword() {
   const { isSignedIn, isLoaded } = useAuth()
   const navigate = useNavigate()
 
@@ -25,5 +25,5 @@ export function Login() {
     return null
   }
 
-  return <LoginForm />
+  return <ForgotPasswordForm />
 }

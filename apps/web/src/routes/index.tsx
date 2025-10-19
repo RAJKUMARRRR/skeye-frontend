@@ -3,6 +3,7 @@ import { Layout } from '../components/Layout'
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute'
 import { Login } from '../pages/Login'
 import { SignUp } from '../pages/SignUp'
+import { ForgotPassword } from '../pages/ForgotPassword'
 import { SSOCallback } from '../pages/SSOCallback'
 import { SignInPage } from '../pages/auth/SignIn'
 import { SignUpPage } from '../pages/auth/SignUp'
@@ -52,6 +53,10 @@ export const routes: RouteObject[] = [
   {
     path: '/signup',
     element: <SignUp />,
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPassword />,
   },
   {
     path: '/sso-callback',

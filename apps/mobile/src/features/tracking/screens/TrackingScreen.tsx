@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
+import { colors } from '@fleet/ui-mobile';
 
 interface LocationCoords {
   latitude: number;
@@ -162,7 +163,7 @@ export default function TrackingScreen() {
             {routeCoords.length > 0 && (
               <Polyline
                 coordinates={routeCoords}
-                strokeColor="#3b82f6"
+                strokeColor={colors.accent.DEFAULT}
                 strokeWidth={4}
               />
             )}
@@ -170,17 +171,17 @@ export default function TrackingScreen() {
 
           <View style={styles.statsContainer}>
             <View style={styles.statCard}>
-              <Ionicons name="speedometer-outline" size={24} color="#3b82f6" />
+              <Ionicons name="speedometer-outline" size={24} color={colors.accent.DEFAULT} />
               <Text style={styles.statValue}>{formatSpeed(speed)}</Text>
               <Text style={styles.statLabel}>mph</Text>
             </View>
             <View style={styles.statCard}>
-              <Ionicons name="navigate-outline" size={24} color="#10b981" />
+              <Ionicons name="navigate-outline" size={24} color={colors.accent.DEFAULT} />
               <Text style={styles.statValue}>{formatDistance(distance)}</Text>
               <Text style={styles.statLabel}>miles</Text>
             </View>
             <View style={styles.statCard}>
-              <Ionicons name="time-outline" size={24} color="#f59e0b" />
+              <Ionicons name="time-outline" size={24} color={colors.accent.DEFAULT} />
               <Text style={styles.statValue}>{isTracking ? 'Active' : 'Stopped'}</Text>
               <Text style={styles.statLabel}>status</Text>
             </View>
@@ -247,12 +248,12 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.text.primary,
     marginTop: 4,
   },
   statLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.text.secondary,
     marginTop: 2,
   },
   controlsContainer: {
@@ -278,7 +279,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ef4444',
   },
   trackingButtonInactive: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.accent.DEFAULT,
   },
   trackingButtonText: {
     fontSize: 18,

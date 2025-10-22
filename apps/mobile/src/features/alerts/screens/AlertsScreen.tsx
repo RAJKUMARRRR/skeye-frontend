@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { colors } from '@fleet/ui-mobile';
 
 interface AlertItem {
   id: string;
@@ -100,11 +101,11 @@ export default function AlertsScreen() {
       case 'warning':
         return '#f59e0b';
       case 'info':
-        return '#3b82f6';
+        return colors.accent.DEFAULT;
       case 'maintenance':
-        return '#6366f1';
+        return colors.accent.dark;
       default:
-        return '#6b7280';
+        return colors.text.secondary;
     }
   };
 
@@ -188,7 +189,7 @@ export default function AlertsScreen() {
           style={styles.acknowledgeButton}
           onPress={() => handleAcknowledge(item.id)}
         >
-          <Ionicons name="checkmark-circle-outline" size={20} color="#3b82f6" />
+          <Ionicons name="checkmark-circle-outline" size={20} color="#ffffff" />
           <Text style={styles.acknowledgeButtonText}>Acknowledge</Text>
         </TouchableOpacity>
       )}
@@ -305,12 +306,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   filterButtonActive: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.accent.DEFAULT,
   },
   filterButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.text.secondary,
   },
   filterButtonTextActive: {
     color: '#ffffff',
@@ -331,7 +332,7 @@ const styles = StyleSheet.create({
   },
   alertCardUnread: {
     borderLeftWidth: 4,
-    borderLeftColor: '#3b82f6',
+    borderLeftColor: colors.accent.DEFAULT,
   },
   alertHeader: {
     flexDirection: 'row',
@@ -363,7 +364,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.accent.DEFAULT,
   },
   alertTimestamp: {
     fontSize: 12,
@@ -383,14 +384,12 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 10,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#3b82f6',
-    backgroundColor: '#eff6ff',
+    backgroundColor: colors.accent.DEFAULT,
   },
   acknowledgeButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3b82f6',
+    color: '#ffffff',
   },
   acknowledgedBadge: {
     flexDirection: 'row',

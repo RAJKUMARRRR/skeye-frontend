@@ -127,7 +127,7 @@ export default function MapScreen() {
             <Marker
               coordinate={currentLocation}
               title="Your Location"
-              pinColor="#3b82f6"
+              pinColor="#14b8a6"
             />
           )}
 
@@ -167,7 +167,7 @@ export default function MapScreen() {
           {routeCoordinates.length > 1 && (
             <Polyline
               coordinates={routeCoordinates}
-              strokeColor="#3b82f6"
+              strokeColor="#14b8a6"
               strokeWidth={3}
               lineDashPattern={[1, 10]}
             />

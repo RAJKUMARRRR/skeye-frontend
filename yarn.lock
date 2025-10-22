@@ -7295,6 +7295,11 @@ expo-av@~14.0.0:
   resolved "https://registry.npmmirror.com/expo-av/-/expo-av-14.0.7.tgz#deb967325e58b2c4d408f5d76a7ccb269442cba1"
   integrity sha512-FvKZxyy+2/qcCmp+e1GTK3s4zH8ZO1RfjpqNxh7ARlS1oH8HPtk1AyZAMo52tHz3yQ3UIqxQ2YbI9CFb4065lA==
 
+expo-blur@^15.0.7:
+  version "15.0.7"
+  resolved "https://registry.npmmirror.com/expo-blur/-/expo-blur-15.0.7.tgz#a11466e697fbf2b272444a38722065e60d0ecbe5"
+  integrity sha512-SugQQbQd+zRPy8z2G5qDD4NqhcD7srBF7fN7O7yq6q7ZFK59VWvpDxtMoUkmSfdxgqONsrBN/rLdk00USADrMg==
+
 expo-constants@~16.0.0, expo-constants@~16.0.2:
   version "16.0.2"
   resolved "https://registry.npmmirror.com/expo-constants/-/expo-constants-16.0.2.tgz#eb5a1bddb7308fd8cadac8fc44decaf4784cac5e"
@@ -7329,6 +7334,11 @@ expo-font@~12.0.0, expo-font@~12.0.10:
   dependencies:
     fontfaceobserver "^2.1.0"
 
+expo-haptics@^15.0.7:
+  version "15.0.7"
+  resolved "https://registry.npmmirror.com/expo-haptics/-/expo-haptics-15.0.7.tgz#384bb873d7eca7b141f85e4f300b75eab68ebfe9"
+  integrity sha512-7flWsYPrwjJxZ8x82RiJtzsnk1Xp9ahnbd9PhCy3NnsemyMApoWIEUr4waPqFr80DtiLZfhD9VMLL1CKa8AImQ==
+
 expo-image-loader@~4.7.0:
   version "4.7.0"
   resolved "https://registry.npmmirror.com/expo-image-loader/-/expo-image-loader-4.7.0.tgz#d403106822de80bda12d644c82b7a3b7983c0f0b"
@@ -7345,6 +7355,11 @@ expo-keep-awake@~13.0.2:
   version "13.0.2"
   resolved "https://registry.npmmirror.com/expo-keep-awake/-/expo-keep-awake-13.0.2.tgz#5ef31311a339671eec9921b934fdd90ab9652b0e"
   integrity sha512-kKiwkVg/bY0AJ5q1Pxnm/GvpeB6hbNJhcFsoOWDh2NlpibhCLaHL826KHUM+WsnJRbVRxJ+K9vbPRHEMvFpVyw==
+
+expo-linear-gradient@^15.0.7:
+  version "15.0.7"
+  resolved "https://registry.npmmirror.com/expo-linear-gradient/-/expo-linear-gradient-15.0.7.tgz#d1ebbda5ecc58afb58398f5a06affd0e83894149"
+  integrity sha512-yF+y+9Shpr/OQFfy/wglB/0bykFMbwHBTuMRa5Of/r2P1wbkcacx8rg0JsUWkXH/rn2i2iWdubyqlxSJa3ggZA==
 
 expo-linking@~6.3.0, expo-linking@~6.3.1:
   version "6.3.1"

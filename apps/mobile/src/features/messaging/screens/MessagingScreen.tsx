@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   driverMessageBubble: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#14b8a6',
     borderBottomRightRadius: 4,
   },
   dispatcherMessageBubble: {
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#14b8a6',
     justifyContent: 'center',
     alignItems: 'center',
   },

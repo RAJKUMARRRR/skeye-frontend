@@ -57,7 +57,7 @@ export default function LanguageSettingsScreen() {
                 <Text style={styles.languageNativeName}>{language.nativeName}</Text>
               </View>
               {selectedLanguage === language.code && (
-                <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
+                <Ionicons name="checkmark-circle" size={24} color="#14b8a6" />
               )}
             </TouchableOpacity>
           ))}
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   languageItemSelected: {
-    borderColor: '#3b82f6',
+    borderColor: '#14b8a6',
     backgroundColor: '#eff6ff',
   },
   languageInfo: {

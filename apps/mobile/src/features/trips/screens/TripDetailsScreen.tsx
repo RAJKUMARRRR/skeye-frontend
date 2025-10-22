@@ -129,7 +129,7 @@ export default function TripDetailsScreen() {
   const getStatusColor = (status: TripDetails['status']) => {
     switch (status) {
       case 'scheduled':
-        return '#3b82f6';
+        return '#14b8a6';
       case 'in_progress':
         return '#f59e0b';
       case 'completed':
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#14b8a6',
     paddingVertical: 16,
     borderRadius: 12,
     gap: 8,

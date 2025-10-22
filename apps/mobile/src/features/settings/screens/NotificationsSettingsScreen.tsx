@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useUser } from '@clerk/clerk-expo';
+import {
+  Card,
+  CustomSwitch,
+  colors,
+  spacing,
+  typography,
+  borderRadius,
+  shadows,
+} from '@fleet/ui-mobile';
 
 export default function NotificationsSettingsScreen() {
   const { user, isLoaded } = useUser();
@@ -100,7 +109,7 @@ export default function NotificationsSettingsScreen() {
   if (!isLoaded || !user) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <ActivityIndicator size="large" color={colors.accent.DEFAULT} />
         <Text style={styles.loadingText}>Loading preferences...</Text>
       </View>
     );
@@ -108,23 +117,28 @@ export default function NotificationsSettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.content}>
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Notification Channels Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Notification Channels</Text>
-          <View style={styles.card}>
+
+          <Card variant="elevated" padding="lg" style={styles.card}>
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="phone-portrait-outline" size={24} color="#6b7280" />
+                <View style={styles.iconCircle}>
+                  <Ionicons name="phone-portrait" size={20} color={colors.accent.DEFAULT} />
+                </View>
                 <View style={styles.settingText}>
                   <Text style={styles.settingLabel}>Push Notifications</Text>
-                  <Text style={styles.settingDescription}>Receive notifications on this device</Text>
+                  <Text style={styles.settingDescription}>
+                    Receive notifications on this device
+                  </Text>
                 </View>
               </View>
-              <Switch
+              <CustomSwitch
                 value={pushEnabled}
                 onValueChange={() => handleToggle(setPushEnabled, pushEnabled, 'pushEnabled')}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={pushEnabled ? '#3b82f6' : '#f3f4f6'}
                 disabled={isSaving}
               />
             </View>
@@ -133,39 +147,45 @@ export default function NotificationsSettingsScreen() {
 
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="mail-outline" size={24} color="#6b7280" />
+                <View style={styles.iconCircle}>
+                  <Ionicons name="mail" size={20} color={colors.accent.DEFAULT} />
+                </View>
                 <View style={styles.settingText}>
                   <Text style={styles.settingLabel}>Email Notifications</Text>
-                  <Text style={styles.settingDescription}>Receive notifications via email</Text>
+                  <Text style={styles.settingDescription}>
+                    Receive notifications via email
+                  </Text>
                 </View>
               </View>
-              <Switch
+              <CustomSwitch
                 value={emailEnabled}
                 onValueChange={() => handleToggle(setEmailEnabled, emailEnabled, 'emailEnabled')}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={emailEnabled ? '#3b82f6' : '#f3f4f6'}
                 disabled={isSaving}
               />
             </View>
-          </View>
+          </Card>
         </View>
 
+        {/* Notification Types Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Notification Types</Text>
-          <View style={styles.card}>
+
+          <Card variant="elevated" padding="lg" style={styles.card}>
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="car-outline" size={24} color="#6b7280" />
+                <View style={styles.iconCircle}>
+                  <Ionicons name="car" size={20} color={colors.accent.DEFAULT} />
+                </View>
                 <View style={styles.settingText}>
                   <Text style={styles.settingLabel}>Trip Updates</Text>
-                  <Text style={styles.settingDescription}>New trips, changes, and completions</Text>
+                  <Text style={styles.settingDescription}>
+                    New trips, changes, and completions
+                  </Text>
                 </View>
               </View>
-              <Switch
+              <CustomSwitch
                 value={tripUpdates}
                 onValueChange={() => handleToggle(setTripUpdates, tripUpdates, 'tripUpdates')}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={tripUpdates ? '#3b82f6' : '#f3f4f6'}
                 disabled={isSaving}
               />
             </View>
@@ -174,17 +194,19 @@ export default function NotificationsSettingsScreen() {
 
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="alert-circle-outline" size={24} color="#6b7280" />
+                <View style={styles.iconCircle}>
+                  <Ionicons name="alert-circle" size={20} color={colors.accent.DEFAULT} />
+                </View>
                 <View style={styles.settingText}>
                   <Text style={styles.settingLabel}>Alerts & Warnings</Text>
-                  <Text style={styles.settingDescription}>Important alerts and safety warnings</Text>
+                  <Text style={styles.settingDescription}>
+                    Important alerts and safety warnings
+                  </Text>
                 </View>
               </View>
-              <Switch
+              <CustomSwitch
                 value={alerts}
                 onValueChange={() => handleToggle(setAlerts, alerts, 'alerts')}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={alerts ? '#3b82f6' : '#f3f4f6'}
                 disabled={isSaving}
               />
             </View>
@@ -193,17 +215,19 @@ export default function NotificationsSettingsScreen() {
 
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="chatbubble-outline" size={24} color="#6b7280" />
+                <View style={styles.iconCircle}>
+                  <Ionicons name="chatbubble" size={20} color={colors.accent.DEFAULT} />
+                </View>
                 <View style={styles.settingText}>
                   <Text style={styles.settingLabel}>Messages</Text>
-                  <Text style={styles.settingDescription}>Messages from dispatchers</Text>
+                  <Text style={styles.settingDescription}>
+                    Messages from dispatchers
+                  </Text>
                 </View>
               </View>
-              <Switch
+              <CustomSwitch
                 value={messages}
                 onValueChange={() => handleToggle(setMessages, messages, 'messages')}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={messages ? '#3b82f6' : '#f3f4f6'}
                 disabled={isSaving}
               />
             </View>
@@ -212,29 +236,35 @@ export default function NotificationsSettingsScreen() {
 
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="information-circle-outline" size={24} color="#6b7280" />
+                <View style={styles.iconCircle}>
+                  <Ionicons name="information-circle" size={20} color={colors.accent.DEFAULT} />
+                </View>
                 <View style={styles.settingText}>
                   <Text style={styles.settingLabel}>System Updates</Text>
-                  <Text style={styles.settingDescription}>App updates and announcements</Text>
+                  <Text style={styles.settingDescription}>
+                    App updates and announcements
+                  </Text>
                 </View>
               </View>
-              <Switch
+              <CustomSwitch
                 value={systemUpdates}
                 onValueChange={() => handleToggle(setSystemUpdates, systemUpdates, 'systemUpdates')}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={systemUpdates ? '#3b82f6' : '#f3f4f6'}
                 disabled={isSaving}
               />
             </View>
-          </View>
+          </Card>
         </View>
 
         {isSaving && (
           <View style={styles.savingIndicator}>
-            <ActivityIndicator size="small" color="#3b82f6" />
-            <Text style={styles.savingText}>Saving preferences...</Text>
+            <View style={styles.savingBadge}>
+              <ActivityIndicator size="small" color={colors.accent.DEFAULT} />
+              <Text style={styles.savingText}>Saving preferences...</Text>
+            </View>
           </View>
         )}
+
+        <View style={{ height: spacing['2xl'] }} />
       </ScrollView>
     </View>
   );
@@ -243,7 +273,7 @@ export default function NotificationsSettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.background.secondary,
   },
   centerContent: {
     justifyContent: 'center',
@@ -253,68 +283,83 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loadingText: {
-    marginTop: 12,
-    fontSize: 14,
-    color: '#6b7280',
+    marginTop: spacing.md,
+    fontSize: typography.fontSize.sm,
+    color: colors.text.secondary,
+    fontWeight: typography.fontWeight.medium,
   },
   section: {
-    padding: 16,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xl,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 12,
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.text.primary,
+    marginBottom: spacing.md,
+    letterSpacing: -0.5,
   },
   card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginBottom: spacing.md,
   },
   settingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 4,
+    paddingVertical: spacing.xs,
   },
   settingInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
     flex: 1,
-    marginRight: 16,
+    marginRight: spacing.lg,
+    gap: spacing.md,
+  },
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.background.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadows.sm,
   },
   settingText: {
     flex: 1,
   },
   settingLabel: {
-    fontSize: 16,
-    color: '#1f2937',
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.semibold,
+    color: colors.text.primary,
     marginBottom: 2,
   },
   settingDescription: {
-    fontSize: 13,
-    color: '#6b7280',
+    fontSize: typography.fontSize.sm,
+    color: colors.text.tertiary,
+    lineHeight: typography.fontSize.sm * typography.lineHeight.normal,
   },
   divider: {
     height: 1,
-    backgroundColor: '#e5e7eb',
-    marginVertical: 16,
+    backgroundColor: colors.border.DEFAULT,
+    marginVertical: spacing.lg,
   },
   savingIndicator: {
+    alignItems: 'center',
+    paddingVertical: spacing.lg,
+  },
+  savingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    gap: 8,
+    gap: spacing.sm,
+    backgroundColor: colors.background.elevated,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.full,
+    ...shadows.md,
   },
   savingText: {
-    fontSize: 14,
-    color: '#6b7280',
+    fontSize: typography.fontSize.sm,
+    color: colors.accent.DEFAULT,
+    fontWeight: typography.fontWeight.medium,
   },
 });

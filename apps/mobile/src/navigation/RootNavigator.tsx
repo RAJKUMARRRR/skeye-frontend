@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ActivityIndicator, View } from 'react-native';
 import MainTabNavigator from './MainTabNavigator';
@@ -11,6 +11,15 @@ import LocationSettingsScreen from '../features/settings/screens/LocationSetting
 import LanguageSettingsScreen from '../features/settings/screens/LanguageSettingsScreen';
 import HelpSupportScreen from '../features/settings/screens/HelpSupportScreen';
 import { useAuth } from '../contexts/AuthContext';
+
+// Custom theme with teal accent color
+const NavigationTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#14b8a6', // Teal color for interactive elements
+  },
+};
 
 export type RootStackParamList = {
   Login: undefined;
@@ -33,13 +42,14 @@ export default function RootNavigator() {
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <ActivityIndicator size="large" color="#14b8a6" />
       </View>
     );
   }
 
   return (
     <NavigationContainer
+      theme={NavigationTheme}
       linking={{
         prefixes: ['fleet-driver://'],
         config: {
@@ -58,7 +68,12 @@ export default function RootNavigator() {
         },
       }}
     >
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          headerTintColor: '#14b8a6', // Teal color for back button and title
+        }}
+      >
         {!isAuthenticated ? (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />

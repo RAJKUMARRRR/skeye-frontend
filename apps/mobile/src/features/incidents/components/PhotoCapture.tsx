@@ -101,7 +101,7 @@ export function PhotoCapture({ onPhotoCapture, photos, maxPhotos = 5 }: PhotoCap
               onPress={takePhoto}
               disabled={isLoading}
             >
-              <Ionicons name="camera" size={24} color="#3b82f6" />
+              <Ionicons name="camera" size={24} color="#14b8a6" />
               <Text style={styles.addButtonText}>Take Photo</Text>
             </TouchableOpacity>
 
@@ -110,7 +110,7 @@ export function PhotoCapture({ onPhotoCapture, photos, maxPhotos = 5 }: PhotoCap
               onPress={pickFromGallery}
               disabled={isLoading}
             >
-              <Ionicons name="images" size={24} color="#3b82f6" />
+              <Ionicons name="images" size={24} color="#14b8a6" />
               <Text style={styles.addButtonText}>Choose Photo</Text>
             </TouchableOpacity>
           </View>
@@ -170,14 +170,14 @@ const styles = StyleSheet.create({
     width: 100,
     height: 46,
     borderWidth: 2,
-    borderColor: '#3b82f6',
+    borderColor: '#14b8a6',
     borderRadius: 8,
     borderStyle: 'dashed',
     gap: 4,
   },
   addButtonText: {
     fontSize: 11,
-    color: '#3b82f6',
+    color: '#14b8a6',
     fontWeight: '600',
   },
   helpText: {

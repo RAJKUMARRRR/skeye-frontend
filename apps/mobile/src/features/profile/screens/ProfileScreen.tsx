@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../navigation/RootNavigator';
 import * as NetInfo from '@react-native-community/netinfo';
+import { colors } from '@fleet/ui-mobile';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -61,9 +62,9 @@ export default function ProfileScreen() {
       case 'pending':
         return '#f59e0b';
       case 'syncing':
-        return '#3b82f6';
+        return colors.accent.DEFAULT;
       default:
-        return '#6b7280';
+        return colors.text.secondary;
     }
   };
 
@@ -107,22 +108,22 @@ export default function ProfileScreen() {
           <Text style={styles.sectionTitle}>Performance Stats</Text>
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
-              <Ionicons name="car-sport" size={32} color="#3b82f6" />
+              <Ionicons name="car-sport" size={32} color={colors.accent.DEFAULT} />
               <Text style={styles.statValue}>{stats.tripsCompleted}</Text>
               <Text style={styles.statLabel}>Trips</Text>
             </View>
             <View style={styles.statCard}>
-              <Ionicons name="speedometer" size={32} color="#10b981" />
+              <Ionicons name="speedometer" size={32} color={colors.accent.DEFAULT} />
               <Text style={styles.statValue}>{stats.totalMiles.toLocaleString()}</Text>
               <Text style={styles.statLabel}>Miles</Text>
             </View>
             <View style={styles.statCard}>
-              <Ionicons name="time" size={32} color="#f59e0b" />
+              <Ionicons name="time" size={32} color={colors.accent.DEFAULT} />
               <Text style={styles.statValue}>{stats.onTimeDeliveries}%</Text>
               <Text style={styles.statLabel}>On Time</Text>
             </View>
             <View style={styles.statCard}>
-              <Ionicons name="shield-checkmark" size={32} color="#6366f1" />
+              <Ionicons name="shield-checkmark" size={32} color={colors.accent.DEFAULT} />
               <Text style={styles.statValue}>{stats.safetyScore}</Text>
               <Text style={styles.statLabel}>Safety</Text>
             </View>
@@ -152,7 +153,7 @@ export default function ProfileScreen() {
                 onPress={handleSync}
                 disabled={syncStatus === 'syncing'}
               >
-                <Ionicons name="refresh" size={20} color="#3b82f6" />
+                <Ionicons name="refresh" size={20} color={colors.accent.DEFAULT} />
               </TouchableOpacity>
             </View>
 
@@ -179,8 +180,8 @@ export default function ProfileScreen() {
               <Switch
                 value={offlineMode}
                 onValueChange={setOfflineMode}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={offlineMode ? '#3b82f6' : '#f3f4f6'}
+                trackColor={{ false: '#d1d5db', true: colors.accent.light }}
+                thumbColor={offlineMode ? colors.accent.DEFAULT : '#f3f4f6'}
               />
             </View>
           </View>
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.accent.DEFAULT,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -402,7 +403,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#eff6ff',
+    backgroundColor: colors.accent.light,
     alignItems: 'center',
     justifyContent: 'center',
   },

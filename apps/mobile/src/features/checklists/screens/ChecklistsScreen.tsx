@@ -13,6 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../navigation/RootNavigator';
+import { colors } from '@fleet/ui-mobile';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -184,7 +185,7 @@ export default function ChecklistsScreen() {
             style={styles.retakeButton}
             onPress={() => handlePhotoCapture(sectionIndex, itemIndex)}
           >
-            <Ionicons name="camera" size={16} color="#3b82f6" />
+            <Ionicons name="camera" size={16} color={colors.accent.DEFAULT} />
             <Text style={styles.retakeButtonText}>Retake</Text>
           </TouchableOpacity>
         </View>
@@ -193,7 +194,7 @@ export default function ChecklistsScreen() {
           style={styles.captureButton}
           onPress={() => handlePhotoCapture(sectionIndex, itemIndex)}
         >
-          <Ionicons name="camera" size={20} color="#3b82f6" />
+          <Ionicons name="camera" size={20} color="#ffffff" />
           <Text style={styles.captureButtonText}>Take Photo</Text>
         </TouchableOpacity>
       )}
@@ -216,7 +217,7 @@ export default function ChecklistsScreen() {
             style={styles.retakeButton}
             onPress={() => handleSignature(sectionIndex, itemIndex)}
           >
-            <Ionicons name="create" size={16} color="#3b82f6" />
+            <Ionicons name="create" size={16} color={colors.accent.DEFAULT} />
             <Text style={styles.retakeButtonText}>Update</Text>
           </TouchableOpacity>
         </View>
@@ -225,7 +226,7 @@ export default function ChecklistsScreen() {
           style={styles.signatureButton}
           onPress={() => handleSignature(sectionIndex, itemIndex)}
         >
-          <Ionicons name="create" size={20} color="#3b82f6" />
+          <Ionicons name="create" size={20} color="#ffffff" />
           <Text style={styles.signatureButtonText}>Add Signature</Text>
         </TouchableOpacity>
       )}
@@ -326,12 +327,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   typeButtonActive: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.accent.DEFAULT,
   },
   typeButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.text.secondary,
   },
   typeButtonTextActive: {
     color: '#ffffff',
@@ -395,14 +396,12 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 10,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#3b82f6',
-    backgroundColor: '#eff6ff',
+    backgroundColor: colors.accent.DEFAULT,
   },
   captureButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3b82f6',
+    color: '#ffffff',
   },
   photoPreview: {
     gap: 8,
@@ -420,13 +419,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#3b82f6',
+    borderColor: colors.accent.DEFAULT,
     backgroundColor: '#ffffff',
   },
   retakeButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3b82f6',
+    color: colors.accent.DEFAULT,
   },
   signatureButton: {
     flexDirection: 'row',
@@ -435,14 +434,12 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 10,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#3b82f6',
-    backgroundColor: '#eff6ff',
+    backgroundColor: colors.accent.DEFAULT,
   },
   signatureButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3b82f6',
+    color: '#ffffff',
   },
   signaturePreview: {
     gap: 8,

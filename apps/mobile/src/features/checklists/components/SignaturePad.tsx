@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     flex: 2,
     paddingVertical: 12,
     borderRadius: 8,
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#14b8a6',
     alignItems: 'center',
   },
   saveButtonText: {

@@ -1,21 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
   Alert,
   ScrollView,
+  TouchableOpacity,
+  Animated,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSignIn } from '@clerk/clerk-expo';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../../navigation/RootNavigator';
+import {
+  Button,
+  Card,
+  Input,
+  colors,
+  spacing,
+  typography,
+  borderRadius,
+} from '@fleet/ui-mobile';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -29,6 +38,47 @@ export default function ForgotPasswordScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<'email' | 'reset'>('email');
+
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+
+  useEffect(() => {
+    // Entrance animations
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        tension: 20,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [fadeAnim, slideAnim]);
+
+  // Reset animations when step changes
+  useEffect(() => {
+    fadeAnim.setValue(0);
+    slideAnim.setValue(30);
+
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        tension: 20,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [step]);
 
   const handleSendCode = async () => {
     if (!email) {
@@ -102,218 +152,256 @@ export default function ForgotPasswordScreen() {
     }
   };
 
+  const handleBack = () => {
+    if (step === 'reset') {
+      setStep('email');
+    } else {
+      navigation.goBack();
+    }
+  };
+
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.content}>
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={() => {
-                if (step === 'reset') {
-                  setStep('email');
-                } else {
-                  navigation.goBack();
-                }
-              }}
-              style={styles.backButton}
-            >
-              <Ionicons name="arrow-back" size={24} color="#1f2937" />
-            </TouchableOpacity>
-            <Ionicons name="key" size={64} color="#14b8a6" />
-            <Text style={styles.title}>
-              {step === 'email' ? 'Forgot Password?' : 'Reset Password'}
-            </Text>
-            <Text style={styles.subtitle}>
-              {step === 'email'
-                ? 'Enter your email to receive a reset code'
-                : 'Enter the code and your new password'}
-            </Text>
-          </View>
+    <View style={styles.container}>
+      {/* Premium gradient background */}
+      <LinearGradient
+        colors={colors.gradients.primaryTeal}
+        locations={[0, 0.5, 1]}
+        style={StyleSheet.absoluteFill}
+      />
 
-          {/* Form */}
-          {step === 'email' ? (
-            <View style={styles.form}>
-              <View style={styles.inputContainer}>
-                <Ionicons name="mail-outline" size={20} color="#6b7280" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Email"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  autoFocus
-                />
-              </View>
-
-              <TouchableOpacity
-                style={[styles.button, isLoading && styles.buttonDisabled]}
-                onPress={handleSendCode}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <ActivityIndicator color="#ffffff" />
-                ) : (
-                  <Text style={styles.buttonText}>Send Reset Code</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.form}>
-              <View style={styles.inputContainer}>
-                <Ionicons name="shield-checkmark-outline" size={20} color="#6b7280" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Reset Code"
-                  value={code}
-                  onChangeText={setCode}
-                  autoCapitalize="none"
-                  autoComplete="off"
-                  autoFocus
-                />
-              </View>
-
-              <View style={styles.inputContainer}>
-                <Ionicons name="lock-closed-outline" size={20} color="#6b7280" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="New Password"
-                  value={newPassword}
-                  onChangeText={setNewPassword}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  autoComplete="password-new"
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={styles.passwordToggle}
-                >
-                  <Ionicons
-                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                    size={20}
-                    color="#6b7280"
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <TouchableOpacity
-                style={[styles.button, isLoading && styles.buttonDisabled]}
-                onPress={handleResetPassword}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <ActivityIndicator color="#ffffff" />
-                ) : (
-                  <Text style={styles.buttonText}>Reset Password</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {/* Back to Login */}
-          <TouchableOpacity
-            style={styles.backToLogin}
-            onPress={() => navigation.goBack()}
+      <KeyboardAvoidingView
+        style={styles.content}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Animated.View
+            style={[
+              styles.innerContent,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }],
+              },
+            ]}
           >
-            <Ionicons name="arrow-back" size={16} color="#3b82f6" />
-            <Text style={styles.backToLoginText}>Back to Login</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            {/* Back button */}
+            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+              <View style={styles.backButtonInner}>
+                <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
+              </View>
+            </TouchableOpacity>
+
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.iconContainer}>
+                <LinearGradient
+                  colors={colors.gradients.tealGlow}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.iconGradient}
+                >
+                  <Ionicons name="key" size={40} color={colors.text.primary} />
+                </LinearGradient>
+              </View>
+
+              <Text style={styles.title}>
+                {step === 'email' ? 'Forgot Password?' : 'Reset Password'}
+              </Text>
+              <Text style={styles.subtitle}>
+                {step === 'email'
+                  ? 'Enter your email to receive a reset code'
+                  : 'Enter the code and your new password'}
+              </Text>
+            </View>
+
+            {/* Form card */}
+            <Card variant="glass" padding="lg" style={styles.formCard}>
+              <View style={styles.form}>
+                {step === 'email' ? (
+                  <>
+                    <Input
+                      label="Email"
+                      value={email}
+                      onChangeText={setEmail}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      autoComplete="email"
+                      leftIcon={
+                        <Ionicons name="mail-outline" size={20} color={colors.text.secondary} />
+                      }
+                    />
+
+                    <Button
+                      onPress={handleSendCode}
+                      loading={isLoading}
+                      disabled={isLoading}
+                      variant="primary"
+                      size="lg"
+                      fullWidth
+                      style={{ marginTop: spacing.lg }}
+                    >
+                      Send Reset Code
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Input
+                      label="Reset Code"
+                      value={code}
+                      onChangeText={setCode}
+                      autoCapitalize="none"
+                      autoComplete="off"
+                      leftIcon={
+                        <Ionicons
+                          name="shield-checkmark-outline"
+                          size={20}
+                          color={colors.text.secondary}
+                        />
+                      }
+                    />
+
+                    <Input
+                      label="New Password"
+                      value={newPassword}
+                      onChangeText={setNewPassword}
+                      secureTextEntry={!showPassword}
+                      autoCapitalize="none"
+                      autoComplete="password-new"
+                      leftIcon={
+                        <Ionicons
+                          name="lock-closed-outline"
+                          size={20}
+                          color={colors.text.secondary}
+                        />
+                      }
+                      rightIcon={
+                        <Ionicons
+                          name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                          size={20}
+                          color={colors.text.secondary}
+                        />
+                      }
+                      onRightIconPress={() => setShowPassword(!showPassword)}
+                      containerStyle={{ marginTop: spacing.base }}
+                    />
+
+                    <Button
+                      onPress={handleResetPassword}
+                      loading={isLoading}
+                      disabled={isLoading}
+                      variant="primary"
+                      size="lg"
+                      fullWidth
+                      style={{ marginTop: spacing.lg }}
+                    >
+                      Reset Password
+                    </Button>
+                  </>
+                )}
+              </View>
+            </Card>
+
+            {/* Back to login */}
+            <TouchableOpacity
+              style={styles.backToLogin}
+              onPress={() => navigation.goBack()}
+            >
+              <Ionicons name="arrow-back" size={16} color={colors.accent.DEFAULT} />
+              <Text style={styles.backToLoginText}>Back to Login</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+  },
+  content: {
+    flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
   },
-  content: {
+  innerContent: {
     flex: 1,
-    padding: 24,
+    padding: spacing.lg,
     justifyContent: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 48,
+    paddingTop: spacing['3xl'],
   },
   backButton: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    padding: 8,
-    zIndex: 1,
+    top: spacing.lg,
+    left: spacing.lg,
+    zIndex: 10,
+  },
+  backButtonInner: {
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.background.card,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border.light,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: spacing['2xl'],
+  },
+  iconContainer: {
+    marginBottom: spacing.lg,
+  },
+  iconGradient: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: colors.accent.DEFAULT,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    elevation: 8,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginTop: 16,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6b7280',
-    marginTop: 8,
+    fontSize: typography.fontSize['3xl'],
+    fontWeight: typography.fontWeight.bold,
+    color: colors.text.inverse,
+    marginBottom: spacing.sm,
     textAlign: 'center',
   },
+  subtitle: {
+    fontSize: typography.fontSize.base,
+    color: colors.text.inverse,
+    opacity: 0.9,
+    textAlign: 'center',
+    paddingHorizontal: spacing.lg,
+  },
+  formCard: {
+    marginBottom: spacing.lg,
+  },
   form: {
-    gap: 16,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#f9fafb',
-  },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    height: 48,
-    fontSize: 16,
-    color: '#1f2937',
-  },
-  passwordToggle: {
-    padding: 8,
-  },
-  button: {
-    backgroundColor: '#3b82f6',
-    height: 48,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
+    width: '100%',
   },
   backToLogin: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 24,
-    gap: 8,
+    gap: spacing.sm,
+    marginTop: spacing.lg,
+    padding: spacing.md,
   },
   backToLoginText: {
-    color: '#3b82f6',
-    fontSize: 14,
+    color: colors.accent.DEFAULT,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
   },
 });

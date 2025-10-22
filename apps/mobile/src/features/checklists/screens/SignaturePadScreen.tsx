@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#3b82f6',
+    borderColor: '#14b8a6',
     borderStyle: 'dashed',
     overflow: 'hidden',
     marginBottom: 16,
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 16,
     borderRadius: 12,
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#14b8a6',
   },
   saveButtonText: {
     color: '#ffffff',

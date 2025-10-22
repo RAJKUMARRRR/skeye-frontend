@@ -1,20 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
   Alert,
+  Animated,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSignIn } from '@clerk/clerk-expo';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../../navigation/RootNavigator';
+import {
+  Button,
+  Card,
+  Input,
+  colors,
+  spacing,
+  typography,
+} from '@fleet/ui-mobile';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -26,6 +33,44 @@ export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
   const { signIn, setActive, isLoaded } = useSignIn();
+
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  const logoRotate = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Entrance animations
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        tension: 20,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Logo pulse animation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(logoRotate, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(logoRotate, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [fadeAnim, slideAnim, logoRotate]);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -50,187 +95,191 @@ export default function LoginScreen() {
       }
     } catch (error: any) {
       console.error('Login error:', error);
-      const errorMessage = error?.errors?.[0]?.longMessage || error?.errors?.[0]?.message || 'Login failed. Please try again.';
+      const errorMessage =
+        error?.errors?.[0]?.longMessage ||
+        error?.errors?.[0]?.message ||
+        'Login failed. Please try again.';
       Alert.alert('Error', errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const logoScale = logoRotate.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 1.1, 1],
+  });
+
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <Ionicons name="flash" size={64} color="#14b8a6" />
-          <Text style={styles.title}>Skeye Driver</Text>
-          <Text style={styles.subtitle}>Sign in to continue</Text>
-        </View>
+    <View style={styles.container}>
+      {/* Premium gradient background */}
+      <LinearGradient
+        colors={colors.gradients.primaryTeal}
+        locations={[0, 0.5, 1]}
+        style={StyleSheet.absoluteFill}
+      />
 
-        <View style={styles.form}>
-          <View style={styles.inputContainer}>
-            <Ionicons name="mail-outline" size={20} color="#6b7280" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="#6b7280" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-              autoCapitalize="none"
-              autoComplete="password"
-            />
-            <TouchableOpacity
-              onPress={() => setShowPassword(!showPassword)}
-              style={styles.passwordToggle}
-            >
-              <Ionicons
-                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                size={20}
-                color="#6b7280"
-              />
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity
-            style={[styles.button, isLoading && styles.buttonDisabled]}
-            onPress={handleLogin}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#ffffff" />
-            ) : (
-              <Text style={styles.buttonText}>Sign In</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity
-          style={styles.forgotPassword}
-          onPress={() => navigation.navigate('ForgotPassword')}
+      <KeyboardAvoidingView
+        style={styles.content}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <Animated.View
+          style={[
+            styles.innerContent,
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }],
+            },
+          ]}
         >
-          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+          {/* Logo and header */}
+          <View style={styles.header}>
+            <Animated.View
+              style={{
+                transform: [{ scale: logoScale }],
+              }}
+            >
+              <View style={styles.logoContainer}>
+                <LinearGradient
+                  colors={colors.gradients.tealGlow}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.logoGradient}
+                >
+                  <Ionicons name="flash" size={48} color={colors.text.inverse} />
+                </LinearGradient>
+              </View>
+            </Animated.View>
+
+            <Text style={styles.title}>Skeye Driver</Text>
+            <Text style={styles.subtitle}>Welcome back, sign in to continue</Text>
+          </View>
+
+          {/* Login form card */}
+          <Card variant="glass" padding="lg" style={styles.formCard}>
+            <View style={styles.form}>
+              <Input
+                label="Email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                leftIcon={
+                  <Ionicons name="mail-outline" size={20} color={colors.text.secondary} />
+                }
+              />
+
+              <Input
+                label="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                autoComplete="password"
+                leftIcon={
+                  <Ionicons name="lock-closed-outline" size={20} color={colors.text.secondary} />
+                }
+                rightIcon={
+                  <Ionicons
+                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                    size={20}
+                    color={colors.text.secondary}
+                  />
+                }
+                onRightIconPress={() => setShowPassword(!showPassword)}
+                containerStyle={{ marginTop: spacing.base }}
+              />
+
+              <Button
+                onPress={handleLogin}
+                loading={isLoading}
+                disabled={isLoading}
+                variant="primary"
+                size="lg"
+                fullWidth
+                style={{ marginTop: spacing.lg }}
+              >
+                Sign In
+              </Button>
+
+              <Button
+                onPress={() => navigation.navigate('ForgotPassword')}
+                variant="ghost"
+                size="md"
+                fullWidth
+                style={{ marginTop: spacing.md }}
+              >
+                Forgot Password?
+              </Button>
+            </View>
+          </Card>
+
+          {/* Footer text */}
+          <Text style={styles.footerText}>
+            Powered by Skeye Fleet Management
+          </Text>
+        </Animated.View>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
   },
   content: {
     flex: 1,
-    padding: 24,
+  },
+  innerContent: {
+    flex: 1,
+    padding: spacing.lg,
     justifyContent: 'center',
   },
   header: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: spacing['2xl'],
+  },
+  logoContainer: {
+    marginBottom: spacing.lg,
+  },
+  logoGradient: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: colors.accent.DEFAULT,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 20,
+    elevation: 10,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginTop: 16,
+    fontSize: typography.fontSize['4xl'],
+    fontWeight: typography.fontWeight.bold,
+    color: colors.text.inverse,
+    marginBottom: spacing.sm,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#6b7280',
-    marginTop: 8,
+    fontSize: typography.fontSize.base,
+    color: colors.text.inverse,
+    opacity: 0.9,
+    textAlign: 'center',
+  },
+  formCard: {
+    marginBottom: spacing.lg,
   },
   form: {
-    gap: 16,
+    width: '100%',
   },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#f9fafb',
-  },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    height: 48,
-    fontSize: 16,
-    color: '#1f2937',
-  },
-  passwordToggle: {
-    padding: 8,
-  },
-  button: {
-    backgroundColor: '#3b82f6',
-    height: 48,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 16,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#d1d5db',
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    color: '#6b7280',
-    fontSize: 14,
-  },
-  biometricButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#3b82f6',
-    borderRadius: 8,
-    gap: 8,
-  },
-  biometricButtonText: {
-    color: '#3b82f6',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  forgotPassword: {
-    alignItems: 'center',
-    marginTop: 24,
-  },
-  forgotPasswordText: {
-    color: '#3b82f6',
-    fontSize: 14,
+  footerText: {
+    textAlign: 'center',
+    color: colors.text.inverse,
+    opacity: 0.7,
+    fontSize: typography.fontSize.xs,
+    marginTop: spacing.xl,
   },
 });

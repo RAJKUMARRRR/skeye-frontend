@@ -210,12 +210,15 @@ export default function LoginScreen() {
                 Sign In
               </Button>
 
-              <TouchableOpacity
+              <Button
                 onPress={() => navigation.navigate('ForgotPassword')}
-                style={styles.forgotPasswordButton}
+                variant="ghost"
+                size="md"
+                fullWidth
+                style={{ marginTop: spacing.md }}
               >
-                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-              </TouchableOpacity>
+                Forgot Password?
+              </Button>
             </View>
           </Card>
 
@@ -301,16 +304,6 @@ const styles = StyleSheet.create({
   eyeIcon: {
     padding: spacing.xs,
     marginLeft: spacing.xs,
-  },
-  forgotPasswordButton: {
-    marginTop: spacing.md,
-    paddingVertical: spacing.sm,
-    alignItems: 'center',
-  },
-  forgotPasswordText: {
-    fontSize: typography.fontSize.base,
-    color: colors.accent.DEFAULT,
-    fontWeight: typography.fontWeight.semibold,
   },
   footerText: {
     textAlign: 'center',

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
@@ -19,7 +20,6 @@ import type { RootStackParamList } from '../../../navigation/RootNavigator';
 import {
   Button,
   Card,
-  Input,
   colors,
   spacing,
   typography,
@@ -174,6 +174,11 @@ export default function ForgotPasswordScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
+        {/* Back button - outside animated view to prevent glitches */}
+        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color={colors.text.inverse} />
+        </TouchableOpacity>
+
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
@@ -188,13 +193,6 @@ export default function ForgotPasswordScreen() {
               },
             ]}
           >
-            {/* Back button */}
-            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-              <View style={styles.backButtonInner}>
-                <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
-              </View>
-            </TouchableOpacity>
-
             {/* Header */}
             <View style={styles.header}>
               <View style={styles.iconContainer}>
@@ -223,17 +221,19 @@ export default function ForgotPasswordScreen() {
               <View style={styles.form}>
                 {step === 'email' ? (
                   <>
-                    <Input
-                      label="Email"
-                      value={email}
-                      onChangeText={setEmail}
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      autoComplete="email"
-                      leftIcon={
-                        <Ionicons name="mail-outline" size={20} color={colors.text.secondary} />
-                      }
-                    />
+                    <View style={styles.inputContainer}>
+                      <Ionicons name="mail-outline" size={20} color={colors.text.secondary} style={styles.inputIcon} />
+                      <TextInput
+                        style={styles.input}
+                        placeholder="Email"
+                        placeholderTextColor={colors.text.muted}
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        autoComplete="email"
+                      />
+                    </View>
 
                     <Button
                       onPress={handleSendCode}
@@ -249,45 +249,39 @@ export default function ForgotPasswordScreen() {
                   </>
                 ) : (
                   <>
-                    <Input
-                      label="Reset Code"
-                      value={code}
-                      onChangeText={setCode}
-                      autoCapitalize="none"
-                      autoComplete="off"
-                      leftIcon={
-                        <Ionicons
-                          name="shield-checkmark-outline"
-                          size={20}
-                          color={colors.text.secondary}
-                        />
-                      }
-                    />
+                    <View style={styles.inputContainer}>
+                      <Ionicons name="shield-checkmark-outline" size={20} color={colors.text.secondary} style={styles.inputIcon} />
+                      <TextInput
+                        style={styles.input}
+                        placeholder="Reset Code"
+                        placeholderTextColor={colors.text.muted}
+                        value={code}
+                        onChangeText={setCode}
+                        autoCapitalize="none"
+                        autoComplete="off"
+                      />
+                    </View>
 
-                    <Input
-                      label="New Password"
-                      value={newPassword}
-                      onChangeText={setNewPassword}
-                      secureTextEntry={!showPassword}
-                      autoCapitalize="none"
-                      autoComplete="password-new"
-                      leftIcon={
-                        <Ionicons
-                          name="lock-closed-outline"
-                          size={20}
-                          color={colors.text.secondary}
-                        />
-                      }
-                      rightIcon={
+                    <View style={[styles.inputContainer, { marginTop: spacing.md }]}>
+                      <Ionicons name="lock-closed-outline" size={20} color={colors.text.secondary} style={styles.inputIcon} />
+                      <TextInput
+                        style={styles.input}
+                        placeholder="New Password"
+                        placeholderTextColor={colors.text.muted}
+                        value={newPassword}
+                        onChangeText={setNewPassword}
+                        secureTextEntry={!showPassword}
+                        autoCapitalize="none"
+                        autoComplete="password-new"
+                      />
+                      <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
                         <Ionicons
                           name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                           size={20}
                           color={colors.text.secondary}
                         />
-                      }
-                      onRightIconPress={() => setShowPassword(!showPassword)}
-                      containerStyle={{ marginTop: spacing.base }}
-                    />
+                      </TouchableOpacity>
+                    </View>
 
                     <Button
                       onPress={handleResetPassword}
@@ -338,19 +332,15 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: spacing.lg,
+    top: Platform.OS === 'ios' ? 60 : spacing.lg,
     left: spacing.lg,
-    zIndex: 10,
-  },
-  backButtonInner: {
+    zIndex: 100,
     width: 44,
     height: 44,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.background.card,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.border.light,
   },
   header: {
     alignItems: 'center',
@@ -403,5 +393,29 @@ const styles = StyleSheet.create({
     color: colors.accent.DEFAULT,
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.medium,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.background.card,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1.5,
+    borderColor: colors.border.DEFAULT,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.md,
+    minHeight: 56,
+  },
+  inputIcon: {
+    marginRight: spacing.sm,
+  },
+  input: {
+    flex: 1,
+    fontSize: typography.fontSize.base,
+    color: colors.text.primary,
+    paddingVertical: spacing.md,
+  },
+  eyeIcon: {
+    padding: spacing.xs,
+    marginLeft: spacing.xs,
   },
 });

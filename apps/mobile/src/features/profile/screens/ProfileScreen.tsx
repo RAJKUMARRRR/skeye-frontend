@@ -153,7 +153,7 @@ export default function ProfileScreen() {
                 onPress={handleSync}
                 disabled={syncStatus === 'syncing'}
               >
-                <Ionicons name="refresh" size={20} color={colors.accent.DEFAULT} />
+                <Ionicons name="refresh" size={20} color="#ffffff" />
               </TouchableOpacity>
             </View>
 

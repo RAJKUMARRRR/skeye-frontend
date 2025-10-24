@@ -63,7 +63,7 @@ export function Button({
     if (loading) {
       return (
         <ActivityIndicator
-          color={variant === 'primary' ? colors.text.primary : colors.accent.DEFAULT}
+          color={variant === 'primary' ? '#ffffff' : colors.accent.DEFAULT}
         />
       );
     }
@@ -194,7 +194,7 @@ const variantStyles = StyleSheet.create({
       ...shadows.md,
     },
     text: {
-      color: colors.text.primary,
+      color: '#ffffff',
     },
   },
   secondary: {

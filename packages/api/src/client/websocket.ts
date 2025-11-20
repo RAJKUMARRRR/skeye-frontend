@@ -1,142 +1,173 @@
-import { io, Socket } from 'socket.io-client'
-import { WS_CONFIG, USE_MOCK_API } from './config'
+import { config } from '../config'
 
-type EventCallback = (data: any) => void
-
-class WebSocketClient {
-  private socket: Socket | null = null
-  private reconnectAttempts = 0
-  private eventHandlers: Map<string, Set<EventCallback>> = new Map()
-  private mockMode = USE_MOCK_API
-
-  connect(token?: string): Socket {
-    if (this.mockMode) {
-      console.log('[WebSocket] Running in mock mode')
-      return this.connectMock()
+// WebSocket telemetry event structure (actual format from backend)
+export interface TelemetryEvent {
+  type: 'telemetry'
+  deviceId: string
+  timestamp: string
+  data: {
+    deviceId: string
+    timestamp: string
+    location: {
+      lat: number
+      lng: number
     }
-
-    if (this.socket?.connected) {
-      return this.socket
+    telemetry: {
+      altitude?: number
+      battery?: number
     }
-
-    this.socket = io(WS_CONFIG.url, {
-      auth: token ? { token } : undefined,
-      transports: ['websocket'],
-      reconnection: true,
-      reconnectionDelay: WS_CONFIG.reconnectDelay,
-      reconnectionDelayMax: WS_CONFIG.reconnectDelayMax,
-      reconnectionAttempts: WS_CONFIG.reconnectAttempts,
-    })
-
-    this.setupEventHandlers()
-    return this.socket
-  }
-
-  private connectMock(): Socket {
-    console.log('[WebSocket] Mock connection established')
-    return {} as Socket
-  }
-
-  private setupEventHandlers() {
-    if (!this.socket) return
-
-    this.socket.on('connect', () => {
-      console.log('[WebSocket] Connected')
-      this.reconnectAttempts = 0
-      this.emit('connection:established', { connected: true })
-    })
-
-    this.socket.on('disconnect', (reason) => {
-      console.log('[WebSocket] Disconnected:', reason)
-      this.emit('connection:lost', { reason })
-    })
-
-    this.socket.on('connect_error', (error) => {
-      console.error('[WebSocket] Connection error:', error.message)
-      this.reconnectAttempts++
-
-      if (this.reconnectAttempts >= WS_CONFIG.reconnectAttempts) {
-        console.error('[WebSocket] Max reconnection attempts reached')
-        this.emit('connection:failed', { error: error.message })
-      }
-    })
-  }
-
-  subscribe(channel: string, callback: EventCallback) {
-    if (this.mockMode) {
-      const handler = (e: CustomEvent) => callback(e.detail)
-      window.addEventListener(\`mock:\${channel}\`, handler as EventListener)
-      return
-    }
-
-    if (!this.socket) {
-      console.error('[WebSocket] Not connected. Call connect() first.')
-      return
-    }
-
-    this.socket.on(channel, callback)
-
-    if (!this.eventHandlers.has(channel)) {
-      this.eventHandlers.set(channel, new Set())
-    }
-    this.eventHandlers.get(channel)!.add(callback)
-  }
-
-  unsubscribe(channel: string, callback?: EventCallback) {
-    if (this.mockMode) {
-      if (callback) {
-        const handler = (e: CustomEvent) => callback(e.detail)
-        window.removeEventListener(\`mock:\${channel}\`, handler as EventListener)
-      }
-      return
-    }
-
-    if (!this.socket) return
-
-    if (callback) {
-      this.socket.off(channel, callback)
-      this.eventHandlers.get(channel)?.delete(callback)
-    } else {
-      this.socket.off(channel)
-      this.eventHandlers.delete(channel)
-    }
-  }
-
-  emit(event: string, data?: any) {
-    if (this.mockMode) {
-      console.log(\`[WebSocket Mock] Emit: \${event}\`, data)
-      return
-    }
-
-    if (!this.socket?.connected) {
-      console.warn('[WebSocket] Cannot emit - not connected')
-      return
-    }
-
-    this.socket.emit(event, data)
-  }
-
-  disconnect() {
-    if (this.socket) {
-      this.eventHandlers.forEach((_, channel) => {
-        this.socket?.off(channel)
-      })
-      this.eventHandlers.clear()
-
-      this.socket.disconnect()
-      this.socket = null
-    }
-  }
-
-  isConnected(): boolean {
-    return this.socket?.connected ?? false
-  }
-
-  getSocket(): Socket | null {
-    return this.socket
+    rawData: any
   }
 }
 
+// Normalized telemetry data for easier use
+export interface NormalizedTelemetry {
+  device_id: string
+  time: string
+  location_lat: number
+  location_lng: number
+  speed?: number
+  heading?: number
+  altitude?: number
+  satellites?: number
+  battery?: number
+}
+
+type EventCallback = (data: TelemetryEvent) => void
+
+class WebSocketClient {
+  private ws: WebSocket | null = null
+  private reconnectAttempts = 0
+  private maxReconnectDelay = 30000 // 30 seconds
+  private reconnectTimeout: NodeJS.Timeout | null = null
+  private eventHandlers: Set<EventCallback> = new Set()
+  private isConnecting = false
+  private authToken: string | null = null
+
+  setToken(token: string | null): void {
+    const tokenChanged = this.authToken !== token
+    this.authToken = token
+
+    if (tokenChanged) {
+      console.log('[WebSocket] Token updated, reconnecting...')
+      // Disconnect and reconnect with new token
+      if (this.ws) {
+        this.ws.close()
+      }
+      if (token) {
+        this.connect()
+      }
+    }
+  }
+
+  connect(): void {
+    if (this.isConnecting || (this.ws && this.ws.readyState === WebSocket.OPEN)) {
+      return
+    }
+
+    if (!this.authToken) {
+      console.warn('[WebSocket] No auth token, skipping connection')
+      return
+    }
+
+    this.isConnecting = true
+    const wsUrl = config.wsUrl.replace('http://', 'ws://').replace('https://', 'wss://')
+    const wsUrlWithToken = `${wsUrl}/ws?token=${this.authToken}`
+
+    try {
+      console.log('[WebSocket] Connecting to:', wsUrl + '/ws')
+      this.ws = new WebSocket(wsUrlWithToken)
+      this.setupEventHandlers()
+    } catch (error) {
+      console.error('[WebSocket] Failed to create connection:', error)
+      this.isConnecting = false
+      this.scheduleReconnect()
+    }
+  }
+
+  private setupEventHandlers() {
+    if (!this.ws) return
+
+    this.ws.onopen = () => {
+      console.log('[WebSocket] Connected')
+      this.reconnectAttempts = 0
+      this.isConnecting = false
+    }
+
+    this.ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data) as TelemetryEvent
+
+        if (data.type === 'telemetry') {
+          // Notify all event handlers
+          this.eventHandlers.forEach(handler => handler(data))
+        }
+      } catch (error) {
+        console.error('[WebSocket] Failed to parse message:', error)
+      }
+    }
+
+    this.ws.onerror = (error) => {
+      console.error('[WebSocket] Error:', error)
+      this.isConnecting = false
+    }
+
+    this.ws.onclose = () => {
+      console.log('[WebSocket] Disconnected')
+      this.isConnecting = false
+      this.scheduleReconnect()
+    }
+  }
+
+  private scheduleReconnect() {
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout)
+    }
+
+    // Exponential backoff: 1s, 2s, 4s, 8s, 16s, 30s
+    const delay = Math.min(
+      1000 * Math.pow(2, this.reconnectAttempts),
+      this.maxReconnectDelay
+    )
+    this.reconnectAttempts++
+
+    console.log(`[WebSocket] Reconnecting in ${delay}ms... (attempt ${this.reconnectAttempts})`)
+
+    this.reconnectTimeout = setTimeout(() => {
+      this.connect()
+    }, delay)
+  }
+
+  subscribe(callback: EventCallback) {
+    this.eventHandlers.add(callback)
+  }
+
+  unsubscribe(callback: EventCallback) {
+    this.eventHandlers.delete(callback)
+  }
+
+  disconnect() {
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout)
+      this.reconnectTimeout = null
+    }
+
+    if (this.ws) {
+      this.ws.close()
+      this.ws = null
+    }
+
+    this.isConnecting = false
+  }
+
+  isConnected(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN
+  }
+}
+
+// Singleton instance
 export const wsClient = new WebSocketClient()
+
+// Note: Don't auto-connect here - wait for token to be set from AuthContext
 
 export default wsClient

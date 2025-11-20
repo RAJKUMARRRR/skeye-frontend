@@ -1,152 +1,134 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { wsClient, type TelemetryEvent } from '@fleet/api'
 
-type WebSocketMessage = {
-  type: 'location_update' | 'alert' | 'trip_start' | 'trip_end' | 'status_change'
-  data: any
-}
-
-interface UseWebSocketOptions {
-  url?: string
-  onMessage?: (message: WebSocketMessage) => void
-  onError?: (error: Event) => void
-  reconnectInterval?: number
-}
-
-export function useWebSocket(options: UseWebSocketOptions = {}) {
-  const {
-    url = 'ws://localhost:8080/ws', // TODO: Use env variable
-    onMessage,
-    onError,
-    reconnectInterval = 5000,
-  } = options
-
-  const wsRef = useRef<WebSocket | null>(null)
-  const [isConnected, setIsConnected] = useState(false)
-  const [lastMessage, setLastMessage] = useState<WebSocketMessage | null>(null)
+/**
+ * Hook to automatically update vehicle locations from WebSocket telemetry
+ * Updates the vehicles query cache in real-time
+ */
+export function useVehicleLocationUpdates() {
   const queryClient = useQueryClient()
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>()
-
-  const connect = useCallback(() => {
-    try {
-      const ws = new WebSocket(url)
-
-      ws.onopen = () => {
-        console.log('WebSocket connected')
-        setIsConnected(true)
-        if (reconnectTimeoutRef.current) {
-          clearTimeout(reconnectTimeoutRef.current)
-        }
-      }
-
-      ws.onmessage = (event) => {
-        try {
-          const message: WebSocketMessage = JSON.parse(event.data)
-          setLastMessage(message)
-          onMessage?.(message)
-
-          // Auto-invalidate queries based on message type
-          switch (message.type) {
-            case 'location_update':
-              queryClient.invalidateQueries({ queryKey: ['vehicles'] })
-              if (message.data.vehicleId) {
-                queryClient.invalidateQueries({
-                  queryKey: ['vehicle', message.data.vehicleId, 'location']
-                })
-              }
-              break
-            case 'alert':
-              queryClient.invalidateQueries({ queryKey: ['alerts'] })
-              break
-            case 'trip_start':
-            case 'trip_end':
-              queryClient.invalidateQueries({ queryKey: ['trips'] })
-              break
-            case 'status_change':
-              if (message.data.vehicleId) {
-                queryClient.invalidateQueries({
-                  queryKey: ['vehicle', message.data.vehicleId]
-                })
-              }
-              break
-          }
-        } catch (error) {
-          console.error('Failed to parse WebSocket message:', error)
-        }
-      }
-
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error)
-        onError?.(error)
-      }
-
-      ws.onclose = () => {
-        console.log('WebSocket disconnected')
-        setIsConnected(false)
-        wsRef.current = null
-
-        // Attempt to reconnect
-        reconnectTimeoutRef.current = setTimeout(() => {
-          console.log('Attempting to reconnect WebSocket...')
-          connect()
-        }, reconnectInterval)
-      }
-
-      wsRef.current = ws
-    } catch (error) {
-      console.error('Failed to create WebSocket connection:', error)
-    }
-  }, [url, onMessage, onError, reconnectInterval, queryClient])
-
-  const disconnect = useCallback(() => {
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current)
-    }
-    if (wsRef.current) {
-      wsRef.current.close()
-      wsRef.current = null
-    }
-  }, [])
-
-  const sendMessage = useCallback((message: any) => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify(message))
-    } else {
-      console.warn('WebSocket is not connected')
-    }
-  }, [])
+  const [isConnected, setIsConnected] = useState(wsClient.isConnected())
 
   useEffect(() => {
-    connect()
-    return () => disconnect()
-  }, [connect, disconnect])
+    const handleTelemetryUpdate = (event: TelemetryEvent) => {
+      // Update vehicles query cache with new location data
+      queryClient.setQueryData(['vehicles'], (oldData: any) => {
+        if (!oldData) return oldData
 
-  return {
-    isConnected,
-    lastMessage,
-    sendMessage,
-    disconnect,
-    reconnect: connect,
-  }
+        return oldData.map((vehicle: any) => {
+          if (vehicle.device_id === event.device_id) {
+            return {
+              ...vehicle,
+              location: {
+                latitude: event.location_lat,
+                longitude: event.location_lng,
+                timestamp: event.time,
+              },
+              speed: event.speed,
+              heading: event.heading,
+              battery: event.battery,
+              last_seen: event.time,
+              status: 'active', // Device is active if sending telemetry
+            }
+          }
+          return vehicle
+        })
+      })
+
+      // Also update individual vehicle query if it exists
+      queryClient.setQueryData(['vehicle', event.device_id], (oldData: any) => {
+        if (!oldData) return oldData
+
+        return {
+          ...oldData,
+          location: {
+            latitude: event.location_lat,
+            longitude: event.location_lng,
+            timestamp: event.time,
+          },
+          speed: event.speed,
+          heading: event.heading,
+          battery: event.battery,
+          last_seen: event.time,
+          status: 'active',
+        }
+      })
+    }
+
+    // Subscribe to WebSocket telemetry updates
+    wsClient.subscribe(handleTelemetryUpdate)
+
+    // Update connection status
+    const checkConnection = setInterval(() => {
+      setIsConnected(wsClient.isConnected())
+    }, 1000)
+
+    // Cleanup on unmount
+    return () => {
+      wsClient.unsubscribe(handleTelemetryUpdate)
+      clearInterval(checkConnection)
+    }
+  }, [queryClient])
+
+  return isConnected
 }
 
-// Specialized hook for vehicle location updates
-export function useVehicleLocationUpdates(vehicleIds?: string[]) {
-  const [locations, setLocations] = useState<Record<string, { lat: number; lng: number; timestamp: string }>>({})
+/**
+ * Get real-time locations for multiple vehicles
+ * Returns a map of vehicle ID to location data
+ */
+export function useVehicleLocations(vehicleIds?: string[]) {
+  const [locations, setLocations] = useState<Record<string, {
+    lat: number
+    lng: number
+    timestamp: string
+    speed?: number
+    heading?: number
+  }>>({})
 
-  useWebSocket({
-    onMessage: (message) => {
-      if (message.type === 'location_update') {
-        const { vehicleId, lat, lng, timestamp } = message.data
-        if (!vehicleIds || vehicleIds.includes(vehicleId)) {
-          setLocations((prev) => ({
-            ...prev,
-            [vehicleId]: { lat, lng, timestamp },
-          }))
-        }
+  useEffect(() => {
+    const handleTelemetryUpdate = (event: TelemetryEvent) => {
+      // Filter by vehicle IDs if specified
+      if (vehicleIds && !vehicleIds.includes(event.device_id)) {
+        return
       }
-    },
-  })
+
+      setLocations(prev => ({
+        ...prev,
+        [event.device_id]: {
+          lat: event.location_lat,
+          lng: event.location_lng,
+          timestamp: event.time,
+          speed: event.speed,
+          heading: event.heading,
+        },
+      }))
+    }
+
+    wsClient.subscribe(handleTelemetryUpdate)
+
+    return () => {
+      wsClient.unsubscribe(handleTelemetryUpdate)
+    }
+  }, [vehicleIds])
 
   return locations
+}
+
+/**
+ * Get WebSocket connection status
+ */
+export function useWebSocketStatus() {
+  const [isConnected, setIsConnected] = useState(wsClient.isConnected())
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsConnected(wsClient.isConnected())
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  return isConnected
 }

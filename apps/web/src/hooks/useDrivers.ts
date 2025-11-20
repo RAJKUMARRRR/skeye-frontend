@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useAuth } from '../features/auth/contexts/AuthContext'
 
 // Types - will be replaced with @fleet/api types
 interface Driver {
@@ -16,34 +17,41 @@ interface Driver {
 }
 
 export function useDrivers() {
+  const { isAuthenticated, isLoading } = useAuth()
+
   return useQuery({
     queryKey: ['drivers'],
     queryFn: async (): Promise<Driver[]> => {
       // TODO: Replace with actual API call from @fleet/api
       return []
     },
+    enabled: isAuthenticated && !isLoading, // Wait for auth before querying
   })
 }
 
 export function useDriver(id: string) {
+  const { isAuthenticated, isLoading } = useAuth()
+
   return useQuery({
     queryKey: ['driver', id],
     queryFn: async (): Promise<Driver | null> => {
       // TODO: Replace with actual API call from @fleet/api
       return null
     },
-    enabled: !!id,
+    enabled: !!id && isAuthenticated && !isLoading, // Wait for auth and valid ID
   })
 }
 
 export function useDriverTrips(driverId: string) {
+  const { isAuthenticated, isLoading } = useAuth()
+
   return useQuery({
     queryKey: ['driver', driverId, 'trips'],
     queryFn: async (): Promise<any[]> => {
       // TODO: Replace with actual API call from @fleet/api
       return []
     },
-    enabled: !!driverId,
+    enabled: !!driverId && isAuthenticated && !isLoading, // Wait for auth and valid ID
   })
 }
 

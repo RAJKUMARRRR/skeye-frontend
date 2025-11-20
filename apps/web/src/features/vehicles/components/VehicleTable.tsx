@@ -29,10 +29,9 @@ export function VehicleTable({ vehicles, isLoading }: VehicleTableProps) {
   const filteredVehicles = useMemo(() => {
     return vehicles.filter((vehicle) => {
       const matchesSearch =
-        vehicle.licensePlate.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.vin?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.make?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.model?.toLowerCase().includes(searchTerm.toLowerCase())
+        vehicle.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vehicle.device_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vehicle.device_type?.toLowerCase().includes(searchTerm.toLowerCase())
 
       const matchesStatus = statusFilter === 'all' || vehicle.status === statusFilter
 
@@ -101,20 +100,19 @@ export function VehicleTable({ vehicles, isLoading }: VehicleTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>License Plate</TableHead>
-              <TableHead>Make/Model</TableHead>
-              <TableHead>VIN</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Device ID</TableHead>
+              <TableHead>Device Type</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Assigned Driver</TableHead>
-              <TableHead>Device</TableHead>
-              <TableHead>Last Location</TableHead>
+              <TableHead>Protocol</TableHead>
+              <TableHead>Created</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedVehicles.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center text-gray-500">
+                <TableCell colSpan={7} className="text-center text-gray-500">
                   No vehicles found
                 </TableCell>
               </TableRow>
@@ -122,25 +120,16 @@ export function VehicleTable({ vehicles, isLoading }: VehicleTableProps) {
               paginatedVehicles.map((vehicle) => (
                 <TableRow
                   key={vehicle.id}
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:bg-gray-50"
                   onClick={() => navigate(`/vehicles/${vehicle.id}`)}
                 >
-                  <TableCell className="font-medium">{vehicle.licensePlate}</TableCell>
-                  <TableCell>
-                    {vehicle.make} {vehicle.model}
-                  </TableCell>
-                  <TableCell className="text-gray-600 text-xs">{vehicle.vin || 'N/A'}</TableCell>
+                  <TableCell className="font-medium">{vehicle.name}</TableCell>
+                  <TableCell className="text-gray-600">{vehicle.device_id}</TableCell>
+                  <TableCell className="text-gray-600">{vehicle.device_type}</TableCell>
                   <TableCell>{getStatusBadge(vehicle.status)}</TableCell>
-                  <TableCell>{vehicle.assignedDriverId || '-'}</TableCell>
-                  <TableCell>{vehicle.deviceId || '-'}</TableCell>
+                  <TableCell className="text-gray-600">{vehicle.protocol_type || '-'}</TableCell>
                   <TableCell className="text-sm text-gray-600">
-                    {vehicle.location ? (
-                      <>
-                        {vehicle.location.latitude.toFixed(4)}, {vehicle.location.longitude.toFixed(4)}
-                      </>
-                    ) : (
-                      '-'
-                    )}
+                    {new Date(vehicle.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right">
                     <Button

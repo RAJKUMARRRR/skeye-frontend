@@ -13,7 +13,7 @@ export interface MapBounds {
 export interface MapMarker {
   id: string
   position: LatLng
-  icon?: string
+  icon?: any // Support Leaflet Icon/DivIcon or string URL
   label?: string
   onClick?: () => void
   data?: Record<string, unknown>

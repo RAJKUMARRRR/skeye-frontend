@@ -142,3 +142,45 @@
     animation: fadeOut 0.3s ease-in-out;
   }
 }
+
+/* Custom styles for vehicle tooltips on map */
+.vehicle-tooltip-container {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.vehicle-tooltip-container::before {
+  display: none !important;
+}
+
+.leaflet-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.leaflet-tooltip-top::before,
+.leaflet-tooltip-bottom::before,
+.leaflet-tooltip-left::before,
+.leaflet-tooltip-right::before {
+  display: none !important;
+}
+
+/* Custom vehicle marker styles */
+.custom-vehicle-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

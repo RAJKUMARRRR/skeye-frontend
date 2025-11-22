@@ -81,11 +81,13 @@ const mockAlerts = [
 
 export function Alerts() {
   const [activeTab, setActiveTab] = useState('alerts')
-  const [alertsView, setAlertsView] = useState<'all' | 'active' | 'acknowledged' | 'resolved'>('all')
+  const [alertsView, setAlertsView] = useState<'all' | 'active' | 'acknowledged' | 'resolved'>(
+    'all'
+  )
 
-  const activeAlerts = mockAlerts.filter((a) => a.status === 'active')
-  const acknowledgedAlerts = mockAlerts.filter((a) => a.status === 'acknowledged')
-  const resolvedAlerts = mockAlerts.filter((a) => a.status === 'resolved')
+  const activeAlerts = mockAlerts.filter(a => a.status === 'active')
+  const acknowledgedAlerts = mockAlerts.filter(a => a.status === 'acknowledged')
+  const resolvedAlerts = mockAlerts.filter(a => a.status === 'resolved')
 
   return (
     <div className="space-y-6">
@@ -117,74 +119,28 @@ export function Alerts() {
       </div>
 
       {/* Main Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={alertsView} onValueChange={setAlertsView}>
         <TabsList>
-          <TabsTrigger value="alerts">Alerts</TabsTrigger>
-          <TabsTrigger value="rules">Rules</TabsTrigger>
-          <TabsTrigger value="routing">Routing</TabsTrigger>
-          <TabsTrigger value="escalation">Escalation</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
-          <TabsTrigger value="muting">Muting</TabsTrigger>
-          <TabsTrigger value="quiet-hours">Quiet Hours</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="all">All Alerts</TabsTrigger>
+          <TabsTrigger value="active">Active ({activeAlerts.length})</TabsTrigger>
+          <TabsTrigger value="acknowledged">Acknowledged ({acknowledgedAlerts.length})</TabsTrigger>
+          <TabsTrigger value="resolved">Resolved ({resolvedAlerts.length})</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="alerts" className="space-y-4">
-          <Tabs value={alertsView} onValueChange={setAlertsView}>
-            <TabsList>
-              <TabsTrigger value="all">All Alerts</TabsTrigger>
-              <TabsTrigger value="active">Active ({activeAlerts.length})</TabsTrigger>
-              <TabsTrigger value="acknowledged">Acknowledged ({acknowledgedAlerts.length})</TabsTrigger>
-              <TabsTrigger value="resolved">Resolved ({resolvedAlerts.length})</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="all">
-              <AlertTable alerts={mockAlerts} />
-            </TabsContent>
-
-            <TabsContent value="active">
-              <AlertTable alerts={activeAlerts} />
-            </TabsContent>
-
-            <TabsContent value="acknowledged">
-              <AlertTable alerts={acknowledgedAlerts} />
-            </TabsContent>
-
-            <TabsContent value="resolved">
-              <AlertTable alerts={resolvedAlerts} />
-            </TabsContent>
-          </Tabs>
+        <TabsContent value="all">
+          <AlertTable alerts={mockAlerts} />
         </TabsContent>
 
-        <TabsContent value="rules">
-          <AlertRuleBuilder
-            onSave={(rule) => console.log('Save rule:', rule)}
-            onCancel={() => setActiveTab('alerts')}
-          />
+        <TabsContent value="active">
+          <AlertTable alerts={activeAlerts} />
         </TabsContent>
 
-        <TabsContent value="routing">
-          <AlertRouting />
+        <TabsContent value="acknowledged">
+          <AlertTable alerts={acknowledgedAlerts} />
         </TabsContent>
 
-        <TabsContent value="escalation">
-          <AlertEscalation />
-        </TabsContent>
-
-        <TabsContent value="history">
-          <AlertHistory />
-        </TabsContent>
-
-        <TabsContent value="muting">
-          <AlertMuting />
-        </TabsContent>
-
-        <TabsContent value="quiet-hours">
-          <QuietHours />
-        </TabsContent>
-
-        <TabsContent value="notifications">
-          <NotificationPreferences />
+        <TabsContent value="resolved">
+          <AlertTable alerts={resolvedAlerts} />
         </TabsContent>
       </Tabs>
     </div>

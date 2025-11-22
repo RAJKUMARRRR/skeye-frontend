@@ -224,8 +224,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   typeButtonActive: {
-    backgroundColor: '#3b82f6',
-    borderColor: '#3b82f6',
+    backgroundColor: '#14b8a6',
+    borderColor: '#14b8a6',
   },
   typeButtonText: {
     fontSize: 14,
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   submitButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#14b8a6',
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',

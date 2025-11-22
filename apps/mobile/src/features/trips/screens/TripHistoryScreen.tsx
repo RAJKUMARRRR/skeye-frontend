@@ -75,7 +75,7 @@ export default function TripHistoryScreen() {
   const getStatusColor = (status: Trip['status']) => {
     switch (status) {
       case 'scheduled':
-        return '#3b82f6';
+        return '#14b8a6';
       case 'in_progress':
         return '#f59e0b';
       case 'completed':
@@ -119,7 +119,7 @@ export default function TripHistoryScreen() {
     >
       <View style={styles.tripHeader}>
         <View style={styles.tripNumberContainer}>
-          <Ionicons name="document-text-outline" size={20} color="#3b82f6" />
+          <Ionicons name="document-text-outline" size={20} color="#14b8a6" />
           <Text style={styles.tripNumber}>{item.tripNumber}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '20' }]}>

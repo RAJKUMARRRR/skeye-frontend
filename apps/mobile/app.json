@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Fleet Driver",
-    "slug": "fleet-driver",
+    "name": "Skeye Driver",
+    "slug": "skeye-driver",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,7 +16,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.fleet.driver",
+      "bundleIdentifier": "com.skeye.driver",
       "infoPlist": {
         "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to location to track trips and provide navigation.",
         "NSLocationWhenInUseUsageDescription": "This app needs access to location to track trips and provide navigation.",
@@ -34,7 +34,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.fleet.driver",
+      "package": "com.skeye.driver",
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
@@ -54,9 +54,9 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow Fleet Driver to use your location to track trips.",
-          "locationAlwaysPermission": "Allow Fleet Driver to use your location in the background to track trips.",
-          "locationWhenInUsePermission": "Allow Fleet Driver to use your location to track trips.",
+          "locationAlwaysAndWhenInUsePermission": "Allow Skeye Driver to use your location to track trips.",
+          "locationAlwaysPermission": "Allow Skeye Driver to use your location in the background to track trips.",
+          "locationWhenInUsePermission": "Allow Skeye Driver to use your location to track trips.",
           "isAndroidBackgroundLocationEnabled": true
         }
       ],
@@ -70,18 +70,19 @@
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "Allow Fleet Driver to use Face ID for secure login."
+          "faceIDPermission": "Allow Skeye Driver to use Face ID for secure login."
         }
       ]
     ],
-    "scheme": "fleet-driver",
+    "scheme": "skeye-driver",
     "extra": {
       "router": {
         "origin": false
       },
       "eas": {
         "projectId": "your-project-id"
-      }
+      },
+      "clerkPublishableKey": "pk_test_c291Z2h0LXNlYWhvcnNlLTk3LmNsZXJrLmFjY291bnRzLmRldiQ"
     }
   }
 }

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { useAuth as useClerkAuth, useUser } from '@clerk/clerk-react'
 
 interface User {
   id: string
@@ -13,85 +14,51 @@ interface AuthContextValue {
   isAuthenticated: boolean
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { isSignedIn, isLoaded, signOut } = useClerkAuth()
+  const { user: clerkUser } = useUser()
   const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check for stored auth token on mount
-    const storedUser = localStorage.getItem('auth_user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
+    if (isLoaded && isSignedIn && clerkUser) {
+      // Map Clerk user to our User interface
+      const mappedUser: User = {
+        id: clerkUser.id,
+        email: clerkUser.primaryEmailAddress?.emailAddress || '',
+        name: clerkUser.fullName || clerkUser.firstName || 'User',
+        role: 'admin', // Default role - you can customize this based on Clerk metadata
+        organizationId: 'org-1', // Default org - you can customize this
+      }
+      setUser(mappedUser)
+    } else if (isLoaded && !isSignedIn) {
+      setUser(null)
     }
-    setIsLoading(false)
-  }, [])
+  }, [isLoaded, isSignedIn, clerkUser])
 
   const login = async (email: string, password: string) => {
-    // Mock login - in production this would call the API
-    // Mock credentials for testing:
-    // admin@fleet.com / admin123
-    // manager@fleet.com / manager123
-    // dispatcher@fleet.com / dispatcher123
-
-    const mockUsers: Record<string, { user: User; password: string }> = {
-      'admin@fleet.com': {
-        password: 'admin123',
-        user: {
-          id: '1',
-          email: 'admin@fleet.com',
-          name: 'Admin User',
-          role: 'admin',
-          organizationId: 'org-1',
-        },
-      },
-      'manager@fleet.com': {
-        password: 'manager123',
-        user: {
-          id: '2',
-          email: 'manager@fleet.com',
-          name: 'Manager User',
-          role: 'manager',
-          organizationId: 'org-1',
-        },
-      },
-      'dispatcher@fleet.com': {
-        password: 'dispatcher123',
-        user: {
-          id: '3',
-          email: 'dispatcher@fleet.com',
-          name: 'Dispatcher User',
-          role: 'dispatcher',
-          organizationId: 'org-1',
-        },
-      },
-    }
-
-    const mockAccount = mockUsers[email]
-
-    if (!mockAccount || mockAccount.password !== password) {
-      throw new Error('Invalid credentials')
-    }
-
-    setUser(mockAccount.user)
-    localStorage.setItem('auth_user', JSON.stringify(mockAccount.user))
+    // Clerk handles authentication - this is kept for compatibility
+    // Redirect to custom login page
+    window.location.href = '/login'
   }
 
-  const logout = () => {
-    setUser(null)
-    localStorage.removeItem('auth_user')
+  const logout = async () => {
+    // Call Clerk's signOut method
+    await signOut()
+    // Redirect to custom login page
+    window.location.href = '/login'
   }
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
-        isLoading,
+        isAuthenticated: isSignedIn || false,
+        isLoading: !isLoaded,
         login,
         logout,
       }}

@@ -95,7 +95,7 @@ export default function HelpSupportScreen() {
                 onPress={option.action}
               >
                 <View style={styles.iconContainer}>
-                  <Ionicons name={option.icon} size={28} color="#3b82f6" />
+                  <Ionicons name={option.icon} size={28} color="#14b8a6" />
                 </View>
                 <Text style={styles.contactTitle}>{option.title}</Text>
                 <Text style={styles.contactDescription}>{option.description}</Text>
@@ -164,7 +164,7 @@ export default function HelpSupportScreen() {
             style={styles.feedbackButton}
             onPress={() => Linking.openURL('mailto:feedback@fleetmanagement.com?subject=App Feedback')}
           >
-            <Ionicons name="create-outline" size={20} color="#3b82f6" />
+            <Ionicons name="create-outline" size={20} color="#14b8a6" />
             <Text style={styles.feedbackButtonText}>Send Feedback</Text>
           </TouchableOpacity>
         </View>
@@ -302,11 +302,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#3b82f6',
+    borderColor: '#14b8a6',
   },
   feedbackButtonText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#3b82f6',
+    color: '#14b8a6',
   },
 });

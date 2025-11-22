@@ -162,7 +162,7 @@ export function VoiceRecorder({ onRecordingComplete, recordingUri, maxDuration =
       ) : (
         <View style={styles.playbackContainer}>
           <View style={styles.audioInfo}>
-            <Ionicons name="musical-notes" size={24} color="#3b82f6" />
+            <Ionicons name="musical-notes" size={24} color="#14b8a6" />
             <Text style={styles.audioText}>Voice note recorded</Text>
           </View>
 
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   recordButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#14b8a6',
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 12,
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f9ff',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#3b82f6',
+    borderColor: '#14b8a6',
   },
   audioInfo: {
     flexDirection: 'row',
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   playButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#14b8a6',
     width: 48,
     height: 48,
     borderRadius: 24,

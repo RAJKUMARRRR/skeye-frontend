@@ -8,9 +8,9 @@ export function Header() {
   const navigate = useNavigate()
   const [showUserMenu, setShowUserMenu] = useState(false)
 
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
+  const handleLogout = async () => {
+    await logout()
+    // Logout function already handles redirect to /login
   }
 
   const getRoleColor = (role: string) => {
@@ -34,7 +34,7 @@ export function Header() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search Fleetio"
+                placeholder="Search Skeye"
                 className="w-full h-10 pl-10 pr-4 bg-gray-100 border-0 rounded-md text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-accent focus:bg-white transition-all"
               />
               <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden lg:inline-block px-2 py-0.5 text-xs font-mono text-gray-500 bg-white border border-gray-300 rounded">

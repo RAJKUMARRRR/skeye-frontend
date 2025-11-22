@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@fleet/ui-web'
+import { Users, User } from 'lucide-react'
 
 interface AlertRoute {
   id: string
@@ -223,8 +224,12 @@ export function AlertRouting() {
                 <TableCell>
                   <div className="flex flex-col gap-1">
                     {route.assignedTo.map((a, i) => (
-                      <Badge key={i} variant="secondary">
-                        {a.type === 'role' ? '👥 ' : '👤 '}
+                      <Badge key={i} variant="secondary" className="flex items-center gap-1.5">
+                        {a.type === 'role' ? (
+                          <Users className="w-3 h-3" />
+                        ) : (
+                          <User className="w-3 h-3" />
+                        )}
                         {a.name}
                       </Badge>
                     ))}

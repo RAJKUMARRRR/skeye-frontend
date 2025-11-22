@@ -17,6 +17,7 @@ import {
   TableRow,
   Badge,
 } from '@fleet/ui-web'
+import { Moon } from 'lucide-react'
 
 interface QuietHourRule {
   id: string
@@ -107,12 +108,14 @@ export function QuietHours() {
   return (
     <div className="space-y-6">
       {/* Info Banner */}
-      <Card className="p-4 bg-blue-50 border-blue-200">
+      <Card className="p-4 bg-accent/5 border-accent/20">
         <div className="flex gap-3">
-          <span className="text-2xl">🌙</span>
+          <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
+            <Moon className="w-5 h-5 text-accent" />
+          </div>
           <div>
-            <h4 className="font-semibold text-blue-900">Quiet Hours</h4>
-            <p className="text-sm text-blue-800 mt-1">
+            <h4 className="font-semibold text-gray-900">Quiet Hours</h4>
+            <p className="text-sm text-gray-600 mt-1">
               Suppress non-critical alerts during specified hours. Critical alerts will always be
               delivered regardless of quiet hours settings.
             </p>

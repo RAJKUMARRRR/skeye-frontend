@@ -1,34 +1,145 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useUser } from '@clerk/clerk-expo';
+import {
+  Card,
+  CustomSwitch,
+  colors,
+  spacing,
+  typography,
+  borderRadius,
+  shadows,
+} from '@fleet/ui-mobile';
 
 export default function NotificationsSettingsScreen() {
-  const [pushEnabled, setPushEnabled] = useState(true);
-  const [emailEnabled, setEmailEnabled] = useState(true);
-  const [tripUpdates, setTripUpdates] = useState(true);
-  const [alerts, setAlerts] = useState(true);
-  const [messages, setMessages] = useState(true);
+  const { user, isLoaded } = useUser();
+
+  // Notification states - will be loaded from Clerk metadata
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [emailEnabled, setEmailEnabled] = useState(false);
+  const [tripUpdates, setTripUpdates] = useState(false);
+  const [alerts, setAlerts] = useState(false);
+  const [messages, setMessages] = useState(false);
   const [systemUpdates, setSystemUpdates] = useState(false);
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  const savePreferences = async (preferences: any) => {
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      await user.update({
+        unsafeMetadata: {
+          ...user.unsafeMetadata,
+          notificationPreferences: preferences,
+        },
+      });
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+      Alert.alert('Error', 'Failed to save notification preferences');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Load preferences from Clerk metadata on mount and when user data changes
+  useEffect(() => {
+    if (user && !isInitialized) {
+      const metadata = user.unsafeMetadata?.notificationPreferences as any;
+
+      // If metadata exists, use it. Otherwise, use defaults for new users
+      if (metadata) {
+        setPushEnabled(metadata.pushEnabled ?? false);
+        setEmailEnabled(metadata.emailEnabled ?? false);
+        setTripUpdates(metadata.tripUpdates ?? false);
+        setAlerts(metadata.alerts ?? false);
+        setMessages(metadata.messages ?? false);
+        setSystemUpdates(metadata.systemUpdates ?? false);
+      } else {
+        // First time user - set sensible defaults for mobile drivers
+        setPushEnabled(true);
+        setEmailEnabled(false);
+        setTripUpdates(true);
+        setAlerts(true);
+        setMessages(true);
+        setSystemUpdates(false);
+
+        // Save these defaults to metadata
+        savePreferences({
+          pushEnabled: true,
+          emailEnabled: false,
+          tripUpdates: true,
+          alerts: true,
+          messages: true,
+          systemUpdates: false,
+        });
+      }
+
+      setIsInitialized(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isInitialized]);
+
+  const handleToggle = async (
+    setter: (value: boolean) => void,
+    currentValue: boolean,
+    key: string
+  ) => {
+    const newValue = !currentValue;
+    setter(newValue);
+
+    // Save to Clerk metadata
+    const newPreferences = {
+      pushEnabled,
+      emailEnabled,
+      tripUpdates,
+      alerts,
+      messages,
+      systemUpdates,
+      [key]: newValue,
+    };
+
+    await savePreferences(newPreferences);
+  };
+
+  // Show loading state while user data is loading
+  if (!isLoaded || !user) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={colors.accent.DEFAULT} />
+        <Text style={styles.loadingText}>Loading preferences...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.content}>
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Notification Channels Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Notification Channels</Text>
-          <View style={styles.card}>
+
+          <Card variant="elevated" padding="lg" style={styles.card}>
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="phone-portrait-outline" size={24} color="#6b7280" />
+                <View style={styles.iconCircle}>
+                  <Ionicons name="phone-portrait" size={20} color={colors.accent.DEFAULT} />
+                </View>
                 <View style={styles.settingText}>
                   <Text style={styles.settingLabel}>Push Notifications</Text>
-                  <Text style={styles.settingDescription}>Receive notifications on this device</Text>
+                  <Text style={styles.settingDescription}>
+                    Receive notifications on this device
+                  </Text>
                 </View>
               </View>
-              <Switch
+              <CustomSwitch
                 value={pushEnabled}
-                onValueChange={setPushEnabled}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={pushEnabled ? '#3b82f6' : '#f3f4f6'}
+                onValueChange={() => handleToggle(setPushEnabled, pushEnabled, 'pushEnabled')}
+                disabled={isSaving}
               />
             </View>
 
@@ -36,38 +147,46 @@ export default function NotificationsSettingsScreen() {
 
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="mail-outline" size={24} color="#6b7280" />
+                <View style={styles.iconCircle}>
+                  <Ionicons name="mail" size={20} color={colors.accent.DEFAULT} />
+                </View>
                 <View style={styles.settingText}>
                   <Text style={styles.settingLabel}>Email Notifications</Text>
-                  <Text style={styles.settingDescription}>Receive notifications via email</Text>
+                  <Text style={styles.settingDescription}>
+                    Receive notifications via email
+                  </Text>
                 </View>
               </View>
-              <Switch
+              <CustomSwitch
                 value={emailEnabled}
-                onValueChange={setEmailEnabled}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={emailEnabled ? '#3b82f6' : '#f3f4f6'}
+                onValueChange={() => handleToggle(setEmailEnabled, emailEnabled, 'emailEnabled')}
+                disabled={isSaving}
               />
             </View>
-          </View>
+          </Card>
         </View>
 
+        {/* Notification Types Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Notification Types</Text>
-          <View style={styles.card}>
+
+          <Card variant="elevated" padding="lg" style={styles.card}>
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="car-outline" size={24} color="#6b7280" />
+                <View style={styles.iconCircle}>
+                  <Ionicons name="car" size={20} color={colors.accent.DEFAULT} />
+                </View>
                 <View style={styles.settingText}>
                   <Text style={styles.settingLabel}>Trip Updates</Text>
-                  <Text style={styles.settingDescription}>New trips, changes, and completions</Text>
+                  <Text style={styles.settingDescription}>
+                    New trips, changes, and completions
+                  </Text>
                 </View>
               </View>
-              <Switch
+              <CustomSwitch
                 value={tripUpdates}
-                onValueChange={setTripUpdates}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={tripUpdates ? '#3b82f6' : '#f3f4f6'}
+                onValueChange={() => handleToggle(setTripUpdates, tripUpdates, 'tripUpdates')}
+                disabled={isSaving}
               />
             </View>
 
@@ -75,17 +194,20 @@ export default function NotificationsSettingsScreen() {
 
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="alert-circle-outline" size={24} color="#6b7280" />
+                <View style={styles.iconCircle}>
+                  <Ionicons name="alert-circle" size={20} color={colors.accent.DEFAULT} />
+                </View>
                 <View style={styles.settingText}>
                   <Text style={styles.settingLabel}>Alerts & Warnings</Text>
-                  <Text style={styles.settingDescription}>Important alerts and safety warnings</Text>
+                  <Text style={styles.settingDescription}>
+                    Important alerts and safety warnings
+                  </Text>
                 </View>
               </View>
-              <Switch
+              <CustomSwitch
                 value={alerts}
-                onValueChange={setAlerts}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={alerts ? '#3b82f6' : '#f3f4f6'}
+                onValueChange={() => handleToggle(setAlerts, alerts, 'alerts')}
+                disabled={isSaving}
               />
             </View>
 
@@ -93,17 +215,20 @@ export default function NotificationsSettingsScreen() {
 
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="chatbubble-outline" size={24} color="#6b7280" />
+                <View style={styles.iconCircle}>
+                  <Ionicons name="chatbubble" size={20} color={colors.accent.DEFAULT} />
+                </View>
                 <View style={styles.settingText}>
                   <Text style={styles.settingLabel}>Messages</Text>
-                  <Text style={styles.settingDescription}>Messages from dispatchers</Text>
+                  <Text style={styles.settingDescription}>
+                    Messages from dispatchers
+                  </Text>
                 </View>
               </View>
-              <Switch
+              <CustomSwitch
                 value={messages}
-                onValueChange={setMessages}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={messages ? '#3b82f6' : '#f3f4f6'}
+                onValueChange={() => handleToggle(setMessages, messages, 'messages')}
+                disabled={isSaving}
               />
             </View>
 
@@ -111,21 +236,35 @@ export default function NotificationsSettingsScreen() {
 
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="information-circle-outline" size={24} color="#6b7280" />
+                <View style={styles.iconCircle}>
+                  <Ionicons name="information-circle" size={20} color={colors.accent.DEFAULT} />
+                </View>
                 <View style={styles.settingText}>
                   <Text style={styles.settingLabel}>System Updates</Text>
-                  <Text style={styles.settingDescription}>App updates and announcements</Text>
+                  <Text style={styles.settingDescription}>
+                    App updates and announcements
+                  </Text>
                 </View>
               </View>
-              <Switch
+              <CustomSwitch
                 value={systemUpdates}
-                onValueChange={setSystemUpdates}
-                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
-                thumbColor={systemUpdates ? '#3b82f6' : '#f3f4f6'}
+                onValueChange={() => handleToggle(setSystemUpdates, systemUpdates, 'systemUpdates')}
+                disabled={isSaving}
               />
             </View>
-          </View>
+          </Card>
         </View>
+
+        {isSaving && (
+          <View style={styles.savingIndicator}>
+            <View style={styles.savingBadge}>
+              <ActivityIndicator size="small" color={colors.accent.DEFAULT} />
+              <Text style={styles.savingText}>Saving preferences...</Text>
+            </View>
+          </View>
+        )}
+
+        <View style={{ height: spacing['2xl'] }} />
       </ScrollView>
     </View>
   );
@@ -134,58 +273,93 @@ export default function NotificationsSettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.background.secondary,
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
     flex: 1,
   },
+  loadingText: {
+    marginTop: spacing.md,
+    fontSize: typography.fontSize.sm,
+    color: colors.text.secondary,
+    fontWeight: typography.fontWeight.medium,
+  },
   section: {
-    padding: 16,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xl,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 12,
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.text.primary,
+    marginBottom: spacing.md,
+    letterSpacing: -0.5,
   },
   card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginBottom: spacing.md,
   },
   settingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 4,
+    paddingVertical: spacing.xs,
   },
   settingInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
     flex: 1,
-    marginRight: 16,
+    marginRight: spacing.lg,
+    gap: spacing.md,
+  },
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.background.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadows.sm,
   },
   settingText: {
     flex: 1,
   },
   settingLabel: {
-    fontSize: 16,
-    color: '#1f2937',
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.semibold,
+    color: colors.text.primary,
     marginBottom: 2,
   },
   settingDescription: {
-    fontSize: 13,
-    color: '#6b7280',
+    fontSize: typography.fontSize.sm,
+    color: colors.text.tertiary,
+    lineHeight: typography.fontSize.sm * typography.lineHeight.normal,
   },
   divider: {
     height: 1,
-    backgroundColor: '#e5e7eb',
-    marginVertical: 16,
+    backgroundColor: colors.border.DEFAULT,
+    marginVertical: spacing.lg,
+  },
+  savingIndicator: {
+    alignItems: 'center',
+    paddingVertical: spacing.lg,
+  },
+  savingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.background.elevated,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.full,
+    ...shadows.md,
+  },
+  savingText: {
+    fontSize: typography.fontSize.sm,
+    color: colors.accent.DEFAULT,
+    fontWeight: typography.fontWeight.medium,
   },
 });

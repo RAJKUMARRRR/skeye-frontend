@@ -127,7 +127,7 @@ export default function LocationSettingsScreen() {
               onPress={() => setAccuracy('high')}
             >
               <View style={styles.accuracyInfo}>
-                <Ionicons name="speedometer" size={24} color={accuracy === 'high' ? '#3b82f6' : '#6b7280'} />
+                <Ionicons name="speedometer" size={24} color={accuracy === 'high' ? '#14b8a6' : '#6b7280'} />
                 <View style={styles.accuracyText}>
                   <Text style={[styles.accuracyLabel, accuracy === 'high' && styles.accuracyLabelActive]}>
                     High Accuracy
@@ -136,7 +136,7 @@ export default function LocationSettingsScreen() {
                 </View>
               </View>
               {accuracy === 'high' && (
-                <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
+                <Ionicons name="checkmark-circle" size={24} color="#14b8a6" />
               )}
             </TouchableOpacity>
 
@@ -147,7 +147,7 @@ export default function LocationSettingsScreen() {
               onPress={() => setAccuracy('balanced')}
             >
               <View style={styles.accuracyInfo}>
-                <Ionicons name="speedometer-outline" size={24} color={accuracy === 'balanced' ? '#3b82f6' : '#6b7280'} />
+                <Ionicons name="speedometer-outline" size={24} color={accuracy === 'balanced' ? '#14b8a6' : '#6b7280'} />
                 <View style={styles.accuracyText}>
                   <Text style={[styles.accuracyLabel, accuracy === 'balanced' && styles.accuracyLabelActive]}>
                     Balanced
@@ -156,7 +156,7 @@ export default function LocationSettingsScreen() {
                 </View>
               </View>
               {accuracy === 'balanced' && (
-                <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
+                <Ionicons name="checkmark-circle" size={24} color="#14b8a6" />
               )}
             </TouchableOpacity>
 
@@ -167,7 +167,7 @@ export default function LocationSettingsScreen() {
               onPress={() => setAccuracy('low')}
             >
               <View style={styles.accuracyInfo}>
-                <Ionicons name="battery-charging-outline" size={24} color={accuracy === 'low' ? '#3b82f6' : '#6b7280'} />
+                <Ionicons name="battery-charging-outline" size={24} color={accuracy === 'low' ? '#14b8a6' : '#6b7280'} />
                 <View style={styles.accuracyText}>
                   <Text style={[styles.accuracyLabel, accuracy === 'low' && styles.accuracyLabelActive]}>
                     Battery Saver
@@ -176,7 +176,7 @@ export default function LocationSettingsScreen() {
                 </View>
               </View>
               {accuracy === 'low' && (
-                <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
+                <Ionicons name="checkmark-circle" size={24} color="#14b8a6" />
               )}
             </TouchableOpacity>
           </View>
@@ -184,7 +184,7 @@ export default function LocationSettingsScreen() {
 
         <View style={styles.section}>
           <TouchableOpacity style={styles.settingsButton} onPress={openAppSettings}>
-            <Ionicons name="settings-outline" size={20} color="#3b82f6" />
+            <Ionicons name="settings-outline" size={20} color="#14b8a6" />
             <Text style={styles.settingsButtonText}>Open Device Settings</Text>
           </TouchableOpacity>
         </View>
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   actionButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#14b8a6',
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 8,
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   },
   accuracyLabelActive: {
     fontWeight: '600',
-    color: '#3b82f6',
+    color: '#14b8a6',
   },
   accuracyDescription: {
     fontSize: 13,
@@ -309,11 +309,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#3b82f6',
+    borderColor: '#14b8a6',
   },
   settingsButtonText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#3b82f6',
+    color: '#14b8a6',
   },
 });

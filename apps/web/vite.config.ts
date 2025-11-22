@@ -13,6 +13,7 @@ export default defineConfig({
       '@fleet/api': path.resolve(__dirname, '../../packages/api/src'),
       '@fleet/utils': path.resolve(__dirname, '../../packages/utils/src'),
       '@fleet/ui': path.resolve(__dirname, '../../packages/ui/src'),
+      'react-map-gl': path.resolve(__dirname, '../../node_modules/react-map-gl/dist/mapbox.js'),
     },
   },
 })

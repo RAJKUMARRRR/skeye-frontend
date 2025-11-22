@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { MapProvider, MapMarker, MapViewport, MapPolyline } from '../components/map'
-import { createVehicleIcon } from '../components/map/VehicleMarker'
-import { VehicleTooltip } from '../components/map/VehicleTooltip'
+import { VehicleIcon, VehiclePopup } from '../components/map/VehicleMarker'
 import { useVehicles } from '../hooks/useVehicles'
 import { useRealtimeTelemetry } from '../hooks/useTelemetry'
 import { useMapClustering } from '../hooks/useMapClustering'
@@ -17,6 +16,7 @@ interface VehicleWithLocation extends Device {
     speed?: number
     heading?: number
     timestamp: string
+    battery?: number
   }
 }
 
@@ -29,21 +29,9 @@ export function LiveTracking() {
   const vehicles: VehicleWithLocation[] = useMemo(() => {
     if (!devices) return []
 
-    console.log('[LiveTracking] Devices:', devices.length)
-    console.log('[LiveTracking] Telemetry map keys:', Object.keys(telemetry))
-    console.log('[LiveTracking] Sample device IDs:', devices.slice(0, 3).map(d => d.device_id))
-
     const vehiclesWithLocation = devices.map(device => {
       // Try matching by device_id (from backend telemetry)
       const telemetryData = telemetry[device.device_id]
-
-      if (telemetryData) {
-        console.log('[LiveTracking] ✓ Matched telemetry for device:', device.device_id, {
-          lat: telemetryData.location_lat,
-          lng: telemetryData.location_lng,
-          speed: telemetryData.speed
-        })
-      }
 
       return {
         ...device,
@@ -53,12 +41,10 @@ export function LiveTracking() {
           speed: telemetryData.speed,
           heading: telemetryData.heading,
           timestamp: telemetryData.time,
+          battery: telemetryData.battery,
         } : undefined,
       }
     })
-
-    const withLocation = vehiclesWithLocation.filter(v => v.location).length
-    console.log('[LiveTracking] Vehicles with location data:', withLocation, '/', devices.length)
 
     return vehiclesWithLocation
   }, [devices, telemetry])
@@ -73,7 +59,6 @@ export function LiveTracking() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [showTrails, setShowTrails] = useState(false)
   const [trailDuration, setTrailDuration] = useState<number>(5) // minutes
-  const [hoveredVehicleId, setHoveredVehicleId] = useState<string | null>(null)
 
   // Store vehicle position history for trails
   const vehicleTrails = useRef<Map<string, Array<{ lat: number; lng: number; timestamp: string }>>>(new Map())
@@ -144,7 +129,7 @@ export function LiveTracking() {
 
   // Convert vehicles to map markers - ONLY include vehicles with valid location data
   const markers: MapMarker[] = useMemo(() => {
-    const validMarkers = filteredVehicles
+    return filteredVehicles
       .filter((vehicle) => {
         // Only include vehicles with valid location coordinates
         return vehicle.location &&
@@ -155,28 +140,31 @@ export function LiveTracking() {
                vehicle.location.latitude !== 0 &&
                vehicle.location.longitude !== 0
       })
-      .map((vehicle) => ({
-        id: vehicle.id,
-        position: {
-          lat: vehicle.location!.latitude,
-          lng: vehicle.location!.longitude,
-        },
-        icon: createVehicleIcon({
+      .map((vehicle) => {
+        const vehicleData = {
           name: vehicle.name,
           status: vehicle.status as 'active' | 'inactive' | 'maintenance' | 'offline',
           device_type: vehicle.device_type,
           location: vehicle.location,
-        }),
-        label: '',
-        onClick: () => {
-          setHoveredVehicleId(vehicle.id)
-          setSelectedVehicleId(vehicle.id)
-        },
-        data: vehicle as any,
-      }))
+        }
 
-    console.log('[LiveTracking] Created markers:', validMarkers.length, '/', filteredVehicles.length)
-    return validMarkers
+        return {
+          id: vehicle.id,
+          position: {
+            lat: vehicle.location!.latitude,
+            lng: vehicle.location!.longitude,
+          },
+          // Pass React components for Mapbox
+          component: <VehicleIcon vehicle={vehicleData} />,
+          popup: <VehiclePopup vehicle={vehicleData} />,
+          // Keep icon for backward compatibility if needed (optional)
+          label: '',
+          onClick: () => {
+            setSelectedVehicleId(vehicle.id)
+          },
+          data: vehicle as any,
+        }
+      })
   }, [filteredVehicles])
 
   // Convert vehicle trails to polylines for map
@@ -215,14 +203,6 @@ export function LiveTracking() {
   const handleMarkerClick = useCallback((marker: MapMarker) => {
     setSelectedVehicleId(marker.id)
   }, [])
-
-  const selectedVehicle = useMemo(() => {
-    return filteredVehicles.find((v) => v.id === selectedVehicleId)
-  }, [filteredVehicles, selectedVehicleId])
-
-  const hoveredVehicle = useMemo(() => {
-    return filteredVehicles.find((v) => v.id === hoveredVehicleId)
-  }, [filteredVehicles, hoveredVehicleId])
 
   // Center map on selected vehicle
   const centerOnVehicle = useCallback((vehicleId: string) => {
@@ -366,26 +346,6 @@ export function LiveTracking() {
           onMarkerClick={handleMarkerClick}
           className="h-full w-full"
         />
-
-        {/* Hovered Vehicle Tooltip */}
-        {hoveredVehicle && hoveredVehicle.location && (
-          <div
-            className="absolute z-[1000] animate-in pointer-events-auto"
-            style={{
-              top: '50%',
-              left: '47.8%',
-              transform: 'translate(-50%, calc(-50% - 188px))'
-            }}
-          >
-            <VehicleTooltip
-              name={hoveredVehicle.name}
-              status={hoveredVehicle.status as 'active' | 'inactive' | 'maintenance' | 'offline'}
-              device_type={hoveredVehicle.device_type}
-              location={hoveredVehicle.location}
-              onClose={() => setHoveredVehicleId(null)}
-            />
-          </div>
-        )}
       </div>
     </div>
   )

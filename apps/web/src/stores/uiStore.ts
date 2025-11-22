@@ -31,7 +31,7 @@ export const useUIStore = create<UIStore>()(
       toggleSidebar: () =>
         set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
 
-      mapProvider: 'leaflet',
+      mapProvider: 'mapbox',
       setMapProvider: (provider) => set({ mapProvider: provider }),
     }),
     {

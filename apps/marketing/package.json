@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "deploy:dev": "vercel",
+    "deploy:preview": "vercel",
+    "deploy:prod": "vercel --prod"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.33.6",

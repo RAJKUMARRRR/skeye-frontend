@@ -2,19 +2,22 @@
 node_modules
 
 # Environment Variables
-# Note: .env files with non-secret defaults can be committed if desired
-# But typically all .env* except .env.example are ignored
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Ignore all .env files except .env.example
+**/.env
+**/.env.local
+**/.env.development
+**/.env.development.local
+**/.env.test
+**/.env.test.local
+**/.env.production
+**/.env.production.local
 
-# Keep .env.development for Vite (web app) - it has working defaults
-!apps/web/.env.development
+# But keep .env.example files (these are templates)
+!**/.env.example
 
-# Optionally commit marketing .env for team defaults (non-secret)
-# Uncomment below line to commit it:
+# If you want to commit specific .env files with team defaults,
+# you can add exceptions here:
+# !apps/web/.env.development
 # !apps/marketing/.env
 
 # Turbo

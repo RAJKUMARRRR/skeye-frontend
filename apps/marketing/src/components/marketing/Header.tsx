@@ -15,6 +15,9 @@ export function Header() {
   const { isSignedIn } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  // Get app URL from environment variables
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:4001'
+
   const navigation = [
     { name: t('features'), href: '/features' },
     { name: t('pricing'), href: '/pricing' },
@@ -82,11 +85,11 @@ export function Header() {
 
           {isSignedIn ? (
             <Button variant="ghost" size="sm" asChild className="hidden md:inline-flex">
-              <a href="http://localhost:3001">Dashboard</a>
+              <a href={`${appUrl}/dashboard`}>Dashboard</a>
             </Button>
           ) : (
             <Button variant="ghost" size="sm" asChild className="hidden md:inline-flex">
-              <a href="http://localhost:3001/login">{t('login')}</a>
+              <a href={`${appUrl}/login`}>{t('login')}</a>
             </Button>
           )}
 
@@ -173,7 +176,7 @@ export function Header() {
               >
                 {isSignedIn ? (
                   <a
-                    href="http://localhost:3001"
+                    href={`${appUrl}/dashboard`}
                     className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary rounded-md hover:bg-muted"
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -181,7 +184,7 @@ export function Header() {
                   </a>
                 ) : (
                   <a
-                    href="http://localhost:3001/login"
+                    href={`${appUrl}/login`}
                     className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary rounded-md hover:bg-muted"
                     onClick={() => setMobileMenuOpen(false)}
                   >

@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd ../.. && yarn install && yarn build:web",
+  "outputDirectory": "dist",
+  "framework": null,
+  "installCommand": "yarn install",
+  "devCommand": "yarn dev"
+}

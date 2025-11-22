@@ -21,7 +21,15 @@
     "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "clean": "turbo run clean && rm -rf node_modules .turbo",
-    "prepare": "husky"
+    "prepare": "husky",
+    "deploy:dev:marketing": "cd apps/marketing && vercel",
+    "deploy:preview:marketing": "cd apps/marketing && vercel",
+    "deploy:prod:marketing": "cd apps/marketing && vercel --prod",
+    "deploy:dev:web": "cd apps/web && vercel",
+    "deploy:preview:web": "cd apps/web && vercel",
+    "deploy:prod:web": "cd apps/web && vercel --prod",
+    "deploy:preview": "yarn deploy:preview:marketing && yarn deploy:preview:web",
+    "deploy:prod": "yarn deploy:prod:marketing && yarn deploy:prod:web"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.0.0",

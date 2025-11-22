@@ -1,5 +1,5 @@
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, Circle, useMap } from 'react-leaflet'
-import { Icon, LatLngExpression } from 'leaflet'
+import { Icon, LatLngExpression, DivIcon } from 'leaflet'
 import { useEffect } from 'react'
 import type { MapProps, MapViewport } from './types'
 import 'leaflet/dist/leaflet.css'
@@ -25,8 +25,21 @@ function ViewportHandler({ center, zoom, onViewportChange, onMapClick }: {
 }) {
   const map = useMap()
 
+  // Only update map view if center/zoom changed significantly (user-initiated from parent)
   useEffect(() => {
-    map.setView(center, zoom)
+    const currentCenter = map.getCenter()
+    const currentZoom = map.getZoom()
+
+    const [targetLat, targetLng] = Array.isArray(center) ? center : [center.lat, center.lng]
+
+    // Only update if the change is significant (more than 0.0001 degrees or 0.5 zoom levels)
+    const centerChanged = Math.abs(currentCenter.lat - targetLat) > 0.0001 ||
+                         Math.abs(currentCenter.lng - targetLng) > 0.0001
+    const zoomChanged = Math.abs(currentZoom - zoom) > 0.5
+
+    if (centerChanged || zoomChanged) {
+      map.setView(center, zoom)
+    }
   }, [center, zoom, map])
 
   useEffect(() => {
@@ -111,6 +124,7 @@ export function LeafletAdapter({
         <Marker
           key={marker.id}
           position={[marker.position.lat, marker.position.lng]}
+          icon={marker.icon ? (marker.icon as any) : undefined}
           eventHandlers={{
             click: () => {
               marker.onClick?.()

@@ -1,3 +1,5 @@
 export * from './types'
 export * from './client/axios'
 export * from './client/websocket'
+export * from './services'
+export * from './config'

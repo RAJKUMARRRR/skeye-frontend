@@ -1,9 +1,9 @@
 import { LeafletAdapter } from './LeafletAdapter'
+import { MapboxAdapter } from './MapboxAdapter'
 import { useUIStore } from '../../stores/uiStore'
 import type { MapProps, MapAdapter } from './types'
 
 // TODO: Implement GoogleMapAdapter when Google Maps API is configured
-// TODO: Implement MapboxAdapter when Mapbox token is configured
 
 const adapters: Record<string, MapAdapter> = {
   leaflet: {
@@ -14,10 +14,10 @@ const adapters: Record<string, MapAdapter> = {
   //   name: 'google',
   //   component: GoogleMapAdapter,
   // },
-  // mapbox: {
-  //   name: 'mapbox',
-  //   component: MapboxAdapter,
-  // },
+  mapbox: {
+    name: 'mapbox',
+    component: MapboxAdapter,
+  },
 }
 
 export function MapProvider(props: MapProps) {

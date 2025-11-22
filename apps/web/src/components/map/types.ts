@@ -13,7 +13,9 @@ export interface MapBounds {
 export interface MapMarker {
   id: string
   position: LatLng
-  icon?: string
+  icon?: any // Support Leaflet Icon/DivIcon or string URL
+  component?: React.ReactNode // React component for the marker (Mapbox)
+  popup?: React.ReactNode // Content for the popup
   label?: string
   onClick?: () => void
   data?: Record<string, unknown>

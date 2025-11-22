@@ -17,14 +17,15 @@ import { useCreateVehicle, useUpdateVehicle } from '../../../hooks/useVehicles'
 import type { Vehicle } from '../../../types/vehicle'
 
 const vehicleSchema = z.object({
-  licensePlate: z.string().min(1, 'License plate is required'),
+  name: z.string().min(1, 'Vehicle name is required'),
+  device_id: z.string().min(1, 'Device ID is required'),
+  licensePlate: z.string().optional(),
   vin: z.string().optional(),
-  make: z.string().min(1, 'Make is required'),
-  model: z.string().min(1, 'Model is required'),
+  make: z.string().optional(),
+  model: z.string().optional(),
   year: z.number().int().min(1900).max(new Date().getFullYear() + 1).optional(),
-  type: z.enum(['sedan', 'suv', 'truck', 'van', 'motorcycle', 'other']),
+  type: z.enum(['sedan', 'suv', 'truck', 'van', 'motorcycle', 'other']).optional(),
   odometer: z.number().int().min(0).optional(),
-  deviceId: z.string().optional(),
 })
 
 type VehicleFormData = z.infer<typeof vehicleSchema>
@@ -42,6 +43,8 @@ export function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
   const form = useForm<VehicleFormData>({
     resolver: zodResolver(vehicleSchema),
     defaultValues: {
+      name: vehicle?.name || '',
+      device_id: vehicle?.device_id || '',
       licensePlate: vehicle?.licensePlate || '',
       vin: vehicle?.vin || '',
       make: vehicle?.make || '',
@@ -49,21 +52,39 @@ export function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
       year: vehicle?.year,
       type: vehicle?.type || 'sedan',
       odometer: vehicle?.odometer,
-      deviceId: vehicle?.deviceId || '',
     },
   })
 
   const onSubmit = async (data: VehicleFormData) => {
     try {
       if (vehicle) {
-        await updateVehicle.mutateAsync({ id: vehicle.id, ...data })
+        // For update - only name and status per OpenAPI spec
+        console.log('[VehicleForm] Updating device:', vehicle.id, data)
+        await updateVehicle.mutateAsync({
+          id: vehicle.id,
+          data: {
+            name: data.name,
+          },
+        })
+        console.log('[VehicleForm] Device updated successfully')
       } else {
-        await createVehicle.mutateAsync(data)
+        // For create - only device_id, name, and device_type per OpenAPI spec
+        const payload = {
+          device_id: data.device_id,
+          name: data.name,
+          device_type: 'gps_tracker', // Optional, defaults to this on backend
+        }
+        console.log('[VehicleForm] Creating device with payload:', payload)
+        const result = await createVehicle.mutateAsync(payload)
+        console.log('[VehicleForm] Device created successfully:', result)
       }
       onSuccess?.()
       navigate('/vehicles')
-    } catch (error) {
-      console.error('Failed to save vehicle:', error)
+    } catch (error: any) {
+      console.error('[VehicleForm] Failed to save vehicle:', error)
+      console.error('[VehicleForm] Error response:', error.response?.data)
+      console.error('[VehicleForm] Error status:', error.response?.status)
+      // TODO: Show error toast to user
     }
   }
 
@@ -72,13 +93,43 @@ export function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
+            {/* Vehicle Name */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Vehicle Name *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Fleet Vehicle 001" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Device ID */}
+            <FormField
+              control={form.control}
+              name="device_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Device ID *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="866897055939956" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* License Plate */}
             <FormField
               control={form.control}
               name="licensePlate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>License Plate *</FormLabel>
+                  <FormLabel>License Plate</FormLabel>
                   <FormControl>
                     <Input placeholder="ABC-1234" {...field} />
                   </FormControl>
@@ -108,7 +159,7 @@ export function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
               name="make"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Make *</FormLabel>
+                  <FormLabel>Make</FormLabel>
                   <FormControl>
                     <Input placeholder="Toyota" {...field} />
                   </FormControl>
@@ -123,7 +174,7 @@ export function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
               name="model"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Model *</FormLabel>
+                  <FormLabel>Model</FormLabel>
                   <FormControl>
                     <Input placeholder="Camry" {...field} />
                   </FormControl>
@@ -158,7 +209,7 @@ export function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Vehicle Type *</FormLabel>
+                  <FormLabel>Vehicle Type</FormLabel>
                   <FormControl>
                     <select
                       {...field}
@@ -191,21 +242,6 @@ export function VehicleForm({ vehicle, onSuccess }: VehicleFormProps) {
                       {...field}
                       onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Device ID */}
-            <FormField
-              control={form.control}
-              name="deviceId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Device ID</FormLabel>
-                  <FormControl>
-                    <Input placeholder="device-12345" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

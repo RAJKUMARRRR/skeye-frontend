@@ -19,9 +19,9 @@ yarn install              # Install all dependencies
 yarn dev
 
 # Individual apps
-yarn dev:web              # Web app → http://localhost:3001
+yarn dev:web              # Web app → http://localhost:4001
 yarn dev:mobile           # Mobile app (Expo)
-yarn dev:marketing        # Marketing site → http://localhost:3000
+yarn dev:marketing        # Marketing site → http://localhost:4000
 
 # Mobile-specific
 yarn mobile               # Start Expo dev server
@@ -78,9 +78,9 @@ yarn start --clear        # Clear cache and restart
 ### Monorepo Structure
 
 **3 Applications:**
-- `apps/web/` - React + Vite web app (port 3001)
+- `apps/web/` - React + Vite web app (port 4001)
 - `apps/mobile/` - React Native + Expo mobile app
-- `apps/marketing/` - Next.js marketing site (port 3000)
+- `apps/marketing/` - Next.js marketing site (port 4000)
 
 **5 Shared Packages:**
 - `packages/api/` - API client, types, mock server (MSW)
@@ -505,9 +505,10 @@ yarn mobile --clear
 ### Port conflicts
 ```bash
 # Kill process on port
-lsof -ti:3001 | xargs kill -9  # Web (3001)
-lsof -ti:3000 | xargs kill -9  # Marketing (3000)
+lsof -ti:4001 | xargs kill -9  # Web (4001)
+lsof -ti:4000 | xargs kill -9  # Marketing (4000)
 lsof -ti:8081 | xargs kill -9  # Mobile (8081)
+lsof -ti:3000 | xargs kill -9  # Backend API (3000)
 ```
 
 ### Turbo cache issues

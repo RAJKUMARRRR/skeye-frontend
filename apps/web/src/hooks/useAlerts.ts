@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useAuth } from '../features/auth/contexts/AuthContext'
 
 interface Alert {
   id: string
@@ -12,17 +13,22 @@ interface Alert {
 }
 
 export function useAlerts(filters?: { vehicleId?: string; isRead?: boolean }) {
+  const { isAuthenticated, isLoading } = useAuth()
+
   return useQuery({
     queryKey: ['alerts', filters],
     queryFn: async (): Promise<Alert[]> => [],
+    enabled: isAuthenticated && !isLoading, // Wait for auth before querying
   })
 }
 
 export function useAlert(id: string) {
+  const { isAuthenticated, isLoading } = useAuth()
+
   return useQuery({
     queryKey: ['alert', id],
     queryFn: async (): Promise<Alert | null> => null,
-    enabled: !!id,
+    enabled: !!id && isAuthenticated && !isLoading, // Wait for auth and valid ID
   })
 }
 

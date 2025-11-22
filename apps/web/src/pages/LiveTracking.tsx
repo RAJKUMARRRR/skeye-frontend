@@ -1,18 +1,53 @@
-import { useState, useMemo, useCallback } from 'react'
-import { MapProvider, MapMarker, MapViewport } from '../components/map'
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
+import { MapProvider, MapMarker, MapViewport, MapPolyline } from '../components/map'
+import { VehicleIcon, VehiclePopup } from '../components/map/VehicleMarker'
 import { useVehicles } from '../hooks/useVehicles'
-import { useVehicleLocationUpdates } from '../hooks/useWebSocket'
+import { useRealtimeTelemetry } from '../hooks/useTelemetry'
 import { useMapClustering } from '../hooks/useMapClustering'
 import { useFilterStore } from '../stores/filterStore'
 import { Button, Card } from '@fleet/ui-web'
+import { type Device, wsClient } from '@fleet/api'
+
+// Extended type to combine device + telemetry
+interface VehicleWithLocation extends Device {
+  location?: {
+    latitude: number
+    longitude: number
+    speed?: number
+    heading?: number
+    timestamp: string
+    battery?: number
+  }
+}
 
 export function LiveTracking() {
-  const { data: vehicles, isLoading } = useVehicles()
+  const { data: devices, isLoading } = useVehicles()
+  const { telemetry } = useRealtimeTelemetry()
   const { vehicleStatus, vehicleSearch } = useFilterStore()
 
-  // Enable real-time location updates
-  // TODO: Uncomment when WebSocket server is available
-  // useVehicleLocationUpdates()
+  // Combine devices with telemetry data
+  const vehicles: VehicleWithLocation[] = useMemo(() => {
+    if (!devices) return []
+
+    const vehiclesWithLocation = devices.map(device => {
+      // Try matching by device_id (from backend telemetry)
+      const telemetryData = telemetry[device.device_id]
+
+      return {
+        ...device,
+        location: telemetryData ? {
+          latitude: telemetryData.location_lat,
+          longitude: telemetryData.location_lng,
+          speed: telemetryData.speed,
+          heading: telemetryData.heading,
+          timestamp: telemetryData.time,
+          battery: telemetryData.battery,
+        } : undefined,
+      }
+    })
+
+    return vehiclesWithLocation
+  }, [devices, telemetry])
 
   const [viewport, setViewport] = useState<MapViewport>({
     center: { lat: 28.6139, lng: 77.2090 }, // Default to Delhi
@@ -20,8 +55,53 @@ export function LiveTracking() {
   })
 
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null)
-  const [showClustering, setShowClustering] = useState(true)
+  const [showClustering, setShowClustering] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [showTrails, setShowTrails] = useState(false)
+  const [trailDuration, setTrailDuration] = useState<number>(5) // minutes
+
+  // Store vehicle position history for trails
+  const vehicleTrails = useRef<Map<string, Array<{ lat: number; lng: number; timestamp: string }>>>(new Map())
+
+  // Update trails when telemetry changes
+  useEffect(() => {
+    Object.values(vehicles).forEach(vehicle => {
+      if (vehicle.location) {
+        const trails = vehicleTrails.current
+        const deviceTrail = trails.get(vehicle.device_id) || []
+
+        // Check if this is a new position (avoid duplicates)
+        const lastPos = deviceTrail[deviceTrail.length - 1]
+        const isDifferent = !lastPos ||
+          lastPos.lat !== vehicle.location.latitude ||
+          lastPos.lng !== vehicle.location.longitude
+
+        if (isDifferent) {
+          const newTrail = [
+            ...deviceTrail,
+            {
+              lat: vehicle.location.latitude,
+              lng: vehicle.location.longitude,
+              timestamp: vehicle.location.timestamp,
+            }
+          ]
+
+          // Keep only positions from the last N minutes
+          const cutoffTime = Date.now() - trailDuration * 60 * 1000
+          const filteredTrail = newTrail.filter(pos =>
+            new Date(pos.timestamp).getTime() > cutoffTime
+          )
+
+          trails.set(vehicle.device_id, filteredTrail)
+        }
+      }
+    })
+  }, [vehicles, trailDuration])
+
+  // Memoize viewport change handler to prevent infinite loops
+  const handleViewportChange = useCallback((newViewport: MapViewport) => {
+    setViewport(newViewport)
+  }, [])
 
   // Filter vehicles based on filter store
   const filteredVehicles = useMemo(() => {
@@ -29,35 +109,87 @@ export function LiveTracking() {
 
     return vehicles.filter((vehicle) => {
       // Status filter
-      if (vehicleStatus.length > 0 && !vehicleStatus.includes(vehicle.status)) {
+      if (vehicleStatus.length > 0 && !vehicleStatus.includes(vehicle.status as any)) {
         return false
       }
 
-      // Search filter
-      if (vehicleSearch && !vehicle.licensePlate.toLowerCase().includes(vehicleSearch.toLowerCase())) {
-        return false
+      // Search filter - search by name or device_id
+      if (vehicleSearch) {
+        const searchLower = vehicleSearch.toLowerCase()
+        const matchesName = vehicle.name.toLowerCase().includes(searchLower)
+        const matchesDeviceId = vehicle.device_id.toLowerCase().includes(searchLower)
+        if (!matchesName && !matchesDeviceId) {
+          return false
+        }
       }
 
       return true
     })
   }, [vehicles, vehicleStatus, vehicleSearch])
 
-  // Convert vehicles to map markers
+  // Convert vehicles to map markers - ONLY include vehicles with valid location data
   const markers: MapMarker[] = useMemo(() => {
-    return filteredVehicles.map((vehicle) => ({
-      id: vehicle.id,
-      position: {
-        lat: vehicle.location?.latitude || 0,
-        lng: vehicle.location?.longitude || 0,
-      },
-      label: `${vehicle.licensePlate} - ${vehicle.status}`,
-      onClick: () => setSelectedVehicleId(vehicle.id),
-      data: vehicle,
-    }))
+    return filteredVehicles
+      .filter((vehicle) => {
+        // Only include vehicles with valid location coordinates
+        return vehicle.location &&
+               typeof vehicle.location.latitude === 'number' &&
+               typeof vehicle.location.longitude === 'number' &&
+               !isNaN(vehicle.location.latitude) &&
+               !isNaN(vehicle.location.longitude) &&
+               vehicle.location.latitude !== 0 &&
+               vehicle.location.longitude !== 0
+      })
+      .map((vehicle) => {
+        const vehicleData = {
+          name: vehicle.name,
+          status: vehicle.status as 'active' | 'inactive' | 'maintenance' | 'offline',
+          device_type: vehicle.device_type,
+          location: vehicle.location,
+        }
+
+        return {
+          id: vehicle.id,
+          position: {
+            lat: vehicle.location!.latitude,
+            lng: vehicle.location!.longitude,
+          },
+          // Pass React components for Mapbox
+          component: <VehicleIcon vehicle={vehicleData} />,
+          popup: <VehiclePopup vehicle={vehicleData} />,
+          // Keep icon for backward compatibility if needed (optional)
+          label: '',
+          onClick: () => {
+            setSelectedVehicleId(vehicle.id)
+          },
+          data: vehicle as any,
+        }
+      })
   }, [filteredVehicles])
 
+  // Convert vehicle trails to polylines for map
+  const polylines: MapPolyline[] = useMemo(() => {
+    if (!showTrails) return []
+
+    const lines: MapPolyline[] = []
+    vehicleTrails.current.forEach((positions, deviceId) => {
+      if (positions.length >= 2) {
+        const vehicle = filteredVehicles.find(v => v.device_id === deviceId)
+        lines.push({
+          id: `trail-${deviceId}`,
+          positions: positions.map(p => ({ lat: p.lat, lng: p.lng })),
+          color: vehicle?.status === 'active' ? '#3b82f6' : '#94a3b8',
+          weight: 3,
+          opacity: 0.6,
+        })
+      }
+    })
+
+    return lines
+  }, [showTrails, filteredVehicles])
+
   // Map clustering
-  const { clusters } = useMapClustering({
+  useMapClustering({
     markers,
     bounds: undefined, // TODO: Calculate from viewport
     zoom: viewport.zoom,
@@ -71,10 +203,6 @@ export function LiveTracking() {
   const handleMarkerClick = useCallback((marker: MapMarker) => {
     setSelectedVehicleId(marker.id)
   }, [])
-
-  const selectedVehicle = useMemo(() => {
-    return filteredVehicles.find((v) => v.id === selectedVehicleId)
-  }, [filteredVehicles, selectedVehicleId])
 
   // Center map on selected vehicle
   const centerOnVehicle = useCallback((vehicleId: string) => {
@@ -112,16 +240,39 @@ export function LiveTracking() {
             <h3 className="text-lg font-semibold">
               Vehicles ({filteredVehicles.length})
             </h3>
+          </div>
+
+          <div className="space-y-2">
             <Button
               size="sm"
               variant="outline"
               onClick={() => setShowClustering(!showClustering)}
+              className="w-full"
             >
               {showClustering ? 'Hide' : 'Show'} Clusters
             </Button>
+            <Button
+              size="sm"
+              variant={showTrails ? 'default' : 'outline'}
+              onClick={() => setShowTrails(!showTrails)}
+              className="w-full"
+            >
+              {showTrails ? 'Hide' : 'Show'} Vehicle Trails
+            </Button>
+            {showTrails && (
+              <div className="text-xs text-gray-600 p-2 bg-gray-50 rounded">
+                Trail duration: {trailDuration} min
+                <input
+                  type="range"
+                  min="1"
+                  max="30"
+                  value={trailDuration}
+                  onChange={(e) => setTrailDuration(Number(e.target.value))}
+                  className="w-full mt-1"
+                />
+              </div>
+            )}
           </div>
-
-          {/* TODO: Add filter controls here */}
         </div>
 
         <div className="overflow-y-auto h-[calc(100%-5rem)]">
@@ -130,16 +281,21 @@ export function LiveTracking() {
               key={vehicle.id}
               className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
                 selectedVehicleId === vehicle.id ? 'bg-blue-50' : ''
-              }`}
+              } ${!vehicle.location ? 'opacity-50' : ''}`}
               onClick={() => centerOnVehicle(vehicle.id)}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium">{vehicle.licensePlate}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{vehicle.name}</span>
+                  {!vehicle.location && (
+                    <span className="text-xs text-gray-400" title="No location data">📍</span>
+                  )}
+                </div>
                 <span
                   className={`text-xs px-2 py-1 rounded-full ${
                     vehicle.status === 'active'
                       ? 'bg-green-100 text-green-800'
-                      : vehicle.status === 'idle'
+                      : vehicle.status === 'inactive'
                       ? 'bg-yellow-100 text-yellow-800'
                       : vehicle.status === 'maintenance'
                       ? 'bg-orange-100 text-orange-800'
@@ -150,10 +306,16 @@ export function LiveTracking() {
                 </span>
               </div>
               <div className="text-sm text-gray-600">
-                <div>Type: {vehicle.type}</div>
-                {vehicle.location && (
-                  <div className="text-xs text-gray-500 mt-1">
-                    {vehicle.location.latitude.toFixed(6)}, {vehicle.location.longitude.toFixed(6)}
+                <div>Type: {vehicle.device_type}</div>
+                <div className="text-xs text-gray-500">ID: {vehicle.device_id}</div>
+                {vehicle.location ? (
+                  <div className="text-xs text-green-600 mt-1">
+                    📍 {vehicle.location.latitude.toFixed(6)}, {vehicle.location.longitude.toFixed(6)}
+                    {vehicle.location.speed && <span className="ml-2">{vehicle.location.speed} km/h</span>}
+                  </div>
+                ) : (
+                  <div className="text-xs text-gray-400 mt-1">
+                    No location data
                   </div>
                 )}
               </div>
@@ -178,74 +340,12 @@ export function LiveTracking() {
         <MapProvider
           center={viewport.center}
           zoom={viewport.zoom}
-          markers={showClustering ? [] : markers} // TODO: Use clustered markers
-          onViewportChange={setViewport}
+          markers={markers}
+          polylines={polylines}
+          onViewportChange={handleViewportChange}
           onMarkerClick={handleMarkerClick}
           className="h-full w-full"
         />
-
-        {/* Selected Vehicle Info Panel */}
-        {selectedVehicle && (
-          <Card className="absolute top-4 right-4 w-80 p-4 shadow-lg z-[1000]">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">{selectedVehicle.licensePlate}</h3>
-              <button
-                onClick={() => setSelectedVehicleId(null)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <span className="text-sm text-gray-600">Status:</span>
-                <span
-                  className={`ml-2 text-xs px-2 py-1 rounded-full ${
-                    selectedVehicle.status === 'active'
-                      ? 'bg-green-100 text-green-800'
-                      : selectedVehicle.status === 'idle'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : selectedVehicle.status === 'maintenance'
-                      ? 'bg-orange-100 text-orange-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}
-                >
-                  {selectedVehicle.status}
-                </span>
-              </div>
-
-              <div>
-                <span className="text-sm text-gray-600">Type:</span>
-                <span className="ml-2 text-sm">{selectedVehicle.type}</span>
-              </div>
-
-              {selectedVehicle.location && (
-                <>
-                  <div>
-                    <span className="text-sm text-gray-600">Speed:</span>
-                    <span className="ml-2 text-sm">{selectedVehicle.location.speed || 0} km/h</span>
-                  </div>
-
-                  <div>
-                    <span className="text-sm text-gray-600">Heading:</span>
-                    <span className="ml-2 text-sm">{selectedVehicle.location.heading || 0}°</span>
-                  </div>
-
-                  <div>
-                    <span className="text-sm text-gray-600">Last Update:</span>
-                    <span className="ml-2 text-sm">
-                      {new Date(selectedVehicle.location.timestamp).toLocaleTimeString()}
-                    </span>
-                  </div>
-                </>
-              )}
-
-              {/* TODO: Add telemetry display component */}
-              {/* TODO: Add trip playback button */}
-            </div>
-          </Card>
-        )}
       </div>
     </div>
   )

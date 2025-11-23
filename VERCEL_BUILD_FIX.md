@@ -29,50 +29,73 @@
 
 Vercel already runs `installCommand`, so no need to run `yarn install` again in `buildCommand`.
 
+### 3. MDX Syntax Errors ✅ FIXED
+**Problem:** MDX parser cannot handle `<` or `>` followed by numbers (interprets as HTML tags)
+
+**Fixed in** `driver-safety-scoring.mdx`:
+- Line 75: `<2 harsh events` → `Less than 2 harsh events`
+- Line 76: `<5% speeding` → `Less than 5% speeding`
+- Line 89: `<60` → `Below 60`
+- Line 90: `>10 harsh events` → `More than 10 harsh events`
+- Line 91: `>20% speeding` → `More than 20% speeding`
+- Line 198: `Score <40` → `Score below 40`
+- Line 299: `>95%` → `greater than 95%`
+
+### 4. TypeScript Error in pricing/page.tsx ✅ FIXED
+**Problem:** Accordion components required `value` prop
+
+**Fixed:** Added `value` prop to `AccordionTrigger` and `AccordionContent`
+
+### 5. TypeScript Error in magnetic-button.tsx ✅ FIXED
+**Problem:** Framer Motion type conflict with React ButtonHTMLAttributes
+
+**Fixed:** Changed from `React.ButtonHTMLAttributes<HTMLButtonElement>` to `HTMLMotionProps<'button'>`
+
 ---
 
-## 🐛 Remaining Issue: MDX Build Error
+## 🐛 Remaining Issue: next-intl Static Rendering
 
 ### Error Message
 ```
-ERROR: Cannot process MDX file with esbuild:
-75:4: Unexpected character `2` (U+0032) before name
+Error: Usage of next-intl APIs in Server Components currently opts into dynamic rendering.
+This limitation will eventually be lifted, but as a stopgap solution, you can use the
+`setRequestLocale` API to enable static rendering
 ```
 
-**File:** `apps/marketing/content/blog/driver-safety-scoring.mdx`
-**Line:** 75
-
 ### Cause
-MDX syntax error in the blog content file. Likely a component or HTML tag starting with a number.
+The marketing site pages are using next-intl in server components but Next.js is trying to statically render them. Next-intl requires calling `setRequestLocale()` in each page component to enable static rendering.
 
 ### Quick Fix Options
 
-#### Option 1: Skip Blog Build (Fastest - For Deployment)
-Comment out blog in the build temporarily:
+#### Option 1: Disable Static Export (Fastest - Recommended for Vercel)
+Vercel doesn't require static export. Update `apps/marketing/next.config.mjs`:
 
-**In `apps/marketing/contentlayer.config.ts`:**
+```javascript
+const nextConfig = {
+  // Remove or comment out the output line:
+  // output: 'export',
+
+  // Keep existing config:
+  transpilePackages: ['@fleet/api', '@fleet/ui', '@fleet/utils'],
+  // ... rest of config
+}
+```
+
+This allows Next.js to use dynamic rendering which works fine on Vercel.
+
+#### Option 2: Add setRequestLocale to all pages (More work)
+Add to every page component in `apps/marketing/src/app/[locale]/`:
+
 ```typescript
-// Temporarily skip blog
-export default makeSource({
-  contentDirPath: 'content',
-  documentTypes: [], // Empty to skip all content
-})
+import { setRequestLocale } from 'next-intl/server'
+
+export default function Page({ params: { locale } }) {
+  setRequestLocale(locale)  // Add this line
+  // ... rest of page
+}
 ```
 
-#### Option 2: Fix the MDX File
-Check line 75 in `apps/marketing/content/blog/driver-safety-scoring.mdx`:
-```mdx
-// Bad - starts with number
-<2Column>
-
-// Good - starts with letter
-<TwoColumn>
-```
-
-#### Option 3: Delete the Problematic File (Quick)
-```bash
-rm apps/marketing/content/blog/driver-safety-scoring.mdx
-```
+Required in: `page.tsx`, `about/page.tsx`, `blog/page.tsx`, `contact/page.tsx`, `demo/page.tsx`, `features/page.tsx`, `pricing/page.tsx`
 
 ---
 

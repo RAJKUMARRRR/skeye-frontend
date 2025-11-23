@@ -268,10 +268,10 @@ export default function PricingPage() {
                       value={`item-${i}`}
                       className="border border-border/50 bg-card/50 backdrop-blur-sm rounded-lg px-6 data-[state=open]:shadow-lg transition-shadow"
                     >
-                      <AccordionTrigger className="text-left hover:no-underline py-5">
+                      <AccordionTrigger value={`item-${i}`} className="text-left hover:no-underline py-5">
                         <span className="font-semibold">{faq.question}</span>
                       </AccordionTrigger>
-                      <AccordionContent className="text-muted-foreground pb-5 leading-relaxed">
+                      <AccordionContent value={`item-${i}`} className="text-muted-foreground pb-5 leading-relaxed">
                         {faq.answer}
                       </AccordionContent>
                     </AccordionItem>

@@ -41,11 +41,29 @@ export function LoginForm() {
       await signIn.authenticateWithRedirect({
         strategy: 'oauth_google',
         redirectUrl: window.location.origin + '/sso-callback',
-        redirectUrlComplete: window.location.origin + '/',
+        redirectUrlComplete: window.location.origin + '/select-organization',
       })
     } catch (err: any) {
       console.error('Google sign-in error:', err)
-      toast.error('Failed to sign in with Google')
+
+      // Handle specific error codes
+      const errorCode = err?.errors?.[0]?.code
+      const errorMessage = err?.errors?.[0]?.message || 'Failed to sign in with Google'
+
+      if (errorCode === 'too_many_requests') {
+        toast.error('Too many sign-in attempts. Please wait a few minutes and try again.', {
+          duration: 5000,
+        })
+      } else if (errorCode === 'session_exists') {
+        toast.info('You have an existing session. Redirecting...')
+        setTimeout(() => {
+          navigate('/select-organization?from_task=choose-organization')
+        }, 1500)
+        return
+      } else {
+        toast.error(errorMessage)
+      }
+
       setIsGoogleLoading(false)
     }
   }
@@ -62,7 +80,7 @@ export function LoginForm() {
 
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId })
-        navigate('/')
+        navigate('/select-organization')
       } else if (result.status === 'needs_second_factor') {
         // 2FA is required
         setRequires2FA(true)
@@ -73,6 +91,31 @@ export function LoginForm() {
       }
     } catch (err: any) {
       console.error('Login error:', err)
+
+      // Check for specific error codes
+      const errorCode = err?.errors?.[0]?.code
+
+      // Rate limiting
+      if (errorCode === 'too_many_requests') {
+        toast.error('Too many sign-in attempts. Please wait a few minutes and try again.', {
+          duration: 5000,
+        })
+        form.setError('root', {
+          message: 'Too many attempts. Please wait a few minutes before trying again.',
+        })
+        setIsLoading(false)
+        return
+      }
+
+      // Session exists - user was removed from org
+      if (errorCode === 'session_exists') {
+        toast.info('You have an existing session. Redirecting to organization selection...')
+        setTimeout(() => {
+          navigate('/select-organization?from_task=choose-organization')
+        }, 1500)
+        return
+      }
+
       const errorMessage = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || 'Invalid email or password'
       form.setError('root', {
         message: errorMessage,
@@ -96,7 +139,7 @@ export function LoginForm() {
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId })
         toast.success('Successfully signed in!')
-        navigate('/')
+        navigate('/select-organization')
       }
     } catch (err: any) {
       console.error('2FA error:', err)

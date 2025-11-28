@@ -98,7 +98,7 @@ export function SignUpForm() {
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId })
         toast.success('Account created successfully!')
-        navigate('/')
+        navigate('/select-organization')
       }
     } catch (err: any) {
       console.error('Verification error:', err)

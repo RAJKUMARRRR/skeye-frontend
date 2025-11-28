@@ -1,0 +1,166 @@
+{
+  "$schema": "./features.schema.json",
+  "features": {
+    "dashboard": {
+      "enabled": true,
+      "name": "Dashboard",
+      "description": "Main dashboard with KPIs and statistics"
+    },
+    "liveTracking": {
+      "enabled": true,
+      "name": "Live Tracking",
+      "description": "Real-time vehicle tracking on map"
+    },
+    "vehicles": {
+      "enabled": true,
+      "name": "Vehicles",
+      "description": "Vehicle management"
+    },
+    "drivers": {
+      "enabled": false,
+      "name": "Drivers",
+      "description": "Driver management"
+    },
+    "trips": {
+      "enabled": false,
+      "name": "Trips",
+      "description": "Trip history and management"
+    },
+    "geofences": {
+      "enabled": false,
+      "name": "Geofences",
+      "description": "Geofence creation and management"
+    },
+    "routes": {
+      "enabled": false,
+      "name": "Routes",
+      "description": "Route planning and management",
+      "subFeatures": {
+        "routePlanner": {
+          "enabled": true,
+          "name": "Route Planner",
+          "description": "Plan and optimize routes"
+        },
+        "liveMap": {
+          "enabled": true,
+          "name": "Live Map",
+          "description": "Real-time route visualization"
+        },
+        "routeHistory": {
+          "enabled": true,
+          "name": "Route History",
+          "description": "Historical route data"
+        }
+      }
+    },
+    "maintenance": {
+      "enabled": false,
+      "name": "Maintenance",
+      "description": "Vehicle maintenance scheduling and tracking"
+    },
+    "fuel": {
+      "enabled": false,
+      "name": "Fuel",
+      "description": "Fuel consumption and cost tracking"
+    },
+    "alerts": {
+      "enabled": false,
+      "name": "Alerts",
+      "description": "Alert management and notifications",
+      "subFeatures": {
+        "alertsDashboard": {
+          "enabled": true,
+          "name": "Alerts Dashboard",
+          "description": "View all alerts"
+        },
+        "rules": {
+          "enabled": true,
+          "name": "Rules",
+          "description": "Configure alert rules"
+        },
+        "routing": {
+          "enabled": true,
+          "name": "Routing",
+          "description": "Alert routing configuration"
+        },
+        "escalation": {
+          "enabled": true,
+          "name": "Escalation",
+          "description": "Alert escalation policies"
+        },
+        "history": {
+          "enabled": true,
+          "name": "History",
+          "description": "Historical alert data"
+        },
+        "muting": {
+          "enabled": true,
+          "name": "Muting",
+          "description": "Mute specific alerts"
+        },
+        "quietHours": {
+          "enabled": true,
+          "name": "Quiet Hours",
+          "description": "Configure quiet hours"
+        },
+        "notifications": {
+          "enabled": true,
+          "name": "Notifications",
+          "description": "Notification preferences"
+        }
+      }
+    },
+    "reports": {
+      "enabled": false,
+      "name": "Reports",
+      "description": "Generate and view reports"
+    },
+    "analytics": {
+      "enabled": false,
+      "name": "Analytics",
+      "description": "Advanced analytics and insights"
+    },
+    "settings": {
+      "enabled": true,
+      "name": "Settings",
+      "description": "Application settings",
+      "subFeatures": {
+        "organization": {
+          "enabled": true,
+          "name": "Organization",
+          "description": "Organization settings"
+        },
+        "users": {
+          "enabled": false,
+          "name": "Users",
+          "description": "User management"
+        },
+        "notifications": {
+          "enabled": false,
+          "name": "Notifications",
+          "description": "Notification settings"
+        },
+        "security": {
+          "enabled": false,
+          "name": "Security",
+          "description": "Security settings"
+        },
+        "appearance": {
+          "enabled": false,
+          "name": "Appearance",
+          "description": "Appearance customization"
+        },
+        "integrations": {
+          "enabled": false,
+          "name": "Integrations",
+          "description": "Third-party integrations"
+        },
+        "whiteLabel": {
+          "enabled": false,
+          "name": "White Label",
+          "description": "White labeling options"
+        }
+      }
+    }
+  }
+}

@@ -1,55 +1,50 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  getTrips,
+  getTrip,
+  createTrip,
+  updateTrip,
+  deleteTrip,
+  endTrip,
+  getTripStats,
+  type Trip,
+  type TripFilters,
+} from '@fleet/api'
 
-// Types - will be replaced with @fleet/api types
-interface Trip {
-  id: string
-  vehicleId: string
-  driverId: string
-  startTime: string
-  endTime?: string
-  startLocation: { lat: number; lng: number; address: string }
-  endLocation?: { lat: number; lng: number; address: string }
-  distance: number
-  duration: number
-  status: 'ongoing' | 'completed' | 'cancelled'
-  route: Array<{ lat: number; lng: number; timestamp: string }>
-  maxSpeed: number
-  avgSpeed: number
-  idleTime: number
-  fuelConsumed?: number
-  createdAt: string
-  updatedAt: string
-}
-
-export function useTrips(filters?: { vehicleId?: string; driverId?: string; startDate?: string; endDate?: string }) {
+export function useTrips(filters?: TripFilters) {
   return useQuery({
     queryKey: ['trips', filters],
-    queryFn: async (): Promise<Trip[]> => {
-      // TODO: Replace with actual API call from @fleet/api
-      return []
-    },
+    queryFn: () => getTrips(filters),
+    staleTime: 30000, // 30 seconds
   })
 }
 
 export function useTrip(id: string) {
   return useQuery({
     queryKey: ['trip', id],
-    queryFn: async (): Promise<Trip | null> => {
-      // TODO: Replace with actual API call from @fleet/api
-      return null
-    },
+    queryFn: () => getTrip(id),
     enabled: !!id,
+    staleTime: 30000,
   })
 }
 
 export function useTripRoute(tripId: string) {
   return useQuery({
     queryKey: ['trip', tripId, 'route'],
-    queryFn: async (): Promise<Array<{ lat: number; lng: number; timestamp: string }>> => {
-      // TODO: Replace with actual API call from @fleet/api
-      return []
+    queryFn: async () => {
+      const trip = await getTrip(tripId)
+      return trip.route
     },
     enabled: !!tripId,
+    staleTime: 30000,
+  })
+}
+
+export function useTripStats(filters?: TripFilters) {
+  return useQuery({
+    queryKey: ['trips', 'stats', filters],
+    queryFn: () => getTripStats(filters),
+    staleTime: 60000, // 1 minute
   })
 }
 
@@ -57,12 +52,35 @@ export function useCreateTrip() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (data: Partial<Trip>): Promise<Trip> => {
-      // TODO: Replace with actual API call from @fleet/api
-      throw new Error('Not implemented')
-    },
+    mutationFn: (data: Partial<Trip>) => createTrip(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['trips'] })
+      queryClient.invalidateQueries({ queryKey: ['trips', 'stats'] })
+    },
+  })
+}
+
+export function useUpdateTrip() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Trip> }) => updateTrip(id, data),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['trips'] })
+      queryClient.invalidateQueries({ queryKey: ['trip', id] })
+      queryClient.invalidateQueries({ queryKey: ['trips', 'stats'] })
+    },
+  })
+}
+
+export function useDeleteTrip() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: string) => deleteTrip(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trips'] })
+      queryClient.invalidateQueries({ queryKey: ['trips', 'stats'] })
     },
   })
 }
@@ -71,13 +89,11 @@ export function useEndTrip() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (id: string): Promise<Trip> => {
-      // TODO: Replace with actual API call from @fleet/api
-      throw new Error('Not implemented')
-    },
+    mutationFn: (id: string) => endTrip(id),
     onSuccess: (_, tripId) => {
       queryClient.invalidateQueries({ queryKey: ['trips'] })
       queryClient.invalidateQueries({ queryKey: ['trip', tripId] })
+      queryClient.invalidateQueries({ queryKey: ['trips', 'stats'] })
     },
   })
 }

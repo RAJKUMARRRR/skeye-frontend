@@ -1,15 +1,38 @@
 import { useState } from 'react'
-import { useTrips } from '../hooks/useTrips'
+import { useTrips, useTripStats } from '../hooks/useTrips'
 import { Card, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Button, Input } from '@fleet/ui-web'
+import type { TripFilters } from '@fleet/api'
 
 export function TripHistory() {
-  const { data: trips, isLoading } = useTrips()
+  const [filters, setFilters] = useState<TripFilters>({})
   const [searchTerm, setSearchTerm] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
 
+  const { data: trips, isLoading, error } = useTrips(filters)
+  const { data: stats } = useTripStats(filters)
+
+  const handleSearch = () => {
+    setFilters({
+      dateFrom: dateFrom || undefined,
+      dateTo: dateTo || undefined,
+      // searchTerm can be used to filter by vehicleId or driverId
+      // This would need backend support for a general search parameter
+    })
+  }
+
   if (isLoading) {
     return <div className="p-6 text-gray-600">Loading trips...</div>
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="rounded-lg bg-red-50 p-4 text-red-600">
+          Error loading trips: {error instanceof Error ? error.message : 'Unknown error'}
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -21,6 +44,32 @@ export function TripHistory() {
         </div>
         <Button variant="outline">Export CSV</Button>
       </div>
+
+      {/* Statistics Cards */}
+      {stats && (
+        <div className="grid gap-4 md:grid-cols-5">
+          <Card className="p-4">
+            <p className="text-sm text-gray-600">Total Trips</p>
+            <p className="text-2xl font-bold">{stats.totalTrips}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-sm text-gray-600">Total Distance</p>
+            <p className="text-2xl font-bold">{stats.totalDistance.toFixed(2)} km</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-sm text-gray-600">Total Duration</p>
+            <p className="text-2xl font-bold">{Math.round(stats.totalDuration / 3600)} hrs</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-sm text-gray-600">Avg Speed</p>
+            <p className="text-2xl font-bold">{stats.avgSpeed.toFixed(1)} km/h</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-sm text-gray-600">Fuel Consumed</p>
+            <p className="text-2xl font-bold">{stats.totalFuelConsumed.toFixed(2)} L</p>
+          </Card>
+        </div>
+      )}
 
       <Card className="p-4">
         <div className="grid gap-4 md:grid-cols-4">
@@ -41,7 +90,7 @@ export function TripHistory() {
             onChange={(e) => setDateTo(e.target.value)}
             placeholder="To date"
           />
-          <Button>Search</Button>
+          <Button onClick={handleSearch}>Search</Button>
         </div>
       </Card>
 

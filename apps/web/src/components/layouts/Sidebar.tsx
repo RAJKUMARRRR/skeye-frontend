@@ -21,10 +21,14 @@ import {
   PanelLeft
 } from 'lucide-react'
 import { usePermissions } from '../../features/auth/contexts/PermissionContext'
+import { OrganizationSwitcherCompact } from '../OrganizationSwitcher'
+import { useFeatureFlags } from '../../hooks/useFeatureFlags'
+import type { FeatureKey } from '../../types/features'
 
 interface SubNavigationItem {
   name: string
   path: string
+  featureKey?: string // Sub-feature key (e.g., 'routePlanner', 'rules')
 }
 
 interface NavigationItem {
@@ -32,73 +36,104 @@ interface NavigationItem {
   path: string
   icon: React.ElementType
   requiredRole?: 'super_admin' | 'admin' | 'manager' | 'dispatcher' | 'driver'
+  featureKey?: FeatureKey // Feature flag key
   subItems?: SubNavigationItem[]
 }
 
 const navigation: NavigationItem[] = [
-  { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-  { name: 'Live Tracking', path: '/tracking', icon: MapPin },
-  { name: 'Vehicles', path: '/vehicles', icon: Truck },
-  { name: 'Drivers', path: '/drivers', icon: Users },
-  { name: 'Trips', path: '/trips', icon: Route },
-  { name: 'Geofences', path: '/geofences', icon: MapPinned },
+  { name: 'Dashboard', path: '/', icon: LayoutDashboard, featureKey: 'dashboard' },
+  { name: 'Live Tracking', path: '/tracking', icon: MapPin, featureKey: 'liveTracking' },
+  { name: 'Vehicles', path: '/vehicles', icon: Truck, featureKey: 'vehicles' },
+  { name: 'Drivers', path: '/drivers', icon: Users, featureKey: 'drivers' },
+  { name: 'Trips', path: '/trips', icon: Route, featureKey: 'trips' },
+  { name: 'Geofences', path: '/geofences', icon: MapPinned, featureKey: 'geofences' },
   {
     name: 'Routes',
     path: '/routes',
     icon: Navigation,
+    featureKey: 'routes',
     subItems: [
-      { name: 'Route Planner', path: '/routes/planner' },
-      { name: 'Live Map', path: '/routes/map' },
-      { name: 'Route History', path: '/routes/history' },
+      { name: 'Route Planner', path: '/routes/planner', featureKey: 'routePlanner' },
+      { name: 'Live Map', path: '/routes/map', featureKey: 'liveMap' },
+      { name: 'Route History', path: '/routes/history', featureKey: 'routeHistory' },
     ]
   },
-  { name: 'Maintenance', path: '/maintenance', icon: Wrench },
-  { name: 'Fuel', path: '/fuel', icon: Fuel },
+  { name: 'Maintenance', path: '/maintenance', icon: Wrench, featureKey: 'maintenance' },
+  { name: 'Fuel', path: '/fuel', icon: Fuel, featureKey: 'fuel' },
   {
     name: 'Alerts',
     path: '/alerts',
     icon: Bell,
+    featureKey: 'alerts',
     subItems: [
-      { name: 'Alerts', path: '/alerts' },
-      { name: 'Rules', path: '/alerts/rules' },
-      { name: 'Routing', path: '/alerts/routing' },
-      { name: 'Escalation', path: '/alerts/escalation' },
-      { name: 'History', path: '/alerts/history' },
-      { name: 'Muting', path: '/alerts/muting' },
-      { name: 'Quiet Hours', path: '/alerts/quiet-hours' },
-      { name: 'Notifications', path: '/alerts/notifications' },
+      { name: 'Alerts', path: '/alerts', featureKey: 'alertsDashboard' },
+      { name: 'Rules', path: '/alerts/rules', featureKey: 'rules' },
+      { name: 'Routing', path: '/alerts/routing', featureKey: 'routing' },
+      { name: 'Escalation', path: '/alerts/escalation', featureKey: 'escalation' },
+      { name: 'History', path: '/alerts/history', featureKey: 'history' },
+      { name: 'Muting', path: '/alerts/muting', featureKey: 'muting' },
+      { name: 'Quiet Hours', path: '/alerts/quiet-hours', featureKey: 'quietHours' },
+      { name: 'Notifications', path: '/alerts/notifications', featureKey: 'notifications' },
     ]
   },
-  { name: 'Reports', path: '/reports', icon: FileText },
-  { name: 'Analytics', path: '/analytics', icon: BarChart3 },
+  { name: 'Reports', path: '/reports', icon: FileText, featureKey: 'reports' },
+  { name: 'Analytics', path: '/analytics', icon: BarChart3, featureKey: 'analytics' },
   {
     name: 'Settings',
     path: '/settings',
     icon: Settings,
     requiredRole: 'manager',
+    featureKey: 'settings',
     subItems: [
-      { name: 'Organization', path: '/settings/organization' },
-      { name: 'Users', path: '/settings/users' },
-      { name: 'Notifications', path: '/settings/notifications' },
-      { name: 'Security', path: '/settings/security' },
-      { name: 'Appearance', path: '/settings/appearance' },
-      { name: 'Integrations', path: '/settings/integrations' },
-      { name: 'White Label', path: '/settings/white-label' },
+      { name: 'Organization', path: '/settings/organization', featureKey: 'organization' },
+      { name: 'Users', path: '/settings/users', featureKey: 'users' },
+      { name: 'Notifications', path: '/settings/notifications', featureKey: 'notifications' },
+      { name: 'Security', path: '/settings/security', featureKey: 'security' },
+      { name: 'Appearance', path: '/settings/appearance', featureKey: 'appearance' },
+      { name: 'Integrations', path: '/settings/integrations', featureKey: 'integrations' },
+      { name: 'White Label', path: '/settings/white-label', featureKey: 'whiteLabel' },
     ]
   },
 ]
 
 export function Sidebar() {
   const { hasRole } = usePermissions()
+  const { isFeatureEnabled, isSubFeatureEnabled } = useFeatureFlags()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [expandedItems, setExpandedItems] = useState<string[]>([])
 
   const filteredNavigation = useMemo(() => {
-    return navigation.filter((item) => {
-      if (!item.requiredRole) return true
-      return hasRole(item.requiredRole)
-    })
-  }, [hasRole])
+    return navigation
+      .filter((item) => {
+        // Filter by role
+        if (item.requiredRole && !hasRole(item.requiredRole)) {
+          return false
+        }
+
+        // Filter by feature flag
+        if (item.featureKey && !isFeatureEnabled(item.featureKey)) {
+          return false
+        }
+
+        return true
+      })
+      .map((item) => {
+        // Filter sub-items by feature flags
+        if (item.subItems && item.featureKey) {
+          const filteredSubItems = item.subItems.filter((subItem) => {
+            if (!subItem.featureKey) return true
+            return isSubFeatureEnabled(item.featureKey!, subItem.featureKey)
+          })
+
+          return {
+            ...item,
+            subItems: filteredSubItems.length > 0 ? filteredSubItems : undefined,
+          }
+        }
+
+        return item
+      })
+  }, [hasRole, isFeatureEnabled, isSubFeatureEnabled])
 
   const toggleExpanded = useCallback((itemName: string) => {
     setExpandedItems((prev) =>
@@ -147,6 +182,13 @@ export function Sidebar() {
           >
             <PanelLeft className="w-5 h-5" />
           </button>
+        </div>
+      )}
+
+      {/* Organization Switcher */}
+      {!isCollapsed && (
+        <div className="px-3 pt-4 pb-2 border-b border-sidebar-border">
+          <OrganizationSwitcherCompact />
         </div>
       )}
 

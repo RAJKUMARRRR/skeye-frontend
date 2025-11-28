@@ -9,7 +9,7 @@ export function SignUp() {
 
   useEffect(() => {
     if (isLoaded && isSignedIn) {
-      navigate('/', { replace: true })
+      navigate('/select-organization', { replace: true })
     }
   }, [isLoaded, isSignedIn, navigate])
 

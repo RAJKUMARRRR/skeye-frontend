@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Feature Flags Configuration",
+  "description": "Configuration for enabling/disabling features in the application",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "dashboard": {
+          "$ref": "#/definitions/feature"
+        },
+        "liveTracking": {
+          "$ref": "#/definitions/feature"
+        },
+        "vehicles": {
+          "$ref": "#/definitions/feature"
+        },
+        "drivers": {
+          "$ref": "#/definitions/feature"
+        },
+        "trips": {
+          "$ref": "#/definitions/feature"
+        },
+        "geofences": {
+          "$ref": "#/definitions/feature"
+        },
+        "routes": {
+          "$ref": "#/definitions/featureWithSubs"
+        },
+        "maintenance": {
+          "$ref": "#/definitions/feature"
+        },
+        "fuel": {
+          "$ref": "#/definitions/feature"
+        },
+        "alerts": {
+          "$ref": "#/definitions/featureWithSubs"
+        },
+        "reports": {
+          "$ref": "#/definitions/feature"
+        },
+        "analytics": {
+          "$ref": "#/definitions/feature"
+        },
+        "settings": {
+          "$ref": "#/definitions/featureWithSubs"
+        }
+      },
+      "required": ["dashboard"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["features"],
+  "definitions": {
+    "feature": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this feature is enabled"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the feature"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of what this feature does"
+        }
+      },
+      "required": ["enabled", "name"],
+      "additionalProperties": false
+    },
+    "featureWithSubs": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this feature is enabled"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the feature"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of what this feature does"
+        },
+        "subFeatures": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z]+$": {
+              "$ref": "#/definitions/subFeature"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["enabled", "name"],
+      "additionalProperties": false
+    },
+    "subFeature": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this sub-feature is enabled (requires parent feature to be enabled)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the sub-feature"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of what this sub-feature does"
+        }
+      },
+      "required": ["enabled", "name"],
+      "additionalProperties": false
+    }
+  }
+}

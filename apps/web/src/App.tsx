@@ -1,6 +1,7 @@
 import { BrowserRouter, useRoutes } from 'react-router-dom'
 import { routes } from './routes'
 import { Toaster } from './components/Toast'
+import { OrganizationGuard } from './components/OrganizationGuard'
 
 function AppRoutes() {
   return useRoutes(routes)
@@ -9,8 +10,10 @@ function AppRoutes() {
 function App() {
   return (
     <BrowserRouter>
-      <AppRoutes />
-      <Toaster />
+      <OrganizationGuard>
+        <AppRoutes />
+        <Toaster />
+      </OrganizationGuard>
     </BrowserRouter>
   )
 }

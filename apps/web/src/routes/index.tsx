@@ -1,6 +1,7 @@
 import { RouteObject } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute'
+import { FeatureRoute } from '../components/FeatureRoute'
 import { Login } from '../pages/Login'
 import { SignUp } from '../pages/SignUp'
 import { ForgotPassword } from '../pages/ForgotPassword'
@@ -37,13 +38,15 @@ import { Reports } from '../pages/Reports'
 import { Analytics } from '../pages/Analytics'
 import { Fuel } from '../pages/Fuel'
 import { Settings } from '../pages/Settings'
-import { OrganizationSettings } from '../pages/settings/OrganizationSettings'
+import { OrganizationSettings } from '../pages/settings/Organization'
 import { UserManagement } from '../pages/settings/UserManagement'
 import { NotificationSettings } from '../pages/settings/NotificationSettings'
 import { SecuritySettings } from '../pages/settings/SecuritySettings'
 import { AppearanceSettings } from '../pages/settings/AppearanceSettings'
 import { Integrations } from '../pages/settings/Integrations'
 import { WhiteLabel } from '../pages/settings/WhiteLabel'
+import { DebugOrganizations } from '../pages/DebugOrganizations'
+import { SelectOrganization } from '../pages/SelectOrganization'
 
 export const routes: RouteObject[] = [
   {
@@ -63,12 +66,16 @@ export const routes: RouteObject[] = [
     element: <SSOCallback />,
   },
   {
-    path: '/sign-in/*',
-    element: <SignInPage />,
+    path: '/sign-in',
+    element: <Login />,
   },
   {
-    path: '/sign-up/*',
-    element: <SignUpPage />,
+    path: '/sign-up',
+    element: <SignUp />,
+  },
+  {
+    path: '/select-organization',
+    element: <SelectOrganization />,
   },
   {
     path: '/',
@@ -80,115 +87,227 @@ export const routes: RouteObject[] = [
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: (
+          <FeatureRoute featureKey="dashboard">
+            <Dashboard />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'tracking',
-        element: <LiveTracking />,
+        element: (
+          <FeatureRoute featureKey="liveTracking">
+            <LiveTracking />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'vehicles',
-        element: <Vehicles />,
+        element: (
+          <FeatureRoute featureKey="vehicles">
+            <Vehicles />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'vehicles/new',
-        element: <VehicleNew />,
+        element: (
+          <FeatureRoute featureKey="vehicles">
+            <VehicleNew />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'vehicles/import',
-        element: <VehicleBulkImport />,
+        element: (
+          <FeatureRoute featureKey="vehicles">
+            <VehicleBulkImport />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'vehicles/:id',
-        element: <VehicleDetail />,
+        element: (
+          <FeatureRoute featureKey="vehicles">
+            <VehicleDetail />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'vehicles/:id/edit',
-        element: <VehicleEdit />,
+        element: (
+          <FeatureRoute featureKey="vehicles">
+            <VehicleEdit />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'drivers',
-        element: <Drivers />,
+        element: (
+          <FeatureRoute featureKey="drivers">
+            <Drivers />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'drivers/:id',
-        element: <DriverDetail />,
+        element: (
+          <FeatureRoute featureKey="drivers">
+            <DriverDetail />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'trips',
-        element: <TripHistory />,
+        element: (
+          <FeatureRoute featureKey="trips">
+            <TripHistory />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'geofences',
-        element: <Geofences />,
+        element: (
+          <FeatureRoute featureKey="geofences">
+            <Geofences />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'geofences/new',
-        element: <GeofenceNew />,
+        element: (
+          <FeatureRoute featureKey="geofences">
+            <GeofenceNew />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'maintenance',
-        element: <Maintenance />,
+        element: (
+          <FeatureRoute featureKey="maintenance">
+            <Maintenance />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'routes',
-        element: <RoutesPage />,
+        element: (
+          <FeatureRoute featureKey="routes">
+            <RoutesPage />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'routes/planner',
-        element: <RoutePlanner />,
+        element: (
+          <FeatureRoute featureKey="routes" subFeatureKey="routePlanner">
+            <RoutePlanner />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'routes/map',
-        element: <LiveMap />,
+        element: (
+          <FeatureRoute featureKey="routes" subFeatureKey="liveMap">
+            <LiveMap />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'routes/history',
-        element: <RouteHistoryPage />,
+        element: (
+          <FeatureRoute featureKey="routes" subFeatureKey="routeHistory">
+            <RouteHistoryPage />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'alerts',
-        element: <Alerts />,
+        element: (
+          <FeatureRoute featureKey="alerts" subFeatureKey="alertsDashboard">
+            <Alerts />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'alerts/rules',
-        element: <AlertRules />,
+        element: (
+          <FeatureRoute featureKey="alerts" subFeatureKey="rules">
+            <AlertRules />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'alerts/routing',
-        element: <AlertRouting />,
+        element: (
+          <FeatureRoute featureKey="alerts" subFeatureKey="routing">
+            <AlertRouting />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'alerts/escalation',
-        element: <AlertEscalation />,
+        element: (
+          <FeatureRoute featureKey="alerts" subFeatureKey="escalation">
+            <AlertEscalation />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'alerts/history',
-        element: <AlertHistory />,
+        element: (
+          <FeatureRoute featureKey="alerts" subFeatureKey="history">
+            <AlertHistory />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'alerts/muting',
-        element: <AlertMuting />,
+        element: (
+          <FeatureRoute featureKey="alerts" subFeatureKey="muting">
+            <AlertMuting />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'alerts/quiet-hours',
-        element: <AlertQuietHours />,
+        element: (
+          <FeatureRoute featureKey="alerts" subFeatureKey="quietHours">
+            <AlertQuietHours />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'alerts/notifications',
-        element: <AlertNotifications />,
+        element: (
+          <FeatureRoute featureKey="alerts" subFeatureKey="notifications">
+            <AlertNotifications />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'reports',
-        element: <Reports />,
+        element: (
+          <FeatureRoute featureKey="reports">
+            <Reports />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'analytics',
-        element: <Analytics />,
+        element: (
+          <FeatureRoute featureKey="analytics">
+            <Analytics />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'fuel',
-        element: <Fuel />,
+        element: (
+          <FeatureRoute featureKey="fuel">
+            <Fuel />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'profile',
@@ -196,35 +315,71 @@ export const routes: RouteObject[] = [
       },
       {
         path: 'settings',
-        element: <Settings />,
+        element: (
+          <FeatureRoute featureKey="settings">
+            <Settings />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'settings/organization',
-        element: <OrganizationSettings />,
+        element: (
+          <FeatureRoute featureKey="settings" subFeatureKey="organization">
+            <OrganizationSettings />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'settings/users',
-        element: <UserManagement />,
+        element: (
+          <FeatureRoute featureKey="settings" subFeatureKey="users">
+            <UserManagement />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'settings/notifications',
-        element: <NotificationSettings />,
+        element: (
+          <FeatureRoute featureKey="settings" subFeatureKey="notifications">
+            <NotificationSettings />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'settings/security',
-        element: <SecuritySettings />,
+        element: (
+          <FeatureRoute featureKey="settings" subFeatureKey="security">
+            <SecuritySettings />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'settings/appearance',
-        element: <AppearanceSettings />,
+        element: (
+          <FeatureRoute featureKey="settings" subFeatureKey="appearance">
+            <AppearanceSettings />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'settings/integrations',
-        element: <Integrations />,
+        element: (
+          <FeatureRoute featureKey="settings" subFeatureKey="integrations">
+            <Integrations />
+          </FeatureRoute>
+        ),
       },
       {
         path: 'settings/white-label',
-        element: <WhiteLabel />,
+        element: (
+          <FeatureRoute featureKey="settings" subFeatureKey="whiteLabel">
+            <WhiteLabel />
+          </FeatureRoute>
+        ),
+      },
+      {
+        path: 'debug/organizations',
+        element: <DebugOrganizations />,
       },
     ],
   },

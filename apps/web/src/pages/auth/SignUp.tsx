@@ -22,7 +22,8 @@ export function SignUpPage() {
           routing="path"
           path="/sign-up"
           signInUrl="/sign-in"
-          afterSignUpUrl="/"
+          afterSignUpUrl="/select-organization"
+          forceRedirectUrl="/select-organization"
         />
       </div>
     </div>

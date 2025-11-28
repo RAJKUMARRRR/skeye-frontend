@@ -9,8 +9,9 @@ export const apiClient = axios.create({
   timeout: config.timeout,
 })
 
-// Token setter function to be called from Clerk auth hook
+// Token and organization management
 let authToken: string | null = null
+let organizationId: string | null = null
 
 export const setAuthToken = (token: string | null) => {
   authToken = token
@@ -21,7 +22,17 @@ export const setAuthToken = (token: string | null) => {
   }
 }
 
+export const setOrganizationId = (orgId: string | null) => {
+  organizationId = orgId
+  if (orgId) {
+    console.log('[API Client] Organization ID set:', orgId)
+  } else {
+    console.log('[API Client] Organization ID cleared')
+  }
+}
+
 export const getAuthToken = () => authToken
+export const getOrganizationId = () => organizationId
 
 apiClient.interceptors.request.use(config => {
   if (authToken) {
@@ -31,6 +42,14 @@ apiClient.interceptors.request.use(config => {
     console.error('[API Client] ⚠️ Request to:', config.url, '- NO AUTH TOKEN!')
     console.error('[API Client] Token value is:', authToken)
   }
+
+  // Add organization ID header if available (in addition to JWT claim)
+  // This provides explicit organization context for API requests
+  if (organizationId) {
+    config.headers['X-Organization-Id'] = organizationId
+    console.log('[API Client] Organization header set:', organizationId)
+  }
+
   return config
 })
 

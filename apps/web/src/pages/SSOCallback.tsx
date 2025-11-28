@@ -6,11 +6,12 @@ export function SSOCallback() {
 
   return (
     <AuthenticateWithRedirectCallback
-      afterSignInUrl="/"
-      afterSignUpUrl="/"
-      redirectUrl="/"
-      signInFallbackRedirectUrl="/"
-      signUpFallbackRedirectUrl="/"
+      afterSignInUrl="/select-organization"
+      afterSignUpUrl="/select-organization"
+      redirectUrl="/select-organization"
+      signInFallbackRedirectUrl="/select-organization"
+      signUpFallbackRedirectUrl="/select-organization"
+      continueSignUpUrl="/select-organization"
     >
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
